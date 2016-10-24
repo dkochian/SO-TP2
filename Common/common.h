@@ -1,0 +1,80 @@
+#ifndef _INC_COMMON_
+
+	#define _INC_COMMON_
+
+	#include <stdint.h>
+
+	#define TRUE				1
+	#define FALSE				!TRUE
+
+	#define STDOUT				1
+	#define STDERR				2
+	#define STDIN				3
+	#define COLOR				4
+	#define TOAST				5
+	#define BGCOLOR				6
+
+	#define SYSREAD				3
+	#define SYSWRITE			4
+	#define SETCOLOR			5
+	#define CLEAR				6
+	#define GETTIME				7
+	#define GETDATE				8
+	#define SLEEP				9
+	#define DRAWPIXEL			10
+
+	#define EMPTY				0
+
+	#define NULL				0x0
+
+	#define MAX_BUFFER			128
+	#define WIDTH 				128
+	#define KB_SIZE				112
+
+	#define BLACK				0
+	#define BLUE				1
+	#define GREEN				2
+	#define CYAN				3
+	#define RED					4
+	#define MAGENTA				5
+	#define BROWN				6
+	#define LIGHT_GRAY			7
+	#define DARK_GRAY			8
+	#define LIGHT_BLUE			9
+	#define LIGHT_GREEN			10
+	#define LIGHT_CYAN			11
+	#define LIGHT_RED			12
+	#define LIGHT_MAGENTA		13
+	#define YELLOW				14
+	#define WHITE				15
+
+	#define COLOR_DEFAULT		WHITE
+	#define COLOR_BG_DEFAULT	BLACK
+	#define COLOR_ERROR			RED
+	#define COLOR_CLEAR			BLACK
+	#define COLOR_INFO			BLUE
+	#define COLOR_NULL			-1
+
+	typedef struct {
+		uint8_t
+			secs,
+			mins,
+			hrs;
+	} timeStruct;
+
+	typedef struct {
+		uint8_t
+			day,
+			dayOfWeak,
+			month,
+			year;
+	} dateStruct;
+
+	typedef struct {
+		uint8_t
+	  		r,
+	  		g,
+	  		b;
+	} ColorRGB;
+
+#endif

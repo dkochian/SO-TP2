@@ -1,0 +1,3 @@
+void timerTickHandler() {
+	return;
+}
