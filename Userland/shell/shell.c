@@ -1,9 +1,9 @@
 #include <shell.h>
-#include <stdlib.h>
 #include <stdio.h>
 #include <string.h>
+#include <syscall.h>
 #include <commands.h>
-#include "../include/common.h"
+#include "../../Common/common.h"
 
 static int insertToBuffer(char c);
 static void resetBuffer();

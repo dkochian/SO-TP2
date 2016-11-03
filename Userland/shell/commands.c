@@ -4,7 +4,7 @@
 #include <string.h>
 #include <syscall.h>
 #include <fractals.h>
-#include "../include/common.h"
+#include "../../Common/common.h"
 
 static void * const sampleDataModuleAddress = (void*)0x500000;
 static int readNumber();
@@ -259,8 +259,7 @@ void colorBgCommand(char* str) {
 	}
 	
 	setBgColor(color);
-	char* str2;
-	clearCommand(str2);
+	clearCommand("");
 }
 
 void disclaimerCommand(char* str) {

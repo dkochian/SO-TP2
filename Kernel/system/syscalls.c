@@ -1,5 +1,6 @@
-#include "../include/common.h"
+#include "include/mmu.h"
 #include "include/syscalls.h"
+#include "../include/common.h"
 #include "../drivers/include/video.h"
 #include "../drivers/include/keyboard.h"
 #include "../include/clock.h"
@@ -29,6 +30,12 @@ void sysCallHandler(uint64_t rax, uint64_t rbx, uint64_t rcx, uint64_t rdx) {
 			break;
 		case DRAWPIXEL:
 			printPixel((int) rbx, (int) rdx, (ColorRGB*) rcx);
+			break;
+		case MALLOC:
+			rcx = (uint64_t) k_malloc((size_t) rbx);
+			break;
+		case FREE:
+			k_free((void *) rbx);
 			break;
 		default:
 			write(STDERR, "Error: Invalid system call.", 28);

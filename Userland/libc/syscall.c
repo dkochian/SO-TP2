@@ -44,3 +44,13 @@ void sleep(int seconds){
 void putPixel(uint16_t x, uint16_t y, ColorRGB* color) {
 	_syscall(DRAWPIXEL, x, (uintptr_t) color, y);
 }
+
+void* malloc(size_t size) {
+	void *res = NULL;
+	_syscall(MALLOC, size, (uintptr_t) res, NULL);
+	return res;
+}
+
+void free(void *ptr) {
+	_syscall(FREE, (uintptr_t) ptr, NULL, NULL);
+}

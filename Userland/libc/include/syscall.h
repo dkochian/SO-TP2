@@ -1,7 +1,7 @@
 #ifndef _INC_SYSCALL_
 	#define _INC_SYSCALL_
 
-	#include "../../include/common.h"
+	#include "../../../Common/common.h"
 
 	extern void _syscall(int, int, int, int);
 
@@ -16,5 +16,7 @@
 	void clear();
 	void sleep(int seconds);
 	void putPixel(uint16_t x, uint16_t y, ColorRGB* color);
+	void* malloc(size_t size);
+	void free(void *ptr);
 
 #endif

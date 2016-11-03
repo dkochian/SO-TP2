@@ -4,12 +4,14 @@ PXESTART=pxestart.sys
 PURE64=pure64.sys
 
 all: bmfs_mbr.sys pxestart.sys pure64.sys
+	@echo -e "	Pure64		[ \033[0;32mOK \033[0m]"
+
 $(BMFS_MBR):
-	$(ASM) src/bootsectors/bmfs_mbr.asm -o $(BMFS_MBR)
+	@$(ASM) src/bootsectors/bmfs_mbr.asm -o $(BMFS_MBR)
 $(PXESTART):
-	$(ASM) src/bootsectors/pxestart.asm -o $(PXESTART)
+	@$(ASM) src/bootsectors/pxestart.asm -o $(PXESTART)
 $(PURE64):
-	cd src; $(ASM) pure64.asm -o ../$(PURE64)
+	@cd src; $(ASM) pure64.asm -o ../$(PURE64)
 clean:
-	rm -rf *.sys
+	@rm -rf *.sys
 .PHONY: all clean

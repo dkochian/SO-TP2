@@ -22,6 +22,8 @@
 	#define GETDATE				8
 	#define SLEEP				9
 	#define DRAWPIXEL			10
+	#define MALLOC				11
+	#define FREE				12
 
 	#define EMPTY				0
 
@@ -76,5 +78,7 @@
 	  		g,
 	  		b;
 	} ColorRGB;
+
+	typedef unsigned int size_t;
 
 #endif
