@@ -4,19 +4,19 @@
 
 #include "process.h"
 #include "processSlot.h"
-
+/*
 typedef struct {
     ProcessSlot * current;
-}Scheduler;
+}Scheduler;*/
 
 #define TIME_SLICE 5
 
 void roundRobin();
 
-Scheduler* newScheduler();
+/*Scheduler* newScheduler();
 
 void removeScheduler();
-
+*/
 void schedule();
 
 void addProcess(Process * process);

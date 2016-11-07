@@ -4,6 +4,7 @@ GLOBAL _sysCallHandler
 GLOBAL _write_port
 GLOBAL _cli
 GLOBAL _sti
+GLOBAL _accel
 
 EXTERN timerTickHandler
 EXTERN keyboardHandler
@@ -143,3 +144,15 @@ _sysCallHandler:
   POPAQ
   sti
   iretq
+
+_accel:
+  push rax
+  mov al,00110100b      ;channel 0, lobyte/hibyte, rate generator
+  out 0x43, al
+ 
+  mov ax,1193         ;ax = 16 bit reload value
+  out 0x40,al         ;Set low byte of PIT reload value
+  mov al,ah         ;ax = high 8 bits of reload value
+  out 0x40,al         ;Set high byte of PIT reload value
+  pop rax
+  ret

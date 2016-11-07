@@ -1,61 +1,46 @@
-//BASED ON Wyrm/Scheduler
+/*
+**	Credit where it's due: Based on Wyrm/Scheduler
+*/
 #include "scheduler.h"
 
 //TODO: Static?
-Scheduler * scheduler;
+//Scheduler * scheduler;
 
-int timeSlice = TIME_SLICE;
-int currentTime = TIME_SLICE;
+/**********************
+**  Current Process  **
+**********************/
 
-void roundRobin() {
-	currentTime--;
-	if(currentTime<=0) {
-		schedule();
-		currentTime = timeSlice;
-	}
+static ProcessSlot * current = NULL;
+
+void init() {
+	if(current!=NULL)
+		return;
+	current = newProcessSlot();
+	current->next = current;
 }
-
-Scheduler* newScheduler() {
-	Scheduler * aux = k_malloc(sizeof(Scheduler));
-	return aux;
-}
-
-void removeScheduler(Scheduler * scheduler) {
-	ProcessSlot* first = scheduler->current;
-	ProcessSlot* following = first->next;
-	while( first!=following ) {
-		ProcessSlot* temp = following->next;
-		removeProcessSlot(following);
-		following = temp;
-	}
-	removeProcessSlot(first);
-	k_free(scheduler);
-}	
 
 void schedule() {
-	scheduler->current = scheduler->current->next;
+	// call assembler
+	current = current->next;
 }
 
 void addProcess(Process * process) {
 	ProcessSlot * aux = newProcessSlot();
 	aux->process = process;
-	aux->next = scheduler->current->next;
-	scheduler->current->next = aux;
+	aux->next = current->next;
+	current->next = aux;
 }
 
 void removeProcess(Process * process) {
-
 	int found = 0;
-
 	if (process == NULL) {
+		return;
 		//TODO: log de errores.
 		//fprintf(stderr, "Failed to remove process: Process is NULL\n");
 	}
-
-	ProcessSlot * first = scheduler->current;
+	ProcessSlot * first = current;
 	ProcessSlot * prev = first;
 	ProcessSlot * aux = prev->next;
-
 	do {
 		if (aux->process == process) {
 			prev->next = aux->next;
@@ -71,16 +56,35 @@ void removeProcess(Process * process) {
 		//TODO: log de errores.
 		//fprintf(stderr, "Failed to remove process: Process not found on Scheduler list\n");
 	}
-
+	return;
 }
 
+/******************
+**  Round Robin  **
+******************/
+
+int timeSlice = TIME_SLICE;
+int currentTime = TIME_SLICE;
+
+void roundRobin() {
+	currentTime--;
+	if(currentTime<=0) {
+		schedule();
+		currentTime = timeSlice;
+	}
+}
+
+/***********************
+**  Helper Functions  **
+***********************/
+
 void * switchUserToKernel(void * rsp) {
-	Process * process = scheduler->current->process;
+	Process * process = current->process;
 	process->userStack = rsp;
 	return process->kernelStack;
 }
 
 void * switchKernelToUser() {
 	schedule();
-	return scheduler->current->process->userStack;
+	return current->process->userStack;
 }

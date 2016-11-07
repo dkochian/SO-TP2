@@ -33,5 +33,6 @@
 	extern void _cli(void);
 	extern void _sti(void);
 	extern void _write_port(int16_t, int16_t);
+	extern void _accel(void);
 
 #endif

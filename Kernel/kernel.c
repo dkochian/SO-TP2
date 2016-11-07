@@ -95,6 +95,10 @@ int main() {
 	print("Interrupt Descriptor Table is ready.", -1);
 	printNewline();
 
+	_accel();
+	print("Accelerated IRQ0 to 1000Hz.", -1);
+	printNewline();
+
 	keyboardInit();
 	print("Keyboard ready.", -1);
 	printNewline();

@@ -5,8 +5,8 @@
 #include "process.h"
 
 typedef struct {
-    struct ProcessSlot * next;
-    Process * process;
+    struct ProcessSlot* next;
+    Process* process;
 }ProcessSlot;
 
 ProcessSlot * newProcessSlot();
