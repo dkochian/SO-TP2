@@ -1,11 +1,11 @@
 //BASED ON Wyrm/Process stackframe
-#include "StackFrame.h"
+#include "stackFrame.h"
 
 StackFrame * newStackFrame() {
-    StackFrame * stackFrame = malloc(sizeof(StackFrame));
+    StackFrame * stackFrame = k_malloc(sizeof(StackFrame));
     return stackFrame;
 }
 
 void removeStackFrame(StackFrame * stackFrame) {
-    free(stackFrame);
+    k_free(stackFrame);
 }

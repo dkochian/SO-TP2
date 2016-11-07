@@ -1,24 +1,11 @@
 //BASED ON Wyrm/Process
-#include "Process.h"
+#include "process.h"
 
-Process * newProcess(void * entryPoint) {
-    Process * process = malloc(sizeof(Process));
 
-    process->entryPoint = entryPoint;
-    process->userStackPage = newStackFrame();
-    process->kernelStackPage = newStackFrame();
-    process->userStack = toStackAddress(process->userStackPage);
-    process->kernelStack = toStackAddress(process->kernelStackPage);
-
-    process->userStack = fillStackFrame(process->entryPoint, process->userStack);
-
-    return process;
-}
-
-void removeProcess(Process * process) {
+void removeProcess2(Process * process) {
     removeStackFrame(process->userStack);
     removeStackFrame(process->kernelStack);
-    free(process);
+    k_free(process);
 }
 
 static void * toStackAddress(void * page) {
@@ -54,4 +41,18 @@ static void * fillStackFrame(void * entryPoint, void * userStack) {
     frame->base = 0x000;
 
     return frame;
+}
+
+Process * newProcess(void * entryPoint) {
+    Process * process = k_malloc(sizeof(Process));
+
+    process->entryPoint = entryPoint;
+    process->userStackPage = newStackFrame();
+    process->kernelStackPage = newStackFrame();
+    process->userStack = toStackAddress(process->userStackPage);
+    process->kernelStack = toStackAddress(process->kernelStackPage);
+
+    process->userStack = fillStackFrame(process->entryPoint, process->userStack);
+
+    return process;
 }

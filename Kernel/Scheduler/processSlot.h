@@ -4,10 +4,10 @@
 
 #include "process.h"
 
-typedef struct ProcessSlot {
-    ProcessSlot * next;
+typedef struct {
+    struct ProcessSlot * next;
     Process * process;
-};
+}ProcessSlot;
 
 ProcessSlot * newProcessSlot();
 

@@ -1,12 +1,12 @@
 //BASED ON Wyrm/ProcessSlot
-#include "ProcessSlot.h"
+#include "processSlot.h"
 
 ProcessSlot * newProcessSlot() {
-    ProcessSlot * processSlot = malloc(sizeof(ProcessSlot));
+    ProcessSlot * processSlot = k_malloc(sizeof(ProcessSlot));
     return processSlot;
 }
 
 void removeProcessSlot(ProcessSlot * processSlot) {
     //TODO: Decidir mas adelante si aca deberia removerse el process.
-    free(processSlot);
+    k_free(processSlot);
 }

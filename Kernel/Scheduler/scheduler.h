@@ -2,14 +2,18 @@
 #ifndef SCHEDULER_H
 #define SCHEDULER_H
 
-#include "Process.h"
-#include "ProcessSlot.h"
+#include "process.h"
+#include "processSlot.h"
 
-typedef struct Scheduler {
+typedef struct {
     ProcessSlot * current;
-};
+}Scheduler;
 
-void newScheduler();
+#define TIME_SLICE 5
+
+void roundRobin();
+
+Scheduler* newScheduler();
 
 void removeScheduler();
 
