@@ -32,8 +32,21 @@ void sysCallHandler(uint64_t rax, uint64_t rbx, uint64_t rcx, uint64_t rdx) {
 			printPixel((int) rbx, (int) rdx, (ColorRGB*) rcx);
 			break;
 		case MALLOC:
-			rcx = (uint64_t) k_malloc((size_t) rbx);
-			break;
+			{
+				*((uintptr_t *) rcx) = (uint64_t) k_malloc((size_t) rbx);
+
+				print("[KSYS] rcx: 0x", -1);
+				printHex((uint64_t) rcx, -1);
+				printNewline();
+
+				print("[KSYS] &rcx: 0x", -1);
+				printHex((uint64_t) &rcx, -1);
+				printNewline();
+
+				print("[KSYS] *rcx: 0x", -1);
+				printHex((uint64_t) *((uintptr_t *) rcx), -1);
+				printNewline();
+			} break;
 		case FREE:
 			k_free((void *) rbx);
 			break;
