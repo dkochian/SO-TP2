@@ -48,6 +48,7 @@ void shell() {
 	printHeader();
 
 	while(TRUE) {
+		//printn("[SHELL] while(TRUE)");
 		c = getchar(TRUE);
 
 		if(insertToBuffer(c) == 1) {

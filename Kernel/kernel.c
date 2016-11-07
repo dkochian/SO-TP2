@@ -103,7 +103,7 @@ int main() {
 	print("mmu ready.", -1);
 	printNewline();
 
-	clear();	
+	clear();
 
 	((EntryPoint)sampleCodeModuleAddress)();
 
