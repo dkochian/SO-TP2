@@ -3,9 +3,10 @@
 #include <moduleLoader.h>
 
 #include "system/include/idt.h"
-#include "drivers/include/keyboard.h"
+#include "system/include/mmu.h"
 #include "drivers/include/video.h"
 #include "system/include/syscalls.h"
+#include "drivers/include/keyboard.h"
 
 extern uint8_t text;
 extern uint8_t rodata;
@@ -96,6 +97,10 @@ int main() {
 
 	keyboardInit();
 	print("Keyboard ready.", -1);
+	printNewline();
+
+	k_initialize();
+	print("mmu ready.", -1);
 	printNewline();
 
 	clear();

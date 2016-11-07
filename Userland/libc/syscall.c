@@ -97,21 +97,17 @@ void* malloc(size_t size) {
 	uintptr_t res = NULL;
 	_syscall(MALLOC, size, (uintptr_t) &res, NULL);
 
-	/*print("[SYS] res: 0x", -1);
-	printHex((uint64_t) res, -1);
-	printNewline();
-
-	print("[SYS] &res: 0x", -1);
-	printHex((uint64_t) &res, -1);
-	printNewline();*/
-
-	/*print("[SYS] *res: 0x", -1);
-	printHex((uint64_t) *res, -1);
-	printNewline();*/
-
 	return (void *) res;
 }
 
 void free(void *ptr) {
+	print("[SYS] ptr: 0x", -1);
+	printHex((uint64_t) ptr, -1);
+	printNewline();
+
+	print("[SYS] &ptr: 0x", -1);
+	printHex((uint64_t) &ptr, -1);
+	printNewline();
+
 	_syscall(FREE, (uintptr_t) ptr, NULL, NULL);
 }
