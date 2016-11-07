@@ -34,7 +34,7 @@ commandExec
 
 	};
 
-static uint32_t uintToBase(uint64_t value, char * buffer, uint32_t base);
+/*static uint32_t uintToBase(uint64_t value, char * buffer, uint32_t base);
 static void printBase(uint64_t value, uint32_t base, char color);
 static void printHex(uint64_t value, char color);
 
@@ -81,7 +81,7 @@ static void printBase(uint64_t value, uint32_t base, char color) {
 
 static void printHex(uint64_t value, char color) {
 	printBase(value, 16, color);
-}
+}*/
 
 void shell() {
 	char
@@ -90,7 +90,7 @@ void shell() {
 		cmd;
 
 	cmd.name = malloc(MAX_BUFFER*sizeof(char));
-	print("[SYS] cmd.name: 0x");
+	/*print("[SYS] cmd.name: 0x");
 	printHex((uint64_t) cmd.name, -1);
 	printNewline();
 	print("[SYS] &cmd.name: 0x");
@@ -99,10 +99,10 @@ void shell() {
 	print("[SYS] *cmd.name: 0x");
 	printHex((uint64_t) *cmd.name, -1);
 	printNewline();
-	printNewline();
+	printNewline();*/
 
 	cmd.args = malloc(MAX_ARG_BUFFER*sizeof(char));
-	print("[SYS] cmd.args: 0x");
+	/*print("[SYS] cmd.args: 0x");
 	printHex((uint64_t) cmd.args, -1);
 	printNewline();
 	print("[SYS] &cmd.args: 0x");
@@ -110,7 +110,7 @@ void shell() {
 	printNewline();
 	print("[SYS] *cmd.args: 0x");
 	printHex((uint64_t) *cmd.args, -1);
-	printNewline();
+	printNewline();*/
 
 	bIndex = 0;
 

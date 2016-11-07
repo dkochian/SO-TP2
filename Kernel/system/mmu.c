@@ -45,7 +45,7 @@ void *k_malloc(size_t size) {
 	void *result = (void *) mem;
 	mem += size;
 
-	print("[MMU] result: 0x", -1);
+	/*print("[MMU] result: 0x", -1);
 	printHex((uint64_t) result, -1);
 	printNewline();
 
@@ -55,7 +55,7 @@ void *k_malloc(size_t size) {
 
 	print("[MMU] *result: 0x", -1);
 	printHex((uint64_t) *((uintptr_t *) result), -1);
-	printNewline();
+	printNewline();*/
 
 	return result;
 }
