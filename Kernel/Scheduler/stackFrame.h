@@ -2,7 +2,10 @@
 #ifndef STACKFRAME_H
 #define STACKFRAME_H
 
-typedef struct StackFrame {
+#include <stdint.h>
+#include "../system/include/mmu.h"
+
+typedef struct {
     //Registers restore context
     uint64_t gs;
     uint64_t fs;
@@ -29,10 +32,10 @@ typedef struct StackFrame {
     uint64_t rsp;
     uint64_t ss;
     uint64_t base;
-};
+}StackFrame;
 
 StackFrame * newStackFrame();
 
 void removeStackFrame(StackFrame * stackFrame);
 
-#endif STACKFRAME_H
+#endif

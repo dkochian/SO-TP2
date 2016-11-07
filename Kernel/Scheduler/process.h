@@ -2,10 +2,10 @@
 #ifndef PROCESS_H
 #define PROCESS_H
 
-#include "StackFrame.h"
-#include "memory_manager.h"
+#include "stackFrame.h"
+#include "../system/include/mmu.h"
 
-typedef struct Process {
+typedef struct {
     void * entryPoint;
 
     void * userStack;
@@ -13,14 +13,10 @@ typedef struct Process {
 
     void * userStackPage;
     void * kernelStackPage;
-};
+}Process;
 
 Process * newProcess(void * entryPoint);
 
-void removeProcess(Process * process);
-
-static void * toStackAddress(void * page);
-
-static void * fillStackFrame(void * entryPoint, void * userStack);
+void removeProcess2(Process * process);
 
 #endif
