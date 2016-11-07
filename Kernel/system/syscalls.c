@@ -35,21 +35,7 @@ void sysCallHandler(uint64_t rax, uint64_t rbx, uint64_t rcx, uint64_t rdx) {
 			*((uintptr_t *) rcx) = (uint64_t) k_malloc((size_t) rbx);
 			break;
 		case FREE:
-			{
-				print("[KSYS] rbx: 0x", -1);
-				printHex((uint64_t) rbx, -1);
-				printNewline();
-
-				print("[KSYS] &rbx: 0x", -1);
-				printHex((uint64_t) &rbx, -1);
-				printNewline();
-
-				print("[KSYS] *rbx: 0x", -1);
-				printHex((uint64_t) *((uintptr_t *) rbx), -1);
-				printNewline();
-
-				k_free((void *) rbx);
-			}
+			k_free((void *) rbx);
 			break;
 		default:
 			write(STDERR, "Error: Invalid system call.", 28);

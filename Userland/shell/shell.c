@@ -34,55 +34,6 @@ commandExec
 
 	};
 
-static uint32_t uintToBase(uint64_t value, char * buffer, uint32_t base);
-static void printBase(uint64_t value, uint32_t base, char color);
-static void printHex(uint64_t value, char color);
-
-static uint32_t uintToBase(uint64_t value, char * buffer, uint32_t base)
-{
-	char *p = buffer;
-	char *p1, *p2;
-	uint32_t digits = 0;
-
-	//Calculate characters for each digit
-	do
-	{
-		uint32_t remainder = value % base;
-		*p++ = (remainder < 10) ? remainder + '0' : remainder + 'A' - 10;
-		digits++;
-	}
-	while (value /= base);
-
-	// Terminate string in buffer.
-	*p = 0;
-
-	//Reverse string in buffer.
-	p1 = buffer;
-	p2 = p - 1;
-	while (p1 < p2)
-	{
-		char tmp = *p1;
-		*p1 = *p2;
-		*p2 = tmp;
-		p1++;
-		p2--;
-	}
-
-	return digits;
-}
-
-static void printBase(uint64_t value, uint32_t base, char color) {
-	char
-		buffer[64] = {'0'};
-
-	uintToBase(value, buffer, base);
-	print(buffer);
-}
-
-static void printHex(uint64_t value, char color) {
-	printBase(value, 16, color);
-}
-
 void shell() {
 	char
 		c;
@@ -90,21 +41,7 @@ void shell() {
 		cmd;
 
 	cmd.name = malloc(MAX_BUFFER*sizeof(char));
-	print("[SHELL] cmd.name: 0x");
-	printHex((uint64_t) cmd.name, -1);
-	printNewline();
-
-	free(cmd.name);
-
-	cmd.name = malloc(MAX_BUFFER*sizeof(char));
-	print("[SHELL] cmd.name: 0x");
-	printHex((uint64_t) cmd.name, -1);
-	printNewline();
-
 	cmd.args = malloc(MAX_ARG_BUFFER*sizeof(char));
-	print("[SHELL] cmd.args: 0x");
-	printHex((uint64_t) cmd.args, -1);
-	printNewline();
 
 	bIndex = 0;
 
