@@ -109,7 +109,7 @@ char getDefaultColor() {
 
 void printPixel(uint16_t x, uint16_t y, ColorRGB* color) {
 	unsigned char*
-		vesaBuffer = (*(uint32_t*) 0x5080);
+		vesaBuffer = (unsigned char *)((uintptr_t)(*(uint64_t**)0x5080) << 32 >> 32);
 	unsigned char*
 		adress = vesaBuffer + 3*(x + y * 1024);
 
