@@ -147,7 +147,8 @@ _write_port:
 _timerTickHandler:
   cli
   pushState
-
+  
+  call timerTickHandler
 
   mov rdi, rsp
   call switchAtomic

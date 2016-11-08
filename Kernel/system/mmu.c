@@ -3,6 +3,7 @@
 
 static uintptr_t **free_mem_table = (uintptr_t **) PAGE_TABLE;
 static int current;
+static char init = FALSE;
 
 void k_initialize() {
 	for(current = 0; current < MEM_BASE-PAGE_TABLE; current++)
@@ -12,6 +13,10 @@ void k_initialize() {
 }
 
 void *k_malloc(size_t size) {
+	if(!init) {
+		k_initialize();
+		init = TRUE;
+	}
 	if(current == -1)
 		return NULL;
 

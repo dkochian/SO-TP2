@@ -1,21 +1,13 @@
 //BASED ON Wyrm/Scheduler
 #include "scheduler.h"
-
-//TODO: Static?
-//Scheduler * scheduler;
+#include "../drivers/include/video.h"
 
 /**********************
 **  Current Process  **
 **********************/
 
+static int processCounter = 0;
 static ProcessSlot* current = NULL;
-
-void initScheduler() {
-	if(current!=NULL)
-		return;
-	current = newProcessSlot();
-	current->next = current;
-}
 
 void schedule() {
 	current = current->next;
@@ -24,8 +16,14 @@ void schedule() {
 void addProcess(Process* process) {
 	ProcessSlot* aux = newProcessSlot();
 	aux->process = process;
-	aux->next = current->next;
-	current->next = aux;
+	if(processCounter==0) {
+		aux->next = aux;
+		current = aux;
+	} else {
+		aux->next = current->next;
+		current->next = aux;
+	}
+	processCounter++;
 }
 
 void removeProcess(Process* process) {
@@ -52,30 +50,19 @@ void removeProcess(Process* process) {
 	if (!found) {
 		//TODO: log de errores.
 		//fprintf(stderr, "Failed to remove process: Process not found on Scheduler list\n");
+	} else {
+		processCounter--;
 	}
 	return;
 }
 
-/******************
-**  Round Robin  **
-******************/
-/*
-int timeSlice = TIME_SLICE;
-int currentTime = TIME_SLICE;
-
-void roundRobin() {
-	currentTime--;
-	if(currentTime<=0) {
-		schedule();
-		currentTime = timeSlice;
-	}
-}
-*/
 /***********************
 **  Helper Functions  **
 ***********************/
 
 void* switchAtomic(void* rsp) {
+	if(processCounter==0)
+		return rsp;
 	current->process->userStack = rsp;
 	schedule();
 	return current->process->userStack;

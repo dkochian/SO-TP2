@@ -93,8 +93,8 @@ void * initializeKernelBinary()
 
 int main() {
 
-	initScheduler();
-	print("Scheduler ready.", -1);
+	k_initialize();
+	print("MMU ready.", -1);
 	printNewline();
 
 	_accelPIT();
@@ -108,13 +108,14 @@ int main() {
 	keyboardInit();
 	print("Keyboard ready.", -1);
 	printNewline();
-
-	k_initialize();
-	print("MMU ready.", -1);
-	printNewline();
 	
+	print("Loading EntryPoint....", -1);
+	printNewline();
 	clear();
-
+	//Process* temp = newProcess((EntryPoint)sampleCodeModuleAddress);
+	//addProcess(temp);
+	//print("You fucked up...", -1);
+	//printNewline();
 	((EntryPoint)sampleCodeModuleAddress)();
 
 	return 0;

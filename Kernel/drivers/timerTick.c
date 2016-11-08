@@ -2,6 +2,6 @@
 #include "include/video.h"
 
 void timerTickHandler() {
-	print("-###-", -1);
+	//print("-###-", -1);
 	return;
 }
