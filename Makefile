@@ -1,5 +1,5 @@
 all: toolchain bootloader kernel userland video image
-	@echo -e "\n\e[1;32mProject build successfully\033[0m"
+	@echo -e "\n\033[1;32mProject built successfully \033[0m"
 
 toolchain:
 	@cd Toolchain; make all --no-print-directory

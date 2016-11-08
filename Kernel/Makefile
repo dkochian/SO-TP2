@@ -2,8 +2,7 @@ include Makefile.inc
 
 KERNEL=kernel.bin
 SYSTEM=
-#SOURCES=$(wildcard *.c) $(wildcard system/*.c) $(wildcard drivers/*.c)
-SOURCES= $(wildcard Scheduler/*.c) $(wildcard *.c) $(wildcard system/*.c) $(wildcard drivers/*.c) 
+SOURCES= $(wildcard system/scheduler/*.c) $(wildcard *.c) $(wildcard system/*.c) $(wildcard drivers/*.c) 
 SOURCES_ASM=$(wildcard asm/*.asm) $(wildcard system/asm/*.asm)
 OBJECTS=$(SOURCES:.c=.o)
 OBJECTS_ASM=$(SOURCES_ASM:.asm=.o)
@@ -13,7 +12,7 @@ LOADEROBJECT=$(LOADERSRC:.asm=.o)
 STATICLIBS=
 
 all: $(KERNEL)
-	@echo -e "Kernel			[ \033[0;32mOK \033[0m]"
+	@echo -e "Kernel		[ \033[0;32mOK \033[0m]"
 
 $(KERNEL): $(LOADEROBJECT) $(OBJECTS) $(STATICLIBS) $(OBJECTS_ASM)
 	@$(LD) $(LDFLAGS) -T kernel.ld -o $(KERNEL) $(LOADEROBJECT) $(OBJECTS) $(OBJECTS_ASM) $(STATICLIBS)
@@ -28,6 +27,6 @@ $(LOADEROBJECT):
 	@$(ASM) $(ASMFLAGS) $(LOADERSRC) -o $(LOADEROBJECT)
 
 clean:
-	@rm -rf asm/*.o *.o *.bin system/*.o drivers/*.o
+	@rm -rf asm/*.o *.o *.bin system/*.o system/scheduler/*.o drivers/*.o system/asm/*.o
 
 .PHONY: all clean

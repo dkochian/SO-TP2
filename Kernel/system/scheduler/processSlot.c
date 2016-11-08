@@ -6,7 +6,7 @@ ProcessSlot* newProcessSlot() {
     return processSlot;
 }
 
-void removeProcessSlot(ProcessSlot * processSlot) {
+void removeProcessSlot(ProcessSlot* processSlot) {
     //TODO: Decidir mas adelante si aca deberia removerse el process.
     k_free(processSlot);
 }

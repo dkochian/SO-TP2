@@ -4,13 +4,13 @@
 
 #include "process.h"
 
-typedef struct {
+typedef struct ProcessSlot{
     struct ProcessSlot* next;
     Process* process;
 }ProcessSlot;
 
-ProcessSlot * newProcessSlot();
+ProcessSlot* newProcessSlot();
 
-void removeProcessSlot(ProcessSlot * processSlot);
+void removeProcessSlot(ProcessSlot* processSlot);
 
 #endif

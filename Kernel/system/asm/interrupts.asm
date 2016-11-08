@@ -4,7 +4,10 @@ GLOBAL _sysCallHandler
 GLOBAL _write_port
 GLOBAL _cli
 GLOBAL _sti
-GLOBAL _accel
+
+EXTERN switchUserToKernel
+EXTERN switchKernelToUser
+EXTERN switchAtomic
 
 EXTERN timerTickHandler
 EXTERN keyboardHandler
@@ -69,6 +72,48 @@ align 8
 %endmacro;end of macro definition
 
 
+; for context switching
+%macro  pushState 0
+  push rax
+  push rbx
+  push rcx
+  push rdx
+  push rbp
+  push rdi
+  push rsi
+  push r8
+  push r9
+  push r10
+  push r11
+  push r12
+  push r13
+  push r14
+  push r15
+  push fs
+  push gs
+%endmacro
+
+%macro  popState 0
+  pop gs
+  pop fs
+  pop r15
+  pop r14
+  pop r13
+  pop r12
+  pop r11
+  pop r10
+  pop r9
+  pop r8
+  pop rsi
+  pop rdi
+  pop rbp
+  pop rdx
+  pop rcx
+  pop rbx
+  pop rax
+%endmacro
+
+
 ;------------------------------------------------------------
 ; sti wrapper for C
 ;------------------------------------------------------------
@@ -101,11 +146,38 @@ _write_port:
 ;------------------------------------------------------------
 _timerTickHandler:
   cli
- 
+  pushState
+
+
+  mov rdi, rsp
+  call switchAtomic
+  mov rsp, rax
+
+
+
+
+  ; save current process's RSP
+  ;mov rdi, rsp
+
+  ; enter kernel context by setting current process's kernel-RSP
+  ;call switchUserToKernel
+  ;;;;xchg bx, bx
+
+  ;mov rsp, rax
+
+  ; schedule, get new process's RSP and load it
+  ;call switchKernelToUser
+  ;;;;xchg bx, bx
+
+  ;mov rsp, rax
+
+
+
   call timerTickHandler
   mov al, 0x20
   out 0x20, al
 
+  popState
   sti
   iretq
 
@@ -139,20 +211,8 @@ _keyboardHandler:
 
 _sysCallHandler:
   cli
-  PUSHAQ  
+  pushaq  
   call sysCallHandler
-  POPAQ
+  popaq
   sti
   iretq
-
-_accel:
-  push rax
-  mov al,00110100b      ;channel 0, lobyte/hibyte, rate generator
-  out 0x43, al
- 
-  mov ax,1193         ;ax = 16 bit reload value
-  out 0x40,al         ;Set low byte of PIT reload value
-  mov al,ah         ;ax = high 8 bits of reload value
-  out 0x40,al         ;Set high byte of PIT reload value
-  pop rax
-  ret

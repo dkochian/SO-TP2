@@ -1,6 +1,4 @@
-/*
-**	Credit where it's due: Based on Wyrm/Scheduler
-*/
+//BASED ON Wyrm/Scheduler
 #include "scheduler.h"
 
 //TODO: Static?
@@ -10,9 +8,9 @@
 **  Current Process  **
 **********************/
 
-static ProcessSlot * current = NULL;
+static ProcessSlot* current = NULL;
 
-void init() {
+void initScheduler() {
 	if(current!=NULL)
 		return;
 	current = newProcessSlot();
@@ -20,27 +18,26 @@ void init() {
 }
 
 void schedule() {
-	// call assembler
 	current = current->next;
 }
 
-void addProcess(Process * process) {
-	ProcessSlot * aux = newProcessSlot();
+void addProcess(Process* process) {
+	ProcessSlot* aux = newProcessSlot();
 	aux->process = process;
 	aux->next = current->next;
 	current->next = aux;
 }
 
-void removeProcess(Process * process) {
+void removeProcess(Process* process) {
 	int found = 0;
 	if (process == NULL) {
 		return;
 		//TODO: log de errores.
 		//fprintf(stderr, "Failed to remove process: Process is NULL\n");
 	}
-	ProcessSlot * first = current;
-	ProcessSlot * prev = first;
-	ProcessSlot * aux = prev->next;
+	ProcessSlot* first = current;
+	ProcessSlot* prev = first;
+	ProcessSlot* aux = prev->next;
 	do {
 		if (aux->process == process) {
 			prev->next = aux->next;
@@ -62,7 +59,7 @@ void removeProcess(Process * process) {
 /******************
 **  Round Robin  **
 ******************/
-
+/*
 int timeSlice = TIME_SLICE;
 int currentTime = TIME_SLICE;
 
@@ -73,18 +70,24 @@ void roundRobin() {
 		currentTime = timeSlice;
 	}
 }
-
+*/
 /***********************
 **  Helper Functions  **
 ***********************/
 
-void * switchUserToKernel(void * rsp) {
-	Process * process = current->process;
+void* switchAtomic(void* rsp) {
+	current->process->userStack = rsp;
+	schedule();
+	return current->process->userStack;
+}
+
+void* switchUserToKernel(void* rsp) {
+	Process* process = current->process;
 	process->userStack = rsp;
 	return process->kernelStack;
 }
 
-void * switchKernelToUser() {
+void* switchKernelToUser() {
 	schedule();
 	return current->process->userStack;
 }

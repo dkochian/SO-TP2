@@ -8,4 +8,6 @@
 
 	char *cpuVendor(char *result);
 
+	void _accelPIT(void);
+
 #endif

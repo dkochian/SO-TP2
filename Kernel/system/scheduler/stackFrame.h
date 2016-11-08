@@ -34,8 +34,8 @@ typedef struct {
     uint64_t base;
 }StackFrame;
 
-StackFrame * newStackFrame();
+StackFrame* newStackFrame();
 
-void removeStackFrame(StackFrame * stackFrame);
+void removeStackFrame(StackFrame* stackFrame);
 
 #endif

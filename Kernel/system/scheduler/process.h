@@ -15,8 +15,8 @@ typedef struct {
     void * kernelStackPage;
 }Process;
 
-Process * newProcess(void * entryPoint);
+Process* newProcess(void* entryPoint);
 
-void removeProcess2(Process * process);
+void removeProcess2(Process* process);
 
 #endif

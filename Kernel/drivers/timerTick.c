@@ -1,19 +1,7 @@
 #include "include/timerTick.h"
-
-//	 54.9254 ms standard
-
-//static int ms = 55;
+#include "include/video.h"
 
 void timerTickHandler() {
-	//roundRobin();
+	print("-###-", -1);
 	return;
 }
-/*
-void setFastPIT() {
-
-}
-
-void getPITSpeed() {
-
-}
-*/

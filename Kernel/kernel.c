@@ -7,6 +7,7 @@
 #include "drivers/include/video.h"
 #include "system/include/syscalls.h"
 #include "drivers/include/keyboard.h"
+#include "system/scheduler/scheduler.h"
 
 extern uint8_t text;
 extern uint8_t rodata;
@@ -91,12 +92,17 @@ void * initializeKernelBinary()
 }
 
 int main() {
-	buildIDT();
-	print("Interrupt Descriptor Table is ready.", -1);
+
+	initScheduler();
+	print("Scheduler ready.", -1);
 	printNewline();
 
-	_accel();
+	_accelPIT();
 	print("Accelerated IRQ0 to 1000Hz.", -1);
+	printNewline();
+
+	buildIDT();
+	print("Interrupt Descriptor Table is ready.", -1);
 	printNewline();
 
 	keyboardInit();
@@ -104,9 +110,9 @@ int main() {
 	printNewline();
 
 	k_initialize();
-	print("mmu ready.", -1);
+	print("MMU ready.", -1);
 	printNewline();
-
+	
 	clear();
 
 	((EntryPoint)sampleCodeModuleAddress)();
