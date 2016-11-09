@@ -112,11 +112,8 @@ int main() {
 	print("Loading EntryPoint....", -1);
 	printNewline();
 	clear();
-	//Process* temp = newProcess((EntryPoint)sampleCodeModuleAddress);
-	//addProcess(temp);
-	//print("You fucked up...", -1);
-	//printNewline();
-	((EntryPoint)sampleCodeModuleAddress)();
+	Process* temp = newProcess(((EntryPoint)sampleCodeModuleAddress)());
+	addProcess(temp);
 
 	return 0;
 }
