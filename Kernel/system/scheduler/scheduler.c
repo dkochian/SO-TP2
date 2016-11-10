@@ -1,6 +1,7 @@
 //BASED ON Wyrm/Scheduler
 #include "scheduler.h"
 #include "../drivers/include/video.h"
+#include "../mutex.h"
 
 /**********************
 **  Current Process  **
@@ -8,6 +9,7 @@
 
 static int processCounter = 0;
 static ProcessSlot* current = NULL;
+static bool volatile mutex;
 
 int strcmp(char *str1, char *str2)//ver despues donde meter la funcion
 {
@@ -40,6 +42,7 @@ void schedule() {
 
 void addProcess(Process* process) {
 	ProcessSlot* aux = newProcessSlot();
+	lock(&mutex);
 	aux->process = process;
 	if(processCounter==0) {
 		aux->next = aux;
@@ -49,6 +52,7 @@ void addProcess(Process* process) {
 		current->next = aux;
 	}
 	processCounter++;
+	unlock(&mutex);
 }
 
 void removeProcess(Process* process) {
@@ -137,34 +141,41 @@ Process getCurrentProcess(){
 
 bool killProcess(uint64_t pid){
 	if(pid < 1)
-		return 0;
+		return FALSE;
+	lock(&mutex);
 	Process *process = getProcess(pid);
 	if (process == NULL){
+		unlock(&mutex);
 		return FALSE;
 	}
 
 	removeProcess(process);
+	unlock(&mutex);
 	return TRUE;
 }
 
 bool blockProcess(uint64_t pid){
+	lock(&mutex);
 	Process *process = getProcess(pid);
 	if(process == NULL){
+		unlock(&mutex);
 		return FALSE;
 	} else if (current->process == process){
 		schedule();
 	}
 	process->state = "BLOCKED";
-
+	unlock(&mutex);
 	return TRUE;
 }
 
 bool unblockProcess(uint64_t pid){
+	lock(&mutex);
 	Process *process = getProcess(pid);
 	if(process == NULL){
-
+		unlock(&mutex);
 		return FALSE;
 	}
 	process->state = "WAITING";
+	unlock(&mutex);
 	return TRUE;
 }
