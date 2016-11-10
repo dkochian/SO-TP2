@@ -7,6 +7,9 @@
 #define ACQUIRE_LOCK(sl)    (CAS_LOCK(sl)? spin_acquire_lock(sl) : 0)
 #define INITIAL_LOCK(sl)    (*sl = 0)
 
+#define LOCK(lock) while (__sync_lock_test_and_set(&lock, 0x01)) { syscall_yield(); };
+#define UNLOCK(lock) __sync_lock_release(&lock);
+
 
 #define SPINS_PER_YIELD 63
 #define SPIN_LOCK_YIELD
@@ -18,7 +21,7 @@
 
 void spin_lock(uint8_t volatile * lock) {
     while(__sync_lock_test_and_set(lock, 0x01)) {
-        switch_task(1);
+        //switch_task(1);
     }
 }
 
@@ -75,11 +78,7 @@ static int spin_acquire_lock(int *sl) {
 }
 
 
+/*USERLAND*/
+//#define LOCK(lock) while (__sync_lock_test_and_set(&lock, 0x01)) { syscall_yield(); };
 
-
-
-
-/*USERLAND
-#define LOCK(lock) while (__sync_lock_test_and_set(&lock, 0x01)) { syscall_yield(); };
-#define UNLOCK(lock) __sync_lock_release(&lock);*/
 
