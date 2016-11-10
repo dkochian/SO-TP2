@@ -31,6 +31,9 @@ commandExec
 		{TRUE, "color", "Sets the color of the shell text.", 	"Usage: color <code>\n\n------------- Color codes ------------\n0 Black          1 Blue\n2 Green          3 Cyan\n4 Red            5 Magenta\n6 Brown          7 Light Gray\n8 Dark Grey      9 Light Blue\n10 Light Green   11 Light Cyan\n12 Light Red     13 Light Magenta\n14 Yellow        15 White\n--------------------------------------", &colorCommand},
 		{TRUE, "disclaimer", "Must read", "Usage: disclaimer", &disclaimerCommand},
 		{TRUE, "background", "Sets the color of the shell background.", 	"Usage: background <code>\n\n------------- Color codes ------------\n0 Black          1 Blue\n2 Green          3 Cyan\n4 Red            5 Magenta\n6 Brown          7 Light Gray\n8 Dark Grey      9 Light Blue\n10 Light Green   11 Light Cyan\n12 Light Red     13 Light Magenta\n14 Yellow        15 White\n--------------------------------------", &colorBgCommand},
+		{TRUE, "pid", "Prints the process pid.", "Usage: pid", &pidCommand},
+		{TRUE, "kill", "Kills the selected process.", "Usage: kill <pid>", &killCommand},
+		{TRUE, "ps", "Prints all the processes information.", "Usage: ps", &ps}
 
 	};
 

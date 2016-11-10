@@ -24,6 +24,12 @@
 	#define DRAWPIXEL			10
 	#define MALLOC				11
 	#define FREE				12
+	#define NEWPROCESS			13	
+	#define KILLPROCESS			14
+	#define BLOCKPROCESS		15
+	#define UNBLOCKPROCESS		16
+	#define PS					17
+	#define PID					18
 
 	#define EMPTY				0
 

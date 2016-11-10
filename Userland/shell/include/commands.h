@@ -2,7 +2,9 @@
 	#define _INC_COMMANDS_
 
 	void echoCommand(char* str);
+	void pidCommand();
 	void helpCommand(char* str);
+	void killCommand(char* pid);
 	void commandsCommand(char* str);
 	void clearCommand(char* str);
 	void colorCommand(char* str);

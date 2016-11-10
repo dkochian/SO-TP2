@@ -13,6 +13,12 @@ void echoCommand(char* str) {
 	printn(str);
 }
 
+void pidCommand() {
+	int resp = pid();
+	printNum(resp);
+	putchar('\n');
+}
+
 void helpCommand(char* str) {
 	commandExec* struc = getAllCommands();
 	if(str[0] == '\0') {
@@ -27,6 +33,15 @@ void helpCommand(char* str) {
 	}
 	printColor("Error", COLOR_ERROR);
 	printn(": The command do not exist.");
+}
+
+void killCommand(char* pid) {
+	int pidNumber = strint(pid);
+	if(pidNumber == -1 || strlen(pid) == 0) {
+		helpCommand("kill");
+		return;
+	}
+	kill((uint64_t) pidNumber);
 }
 
 void clearCommand(char* str) {

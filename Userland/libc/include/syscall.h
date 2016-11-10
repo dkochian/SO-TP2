@@ -18,5 +18,11 @@
 	void putPixel(uint16_t x, uint16_t y, ColorRGB* color);
 	void* malloc(size_t size);
 	void free(void *ptr);
+	void newProcess();
+	void kill(uint64_t pid);
+	void block(uint64_t pid);
+	void unblock(uint64_t pid);
+	void ps();
+	int pid();
 
 #endif

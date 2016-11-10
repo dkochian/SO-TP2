@@ -4,6 +4,8 @@
 #include "../drivers/include/video.h"
 #include "../drivers/include/keyboard.h"
 #include "../include/clock.h"
+#include "scheduler/scheduler.h"
+#include "scheduler/process.h"
 
 static void write(int out, char* str, int size);
 static void read(int in, char* buffer, char aux);
@@ -37,34 +39,35 @@ void sysCallHandler(uint64_t rax, uint64_t rbx, uint64_t rcx, uint64_t rdx) {
 		case FREE:
 			k_free((void *) rbx);
 			break;
+		case NEWPROCESS:
+			//newProcess();
+			break;
+		case KILLPROCESS:
+			killProcess((uint64_t) rbx);
+			break;
+		case BLOCKPROCESS:
+			blockProcess((uint64_t) rbx);
+			break;
+		case UNBLOCKPROCESS:
+			unblockProcess((uint64_t) rbx);
+			break;
+		case PS:
+			printProcesses();
+			break;
+		case PID:
+			*((uintptr_t *) rcx) = (uint64_t) getPID();
+			break;
 		default:
 			write(STDERR, "Error: Invalid system call.", 28);
 			break;
 	}
 }
-/*uint64_t syscall_new_process(uint64_t rdi, uint64_t rsi, uint64_t rdx, uint64_t r10, uint64_t r8, uint64_t r9) {
-	return create_process((char*) rdi, (process_func) rsi, rdx, (char**) r10);
-}
-
+/*
 uint64_t syscall_ps(uint64_t rdi, uint64_t rsi, uint64_t rdx, uint64_t r10, uint64_t r8, uint64_t r9) {
 	printProcesses();
 	return 1;
 }
-
-uint64_t syscall_kill_process(uint64_t rdi, uint64_t rsi, uint64_t rdx, uint64_t r10, uint64_t r8, uint64_t r9){
-	return killProcess(rdi);
-}
-
-uint64_t syscall_block_process(uint64_t rdi, uint64_t rsi, uint64_t rdx, uint64_t r10, uint64_t r8, uint64_t r9){
-	return blockProcess((int)rdi);
-}
-
-uint64_t syscall_waitpid(uint64_t rdi, uint64_t rsi, uint64_t rdx, uint64_t r10, uint64_t r8, uint64_t r9){
-	return kwaitpid((int)rdi);
-}
-
-uint64_t syscall_get_pid(uint64_t rdi, uint64_t rsi, uint64_t rdx, uint64_t r10, uint64_t r8, uint64_t r9){
-return (uint64_t) getCurrentPid();*/
+*/
 
 static void write(int out, char* str, int size) {
 	switch(out) {

@@ -55,6 +55,6 @@ static bool compareAndSet(bool expectedValue, bool newValue){
     return m_locked;
 }
 */
-
-
-/* Plain spin locks use single word (embedded in malloc_states) */
+/*
+https://github.com/stevej/osdev
+*/

@@ -54,3 +54,30 @@ void* malloc(size_t size) {
 void free(void *ptr) {
 	_syscall(FREE, (uintptr_t) ptr, NULL, NULL);
 }
+
+void newProcess() {
+	_syscall(NEWPROCESS, NULL, NULL, NULL);
+}
+
+void kill(uint64_t pid) {
+	_syscall(KILLPROCESS, pid, NULL, NULL);
+}
+
+void block(uint64_t pid) {
+	_syscall(BLOCKPROCESS, pid, NULL, NULL);
+}
+
+void unblock(uint64_t pid) {
+	_syscall(UNBLOCKPROCESS, pid, NULL, NULL);
+}
+
+void ps() {
+	_syscall(PS, NULL, NULL, NULL);
+}
+
+int pid() {
+	int  * res = -1;
+	_syscall(PID, (int *)&pid, NULL, NULL);
+
+	return *res;
+}

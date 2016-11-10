@@ -2,6 +2,7 @@
 #include "scheduler.h"
 #include "../drivers/include/video.h"
 #include "../mutex.h"
+#include "../../drivers/include/video.h"
 
 /**********************
 **  Current Process  **
@@ -134,10 +135,13 @@ Process *getProcess(uint64_t pid){
 	return resp->process;
 }
 
-Process getCurrentProcess(){
-	return *(current->process);
+Process *getCurrProcess(){
+	return current->process;
 }
 
+uint64_t getPID(){
+	return current->process->pid;
+}
 
 bool killProcess(uint64_t pid){
 	if(pid < 1)
@@ -179,3 +183,23 @@ bool unblockProcess(uint64_t pid){
 	unlock(&mutex);
 	return TRUE;
 }
+
+void printProcesses(){
+	lock(&mutex);
+	ProcessSlot* aux = current;
+
+	if(aux->process == NULL){
+		return;
+	}
+	print("PID -------------Process Name",-1);
+	do{
+		printDec(aux->process->pid,-1);
+		print(aux->process->name,-1);
+		//putchar('\n',-1);
+		
+		aux = aux->next;
+	}while(current != aux);
+	
+	unlock(&mutex);
+}
+

@@ -1,7 +1,8 @@
 //BASED ON Wyrm/Process
 #include "process.h"
+#include "scheduler.h"
 
-static uint64_t currentPid = 0;
+static uint64_t currentPid = 50;
 
 void removeProcess2(Process * process) {
     removeStackFrame(process->userStack);
@@ -57,6 +58,8 @@ Process * newProcess(void * entryPoint, char* name) {
     process->state = "WAITING";
 
     process->userStack = fillStackFrame(process->entryPoint, process->userStack);
+
+    addProcess(process);
 
     return process;
 }
