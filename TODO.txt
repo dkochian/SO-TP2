@@ -1,0 +1,44 @@
+
+Requerimientos:			(en orden de prioridad)
+	- System calls
+	- Physical Memory Management
+		- Syscalls: reservar y liberar memoria para el proceso que llama
+	- Procesos, Context Switching y Scheduling
+		- Multitasking pre-emptivo
+		- Cada proceso en el scheduler debe tener 3 estados: ejecutado, dormido, pausado.
+		- Los dormidos deben ser ignorados por el scheduler.
+		- Sólo el que esta en "foreground" puede leer el input de teclado.
+		- Proceso "foreground" != Proceso "current".
+		- Syscalls:
+			- Crear, finalizar, y listar procesos.
+	- IPC y primitivas de sincronización
+		- Mutexes globales.
+		- Variables de condiciones globales.
+		- Un mecanismo de IPC, a elección.
+	- Aplicaciones de Userspace
+		- sh: shell que ejecute aplicaciones.
+			- mecanismo para ceder o no el foreground al proceso que se ejecuta (& ?)
+		- ps:
+			- PID, nombre, estado, foreground, memoria reservada, etc.
+		- ipcs: lista de estructuras de IPC creadas
+		- philosophers: resolución del problema de los filósofos.
+			- Poder agregar o quitar filósofos dinamicamente (con 'w' y 's')
+		- prodcons: mostrar resolución del problema de productor consumidor.
+		- help: mostrar lista de comandos
+
+
+
+Consideraciones:
+	- Elegir limitaciones para simplificar el desarrollo
+	- Citar en el informe cualquier código copiado de fuente externa.
+
+
+Opcionales:
+	- Re-escribir syscall read (keyboard input) para dormir el proceso en foreground hasta que el usuario ingrese un '\n' en el buffer de teclado.
+	- Dormir proceso hasta que suceda evento X.
+	- Enviar señal a proceso (wakeup call).
+	- yield().
+	- Aplicación: envío de mensajes en formato string entre dos procesos
+
+
+
