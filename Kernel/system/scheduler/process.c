@@ -1,6 +1,7 @@
 //BASED ON Wyrm/Process
 #include "process.h"
 
+static uint64_t currentPid = 0;
 
 void removeProcess2(Process * process) {
     removeStackFrame(process->userStack);
@@ -43,14 +44,17 @@ static void * fillStackFrame(void * entryPoint, void * userStack) {
     return frame;
 }
 
-Process * newProcess(void * entryPoint) {
+Process * newProcess(void * entryPoint, char* name) {
     Process * process = k_malloc(sizeof(Process));
 
+    process->name = name;
     process->entryPoint = entryPoint;
     process->userStackPage = newStackFrame();
     process->kernelStackPage = newStackFrame();
     process->userStack = toStackAddress(process->userStackPage);
     process->kernelStack = toStackAddress(process->kernelStackPage);
+    process->pid = currentPid++;
+    process->state = "WAITING";
 
     process->userStack = fillStackFrame(process->entryPoint, process->userStack);
 

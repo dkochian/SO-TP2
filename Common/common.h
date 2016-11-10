@@ -81,4 +81,6 @@
 
 	typedef unsigned int size_t;
 
+	typedef char bool;
+
 #endif

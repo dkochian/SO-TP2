@@ -154,9 +154,6 @@ _timerTickHandler:
   call switchAtomic
   mov rsp, rax
 
-
-
-
   ; save current process's RSP
   ;mov rdi, rsp
 
@@ -171,8 +168,6 @@ _timerTickHandler:
   ;;;;xchg bx, bx
 
   ;mov rsp, rax
-
-
 
   call timerTickHandler
   mov al, 0x20
@@ -217,3 +212,17 @@ _sysCallHandler:
   popaq
   sti
   iretq
+
+
+;------------------------------------------------------------
+; syscalls idt handler -> processed in C
+;------------------------------------------------------------
+
+_testAndSetLock:
+  cli
+  pushaq  
+  call sysCallHandler
+  popaq
+  sti
+  iretq
+

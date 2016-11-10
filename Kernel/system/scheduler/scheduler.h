@@ -19,4 +19,14 @@ void* switchUserToKernel(void* rsp);
 void* switchKernelToUser();
 void* switchAtomic(void* rsp);
 
+
+
+
+bool unblockProcess(uint64_t pid);
+bool blockProcess(uint64_t pid);
+bool killProcess(uint64_t pid);
+Process *getProcess(uint64_t pid);
+
+
+
 #endif

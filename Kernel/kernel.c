@@ -112,7 +112,7 @@ int main() {
 	print("Loading EntryPoint....", -1);
 	printNewline();
 	clear();
-	Process* temp = newProcess(((EntryPoint)sampleCodeModuleAddress)());
+	Process* temp = newProcess(((EntryPoint)sampleCodeModuleAddress)(), "SHELL");
 	addProcess(temp);
 
 	return 0;

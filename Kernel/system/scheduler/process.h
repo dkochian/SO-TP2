@@ -13,9 +13,13 @@ typedef struct {
 
     void * userStackPage;
     void * kernelStackPage;
+
+    uint64_t pid;
+    char* name;
+    char* state;
 }Process;
 
-Process* newProcess(void* entryPoint);
+Process * newProcess(void * entryPoint, char* name);
 
 void removeProcess2(Process* process);
 
