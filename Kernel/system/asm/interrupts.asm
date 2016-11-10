@@ -147,8 +147,6 @@ _write_port:
 _timerTickHandler:
   cli
   pushState
-  
-  call timerTickHandler
 
   mov rdi, rsp
   call switchAtomic
@@ -206,19 +204,6 @@ _keyboardHandler:
 ;------------------------------------------------------------
 
 _sysCallHandler:
-  cli
-  pushaq  
-  call sysCallHandler
-  popaq
-  sti
-  iretq
-
-
-;------------------------------------------------------------
-; syscalls idt handler -> processed in C
-;------------------------------------------------------------
-
-_testAndSetLock:
   cli
   pushaq  
   call sysCallHandler
