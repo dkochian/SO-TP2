@@ -55,7 +55,7 @@ void sysCallHandler(uint64_t rax, uint64_t rbx, uint64_t rcx, uint64_t rdx) {
 			printProcesses();
 			break;
 		case PID:
-			*((uintptr_t *) rcx) = (uint64_t) getPID();
+			*((int *) rbx) = ((uint64_t) getPID());
 			break;
 		default:
 			write(STDERR, "Error: Invalid system call.", 28);

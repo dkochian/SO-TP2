@@ -7,7 +7,7 @@
 #include "drivers/include/video.h"
 #include "system/include/syscalls.h"
 #include "drivers/include/keyboard.h"
-#include "system/scheduler/scheduler.h"
+#include "system/scheduler/process.h"
 
 extern uint8_t text;
 extern uint8_t rodata;
@@ -112,8 +112,8 @@ int main() {
 	print("Loading EntryPoint....", -1);
 	printNewline();
 	clear();
-	Process* temp = newProcess(((EntryPoint)sampleCodeModuleAddress)(), "SHELL");
-	addProcess(temp);
+
+	newProcess(((EntryPoint)sampleCodeModuleAddress)(), "SHELL");
 
 	return 0;
 }

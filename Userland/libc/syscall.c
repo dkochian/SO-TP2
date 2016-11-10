@@ -76,8 +76,8 @@ void ps() {
 }
 
 int pid() {
-	int  * res = -1;
-	_syscall(PID, (int *)&pid, NULL, NULL);
+	int  res = -1;
+	_syscall(PID, (int *)&res, NULL, NULL);
 
-	return *res;
+	return res;
 }
