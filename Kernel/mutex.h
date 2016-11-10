@@ -2,6 +2,11 @@
   #define __MUTEX_H__
 
   #include "../Common/common.h"
+  
+  /**
+  * Initializes Mutex.
+  */
+  void initMutex();
 
    /**
     * Acquires the lock.

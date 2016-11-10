@@ -4,6 +4,8 @@ GLOBAL _sysCallHandler
 GLOBAL _write_port
 GLOBAL _cli
 GLOBAL _sti
+GLOBAL _enter_region
+GLOBAL _leave_region
 
 EXTERN switchUserToKernel
 EXTERN switchKernelToUser
@@ -211,3 +213,38 @@ _sysCallHandler:
   sti
   iretq
 
+
+;_lock:
+;  ts      rax, rcx   // load word into R0
+;  bnz     rax, 0          // if 0, lock obtained
+
+;_unlock:
+;  st      rcx, 0   // store 0 to address
+
+_enter_region:        ; A "jump to" tag; function entry point.
+  push rdi
+  push rax
+  mov rdi, rax
+  mov rax,1
+  xchg rax,rdi      ; Test and Set Lock; flag is the
+                     ; shared variable; it is copied
+                     ; into the register rax and flag
+                     ; then atomically set to 1.
+
+  cmp rax,0        ; Was flag zero on entry_region?
+
+  jne _enter_region   ; Jump to enter_region if
+                     ; rax is non-zero; i.e.,
+                     ; flag was non-zero on entry.
+  pop rax
+  pop rdi
+
+  ret                ; Exit; i.e., flag was zero on
+                     ; entry. If we get here, tsl
+                     ; will have set it non-zero; thus,
+                     ; we have claimed the resource
+                     ; associated with flag.
+
+_leave_region:
+  mov rcx,0      ; store 0 in flag
+  ret                ; return to caller

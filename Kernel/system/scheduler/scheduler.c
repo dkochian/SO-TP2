@@ -63,6 +63,9 @@ void removeProcess(Process* process) {
 	ProcessSlot* aux = prev->next;
 	do {
 		if (aux->process == process) {
+			if (aux == current){
+				current = aux->next;
+			}
 			prev->next = aux->next;
 			removeProcessSlot(aux);
 			found = 1;

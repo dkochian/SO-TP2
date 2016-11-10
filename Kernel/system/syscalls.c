@@ -42,6 +42,29 @@ void sysCallHandler(uint64_t rax, uint64_t rbx, uint64_t rcx, uint64_t rdx) {
 			break;
 	}
 }
+/*uint64_t syscall_new_process(uint64_t rdi, uint64_t rsi, uint64_t rdx, uint64_t r10, uint64_t r8, uint64_t r9) {
+	return create_process((char*) rdi, (process_func) rsi, rdx, (char**) r10);
+}
+
+uint64_t syscall_ps(uint64_t rdi, uint64_t rsi, uint64_t rdx, uint64_t r10, uint64_t r8, uint64_t r9) {
+	printProcesses();
+	return 1;
+}
+
+uint64_t syscall_kill_process(uint64_t rdi, uint64_t rsi, uint64_t rdx, uint64_t r10, uint64_t r8, uint64_t r9){
+	return killProcess(rdi);
+}
+
+uint64_t syscall_block_process(uint64_t rdi, uint64_t rsi, uint64_t rdx, uint64_t r10, uint64_t r8, uint64_t r9){
+	return blockProcess((int)rdi);
+}
+
+uint64_t syscall_waitpid(uint64_t rdi, uint64_t rsi, uint64_t rdx, uint64_t r10, uint64_t r8, uint64_t r9){
+	return kwaitpid((int)rdi);
+}
+
+uint64_t syscall_get_pid(uint64_t rdi, uint64_t rsi, uint64_t rdx, uint64_t r10, uint64_t r8, uint64_t r9){
+return (uint64_t) getCurrentPid();*/
 
 static void write(int out, char* str, int size) {
 	switch(out) {
