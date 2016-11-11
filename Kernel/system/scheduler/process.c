@@ -4,11 +4,14 @@
 
 static uint64_t currentPid = 50;
 
+extern void _yield(void);
+static void initProcess(process_entry_t process_entry, uint64_t argc, void *argv);
+
 static void * toStackAddress(void * page) {
 	return (uint8_t *) page + PAGE_SIZE - 0x10;
 }
 
-static void * fillStackFrame(void * entryPoint, void * userStack) {
+static void * fillStackFrame(void * userStack, process_entry_t process_entry, uint64_t argc, char* argv[] ) {
 
 	StackFrame * frame = (StackFrame *) userStack - 1;
 
@@ -22,22 +25,31 @@ static void * fillStackFrame(void * entryPoint, void * userStack) {
 	frame->r10 = 0x008;
 	frame->r9 = 0x009;
 	frame->r8 = 0x00A;
-	frame->rsi = 0x00B;
-	frame->rdi = 0x00C;
+	frame->rsi = argc;
+	frame->rdi = (uint64_t) process_entry;
 	frame->rbp = 0x00D;
-	frame->rdx = 0x00E;
+	frame->rdx = (uint64_t) argv;
 	frame->rcx = 0x00F;
 	frame->rbx = 0x010;
 	frame->rax = 0x011;
-	frame->rip = (uint64_t) entryPoint;
+	
+	frame->rip = (uint64_t) &initProcess;//entryPoint;
 	frame->cs = 0x008;
 	frame->eflags = 0x202;
-	frame->rsp = (uint64_t) & (frame->base);
+	frame->rsp = (uint64_t) &(frame->base);
 	frame->ss = 0x000;
 	frame->base = 0x000;
 
 	return frame;
 }
+
+static void initProcess(process_entry_t process_entry, uint64_t argc, void *argv) {
+	process_entry(argc, argv);
+	removeProcessFromScheduler(getCurrProcess());
+	_yield();
+	return;
+}
+
 static void strcpy(char* to, char* from) {
 	while( *from != '\0' ) {
 		*to = *from;
@@ -47,7 +59,7 @@ static void strcpy(char* to, char* from) {
 	*to = '\0';
 }
 
-Process* newProcess(void* entryPoint, char* name, bool foreground) {
+Process* newProcess(void* entryPoint, char* name, bool foreground){//, uint64_t argc, void *argv) {
 	Process* process = k_malloc(sizeof(Process));
 	strcpy(process->name, name);
 	process->entryPoint = entryPoint;
@@ -58,7 +70,7 @@ Process* newProcess(void* entryPoint, char* name, bool foreground) {
 	process->pid = currentPid++;
 	process->state = P_WAIT;
 
-	process->userStack = fillStackFrame(process->entryPoint, process->userStack);
+	process->userStack = fillStackFrame(process->userStack, process->entryPoint, 0, NULL);
 
 	addProcessToScheduler(process, foreground);
 

@@ -225,12 +225,12 @@ bool unblockProcess(uint64_t pid){
 }
 
 void printProcesses(){
-	//lock(&mutex);
+	lock(&mutex);
 	ProcessSlot* aux = current;
 
 	if(aux->process == NULL){
 		print("NULL",-1);
-		//unlock(&mutex);
+		unlock(&mutex);
 		return;
 	}
 	print("PID -------------Process Name",-1);
@@ -244,7 +244,7 @@ void printProcesses(){
 		aux = aux->next;
 	}while(current != aux);
 	
-	//unlock(&mutex);
+	unlock(&mutex);
 }
 /*
 void yield() {

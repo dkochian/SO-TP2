@@ -5,6 +5,8 @@
 #include "stackFrame.h"
 #include "../system/include/mmu.h"
 
+typedef int (*process_entry_t) (int argc, char **argv);
+
 typedef enum {
 	P_WAIT, P_RUN, P_BLOCK
 }ProcessState;

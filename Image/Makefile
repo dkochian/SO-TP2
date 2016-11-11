@@ -15,7 +15,7 @@ PACKEDKERNEL=packedKernel.bin
 IMGSIZE=6291456
 
 all: $(IMG) $(VMDK) $(QCOW2)
-	@echo -e "	Image		[ \033[0;32mOK \033[0m]"
+	@echo -e "Image		[ \033[0;32mOK \033[0m]"
 
 $(KERNEL):
 	@cd ../Kernel; make

@@ -61,7 +61,7 @@
 	#define COLOR_ERROR			RED
 	#define COLOR_CLEAR			BLACK
 	#define COLOR_INFO			BLUE
-	#define COLOR_NULL			-1
+	#define COLOR_NULL			(-1)
 
 	typedef struct {
 		uint8_t

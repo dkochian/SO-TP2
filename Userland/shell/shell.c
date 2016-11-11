@@ -5,7 +5,7 @@
 #include <commands.h>
 #include "../../Common/common.h"
 
-//static void runShell();
+static void shell();
 static int insertToBuffer(char c);
 static void resetBuffer();
 static int parseBuffer(commandData* cmd);
@@ -37,16 +37,19 @@ commandExec
 		{TRUE, "ps", "Prints all the processes information.", "Usage: ps", &ps}
 
 	};
-/*
-void shell() {
-	
-	newProcess((void *)&runShell, "SHELL", TRUE);
 
-	runShell();
-	while(1);
+int main(int argc, char ** argv) {
+
+	printn("main called");
+	
+	newProcess((void *)&shell, "SHELL", TRUE);
+
+	shell();
+	while(1) { }
 	return 1;
-}*/
-void shell(){
+}
+
+static void shell() {
 		char
 		c;
 	commandData
@@ -64,16 +67,23 @@ void shell(){
 		c = getchar(TRUE);
 
 		if(insertToBuffer(c) == 1) {
+			printn("0");
 			int
 				result = parseBuffer(&cmd);//if result==0 empty line, result==1 try to execute command, result == -1 command's name is too long
-			
+			printn("1");
 			resetBuffer();
+			print("cmd.name: ");
+			printn(cmd.name);
+			print("cmd.args: ");
+			printn(cmd.args);
 			if(result == -1) {
+				printn("1.1");
 				printColor("Error", COLOR_ERROR);
 				printn(": The command's name is too long (AKA: It doesn't exists.)");
 				printn("Info: Use \"commands\" to see all avaliable commands.");
 			}
 			else if(result == 1) {
+				printn("1.2");
 				if(!executeCommand(cmd)) {
 					printColor("Error", COLOR_ERROR);
 					printn(": The command doesn't exists.");

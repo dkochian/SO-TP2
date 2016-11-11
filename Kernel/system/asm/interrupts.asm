@@ -7,6 +7,8 @@ GLOBAL _sti
 GLOBAL _enter_region
 GLOBAL _leave_region
 
+GLOBAL _yield
+
 EXTERN switchUserToKernel
 EXTERN switchKernelToUser
 EXTERN switchAtomic
@@ -143,6 +145,18 @@ _write_port:
     pop rbp  
     ret
 
+_yield:
+  cli
+  pushState
+
+  mov rdi, rsp
+  call switchAtomic
+  mov rsp, rax
+
+  popState
+  sti
+  ret
+
 ;------------------------------------------------------------
 ; Timer tick idt handler -> processed in C
 ;------------------------------------------------------------
@@ -153,21 +167,6 @@ _timerTickHandler:
   mov rdi, rsp
   call switchAtomic
   mov rsp, rax
-
-  ; save current process's RSP
-  ;mov rdi, rsp
-
-  ; enter kernel context by setting current process's kernel-RSP
-  ;call switchUserToKernel
-  ;;;;xchg bx, bx
-
-  ;mov rsp, rax
-
-  ; schedule, get new process's RSP and load it
-  ;call switchKernelToUser
-  ;;;;xchg bx, bx
-
-  ;mov rsp, rax
 
   call timerTickHandler
   mov al, 0x20
