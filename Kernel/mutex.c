@@ -2,13 +2,25 @@
 
 
 void lock(bool volatile * lock) {
-    while(__sync_lock_test_and_set(lock, 0x01)) {
-        //switch_task(1);
-    }
+	while(__sync_lock_test_and_set(lock, 0x01)) {
+		//switch_task(1);	//yield??
+	}
 }
 
 void unlock(bool volatile * lock) {
-    __sync_lock_release(lock);
+	__sync_lock_release(lock);
+}
+
+// Use only within interrupt, guaranteing uninterrupted execution.
+bool isLockOpenRightThisInstant(bool volatile * lock) {
+	if(__sync_lock_test_and_set(lock, 0x01)) {
+		// sync returned true, therefore wasn't grabbed
+		return FALSE;
+	} else {
+		// sync returned false, therefore was grabbed
+		__sync_lock_release(lock);
+		return TRUE;
+	}
 }
 
 static int spin_acquire_lock(int *sl) {

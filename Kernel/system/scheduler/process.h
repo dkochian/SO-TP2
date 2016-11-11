@@ -5,22 +5,28 @@
 #include "stackFrame.h"
 #include "../system/include/mmu.h"
 
+typedef enum {
+	P_WAIT, P_RUN, P_BLOCK
+}ProcessState;
+
 typedef struct {
-    void * entryPoint;
+	void* entryPoint;
 
-    void * userStack;
-    void * kernelStack;
+	void* userStack;
+	void* kernelStack;
 
-    void * userStackPage;
-    void * kernelStackPage;
+	void* userStackPage;
+	void* kernelStackPage;
 
-    uint64_t pid;
-    char* name;
-    char* state;
+	uint64_t pid;
+	char name[32];
+	ProcessState state;
 }Process;
 
-Process * newProcess(void * entryPoint, char* name);
+//  Use this!  //
+Process* newProcess(void * entryPoint, char* name, bool foreground);
 
-void removeProcess2(Process* process);
+//  Used by scheduler/scheduler.c/removeProcessFromScheduler(). Don't use externaly!  //
+void freeProcess(Process* process);
 
 #endif

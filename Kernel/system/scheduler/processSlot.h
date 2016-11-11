@@ -10,7 +10,6 @@ typedef struct ProcessSlot{
 }ProcessSlot;
 
 ProcessSlot* newProcessSlot();
-
 void removeProcessSlot(ProcessSlot* processSlot);
 
 #endif

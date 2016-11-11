@@ -8,9 +8,14 @@
 /**********************
 **  Current Process  **
 **********************/
-void schedule();
-void addProcess(Process* process);
-void removeProcess(Process* process);
+//  Used by switchAtomic() and switchKernelToUser(). Don't use externaly!
+//  static void schedule();
+
+//  Used by scheduler/process.c/newProcess(). Don't use externaly!  //
+void addProcessToScheduler(Process* process, bool foreground);
+
+//  Use this!  //
+void removeProcessFromScheduler(Process* process);
 
 /***********************
 **  Helper Functions  **
@@ -27,6 +32,6 @@ Process *getCurrProcess();
 uint64_t getPID();
 void printProcesses();
 
-
+// void yield();
 
 #endif

@@ -30,4 +30,9 @@
     */
   void unlock(bool volatile * lock);
 
+   /**
+    * Check the lock. Use only within interrupt, guaranteing uninterrupted execution.
+    */
+  bool isLockOpenRightThisInstant(bool volatile * lock);
+
 #endif

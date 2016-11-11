@@ -8,55 +8,82 @@
 **  Current Process  **
 **********************/
 
+static bool volatile mutex;			// grab this before touching any other variable
 static int processCounter = 0;
 static ProcessSlot* current = NULL;
-static bool volatile mutex;
+static ProcessSlot* foreground;
 
-int strcmp(char *str1, char *str2)//ver despues donde meter la funcion
-{
+static ProcessSlot* foregroundDefault;	// set with shell on first add
+
+//ver despues donde meter la funcion. klib?
+int strcmp(char *str1, char *str2) {
 	while((*str1 == *str2) && (*str1 != '\0')) {
 		str1++;
 		str2++;
 	}
-
 	if(*str1 > *str2)
 		return 1;
-
 	if(*str1 < *str2)
 		return -1;
-
 	return 0;
 }
 
-void schedule() {
-	ProcessSlot* aux = current->next;
+static void schedule() {
+	if( !isLockOpenRightThisInstant(&mutex) )
+		return;
+	ProcessSlot* aux = current;
 	bool found = FALSE;
-
 	while(!found){
-		if (strcmp(aux->process->state, "WAITING") == 0){
-			current = aux;
-			found = TRUE;
-		}else
-			aux = aux->next;
+		aux = aux->next;
+		switch(aux->process->state) {
+			case P_WAIT: {
+				// next in line
+				current->process->state = P_WAIT;
+				aux->process->state = P_RUN;
+				current = aux;
+				found = TRUE;
+			}
+			break;
+			case P_RUN: {
+				// merry go round
+				found = TRUE;
+			}
+			break;
+			case P_BLOCK:
+			default: {
+				// keep going round
+				;
+			}
+		}
 	}
 }
 
-void addProcess(Process* process) {
+// Used by scheduler/process.c/newProcess(). Don't use externaly!
+void addProcessToScheduler(Process* process, bool f) {
 	ProcessSlot* aux = newProcessSlot();
-	lock(&mutex);
+	process->state = P_WAIT;
 	aux->process = process;
+	lock(&mutex);
 	if(processCounter==0) {
+		foregroundDefault = aux;
 		aux->next = aux;
 		current = aux;
 	} else {
 		aux->next = current->next;
 		current->next = aux;
 	}
+	if(f) {
+		foreground = aux;
+	}
 	processCounter++;
 	unlock(&mutex);
 }
 
-void removeProcess(Process* process) {
+void removeProcessFromScheduler(Process* process) {
+	if( strcmp(process->name, "SHELL")==0 ) {
+		// can't kill the shell
+		return;
+	}
 	int found = 0;
 	if (process == NULL) {
 		return;
@@ -68,10 +95,17 @@ void removeProcess(Process* process) {
 	ProcessSlot* aux = prev->next;
 	do {
 		if (aux->process == process) {
+			if( foregroundDefault == aux) {
+				// can't kill foregroundDefault (i.e. SHELL)
+				break;
+			}
 			if (aux == current){
 				current = aux->next;
 			}
 			prev->next = aux->next;
+			if(aux == foreground)
+				foreground = foregroundDefault;
+			freeProcess(aux->process);
 			removeProcessSlot(aux);
 			found = 1;
 			break;
@@ -114,7 +148,7 @@ void* switchKernelToUser() {
 
 
 
-Process *getProcess(uint64_t pid){
+Process* getProcess(uint64_t pid){
 	int found = 0;
 	ProcessSlot* resp = current;
 
@@ -135,7 +169,7 @@ Process *getProcess(uint64_t pid){
 	return resp->process;
 }
 
-Process *getCurrProcess(){
+Process* getCurrProcess(){
 	return current->process;
 }
 
@@ -153,7 +187,7 @@ bool killProcess(uint64_t pid){
 		return FALSE;
 	}
 
-	removeProcess(process);
+	removeProcessFromScheduler(process);
 	unlock(&mutex);
 	return TRUE;
 }
@@ -167,7 +201,7 @@ bool blockProcess(uint64_t pid){
 	} else if (current->process == process){
 		schedule();
 	}
-	process->state = "BLOCKED";
+	process->state = P_BLOCK;
 	unlock(&mutex);
 	return TRUE;
 }
@@ -179,7 +213,7 @@ bool unblockProcess(uint64_t pid){
 		unlock(&mutex);
 		return FALSE;
 	}
-	process->state = "WAITING";
+	process->state = P_WAIT;
 	unlock(&mutex);
 	return TRUE;
 }
@@ -202,4 +236,10 @@ void printProcesses(){
 	
 	unlock(&mutex);
 }
-
+/*
+void yield() {
+	lock(&mutex);
+	//	make call to timerTickHandler (ASM) 
+	unlock(&mutex);
+}
+*/
