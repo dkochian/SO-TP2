@@ -113,7 +113,10 @@ int main() {
 	printNewline();
 	clear();
 
-	newProcess(((EntryPoint)sampleCodeModuleAddress)(), "SHELL", TRUE);
+	//newProcess((&sampleCodeModuleAddress), "SHELL", TRUE);
+	((EntryPoint)sampleCodeModuleAddress)();
+
+
 
 	return 0;
 }

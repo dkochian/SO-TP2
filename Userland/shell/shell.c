@@ -36,7 +36,12 @@ commandExec
 		{TRUE, "ps", "Prints all the processes information.", "Usage: ps", &ps}
 
 	};
-
+int main(void){
+	printn("Tirenme la goma");
+	//sys_new_process("shell", (uint64_t) &shell, 0, 0);
+	while(1);
+	return 1;
+}
 void shell() {
 	char
 		c;

@@ -49,7 +49,6 @@ static void strcpy(char* to, char* from) {
 
 Process* newProcess(void* entryPoint, char* name, bool foreground) {
 	Process* process = k_malloc(sizeof(Process));
-
 	strcpy(process->name, name);
 	process->entryPoint = entryPoint;
 	process->userStackPage = newStackFrame();

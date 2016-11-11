@@ -174,6 +174,7 @@ Process* getCurrProcess(){
 }
 
 uint64_t getPID(){
+	printDec(processCounter,-1);
 	return current->process->pid;
 }
 
@@ -223,6 +224,8 @@ void printProcesses(){
 	ProcessSlot* aux = current;
 
 	if(aux->process == NULL){
+		print("NULL",-1);
+		unlock(&mutex);
 		return;
 	}
 	print("PID -------------Process Name",-1);
