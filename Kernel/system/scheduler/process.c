@@ -59,10 +59,10 @@ static void strcpy(char* to, char* from) {
 	*to = '\0';
 }
 
-Process* newProcess(void* entryPoint, char* name, bool foreground){//, uint64_t argc, void *argv) {
+Process* newProcess(process_entry_t process_entry, char* name, bool foreground) {//, uint64_t argc, void *argv) {
 	Process* process = k_malloc(sizeof(Process));
 	strcpy(process->name, name);
-	process->entryPoint = entryPoint;
+	process->process_entry = process_entry;
 	process->userStackPage = newStackFrame();
 	process->kernelStackPage = newStackFrame();
 	process->userStack = toStackAddress(process->userStackPage);
@@ -70,9 +70,11 @@ Process* newProcess(void* entryPoint, char* name, bool foreground){//, uint64_t 
 	process->pid = currentPid++;
 	process->state = P_WAIT;
 
-	process->userStack = fillStackFrame(process->userStack, process->entryPoint, 0, NULL);
+	process->userStack = fillStackFrame(process->userStack, process->process_entry, 0, NULL);
 
 	addProcessToScheduler(process, foreground);
+
+	process_entry(0, NULL);
 
 	return process;
 }

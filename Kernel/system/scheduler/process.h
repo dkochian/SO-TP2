@@ -12,7 +12,7 @@ typedef enum {
 }ProcessState;
 
 typedef struct {
-	void* entryPoint;
+	process_entry_t process_entry;
 
 	void* userStack;
 	void* kernelStack;
@@ -26,7 +26,7 @@ typedef struct {
 }Process;
 
 //  Use this!  //
-Process* newProcess(void * entryPoint, char* name, bool foreground);
+Process* newProcess(process_entry_t process_entry, char* name, bool foreground);
 
 //  Used by scheduler/scheduler.c/removeProcessFromScheduler(). Don't use externaly!  //
 void freeProcess(Process* process);

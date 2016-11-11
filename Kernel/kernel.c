@@ -9,6 +9,8 @@
 #include "drivers/include/keyboard.h"
 #include "system/scheduler/process.h"
 
+#include <clock.h>
+
 extern uint8_t text;
 extern uint8_t rodata;
 extern uint8_t data;
@@ -20,6 +22,9 @@ static const uint64_t PageSize = 0x1000;
 
 static void * const sampleCodeModuleAddress = (void*)0x400000;
 static void * const sampleDataModuleAddress = (void*)0x500000;
+
+static int processA(int argc, char **argv);
+static int processB(int argc, char **argv);
 
 typedef void* (*EntryPoint)();
 
@@ -113,10 +118,52 @@ int main() {
 	printNewline();
 	clear();
 
+
+	//Test multi-task
+	print("Creating process A", -1);
+	printNewline();
+	newProcess(processA, "Process A", TRUE);
+	print("Creating process B", -1);
+	printNewline();
+	newProcess(processB, "Process B", TRUE);
+
+
 	//newProcess(&sampleCodeModuleAddress, "SHELL", TRUE);
-	((EntryPoint)sampleCodeModuleAddress)();
+	//((EntryPoint)sampleCodeModuleAddress)();
 
+	return 0;
+}
 
+static int processA(int argc, char **argv) {
+	static int counter = 0;
+
+	print("Process A is running", -1);
+	printNewline();
+
+	while(TRUE) {
+		print("Process A: row ", -1);
+		printDec(counter++, -1);
+		printNewline();
+
+		sleep(1);
+	}
+
+	return 0;
+}
+
+static int processB(int argc, char **argv) {
+	static int counter = 0;
+
+	print("Process B is running", -1);
+	printNewline();
+
+	while(TRUE) {
+		print("Process B: row ", -1);
+		printDec(counter++, -1);
+		printNewline();
+
+		sleep(1);
+	}
 
 	return 0;
 }

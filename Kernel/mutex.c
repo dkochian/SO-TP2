@@ -23,7 +23,7 @@ bool isLockOpenRightThisInstant(bool volatile * lock) {
 	}
 }
 
-static int spin_acquire_lock(int *sl) {
+/*static int spin_acquire_lock(int *sl) {
   int spins = 0;
   while (*(volatile int *)sl != 0 || CAS_LOCK(sl)) {
     if ((++spins & SPINS_PER_YIELD) == 0) {
@@ -31,7 +31,7 @@ static int spin_acquire_lock(int *sl) {
     }
   }
   return 0;
-}
+}*/
 
 
 /*
