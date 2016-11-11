@@ -40,7 +40,7 @@ void sysCallHandler(uint64_t rax, uint64_t rbx, uint64_t rcx, uint64_t rdx) {
 			k_free((void *) rbx);
 			break;
 		case NEWPROCESS:
-			//newProcess();
+			newProcess((void *) rbx, (char *) rcx,(bool)rdx);
 			break;
 		case KILLPROCESS:
 			killProcess((uint64_t) rbx);

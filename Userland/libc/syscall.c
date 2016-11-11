@@ -55,8 +55,8 @@ void free(void *ptr) {
 	_syscall(FREE, (uintptr_t) ptr, NULL, NULL);
 }
 
-void newProcess() {
-	_syscall(NEWPROCESS, NULL, NULL, NULL);
+void newProcess(void * entryPoint, char* name, bool foreground) {
+	_syscall(NEWPROCESS, (uintptr_t) entryPoint, (uintptr_t) name, foreground);
 }
 
 void kill(uint64_t pid) {

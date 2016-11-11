@@ -2,7 +2,7 @@
 #include "scheduler.h"
 #include "../drivers/include/video.h"
 #include "../mutex.h"
-#include "../../drivers/include/video.h"
+
 
 /**********************
 **  Current Process  **
@@ -32,6 +32,7 @@ static void schedule() {
 	if( !isLockOpenRightThisInstant(&mutex) )
 		return;
 	ProcessSlot* aux = current;
+	
 	bool found = FALSE;
 	while(!found){
 		aux = aux->next;
@@ -42,11 +43,15 @@ static void schedule() {
 				aux->process->state = P_RUN;
 				current = aux;
 				found = TRUE;
+				//printProcesses();
+				//sleep(2);
 			}
 			break;
 			case P_RUN: {
 				// merry go round
 				found = TRUE;
+				//printProcesses();
+				//sleep(2);
 			}
 			break;
 			case P_BLOCK:
@@ -64,6 +69,7 @@ void addProcessToScheduler(Process* process, bool f) {
 	process->state = P_WAIT;
 	aux->process = process;
 	lock(&mutex);
+
 	if(processCounter==0) {
 		foregroundDefault = aux;
 		aux->next = aux;
@@ -174,7 +180,6 @@ Process* getCurrProcess(){
 }
 
 uint64_t getPID(){
-	printDec(processCounter,-1);
 	return current->process->pid;
 }
 
@@ -220,24 +225,26 @@ bool unblockProcess(uint64_t pid){
 }
 
 void printProcesses(){
-	lock(&mutex);
+	//lock(&mutex);
 	ProcessSlot* aux = current;
 
 	if(aux->process == NULL){
 		print("NULL",-1);
-		unlock(&mutex);
+		//unlock(&mutex);
 		return;
 	}
 	print("PID -------------Process Name",-1);
+	putChar('\n',-1);
 	do{
 		printDec(aux->process->pid,-1);
+		print("                  ",-1);
 		print(aux->process->name,-1);
-		//putchar('\n',-1);
+		putChar('\n',-1);
 		
 		aux = aux->next;
 	}while(current != aux);
 	
-	unlock(&mutex);
+	//unlock(&mutex);
 }
 /*
 void yield() {
