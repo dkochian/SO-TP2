@@ -1,6 +1,7 @@
 #include <syscall.h>
 #include <stdio.h>
 #include <string.h>
+#include <mutex.h>
 #include "include/philosophers.h"
 #include "../../Common/common.h"
 
@@ -10,33 +11,22 @@ typedef enum {
 	NO_ACTION, INC, DEC, KILL
 } edit_t;
 
-typedef volatile bool mutex;
-
-#define INIT_MUTEX 0;
-
-/**********************
-**  FALTAN DEFINIR!  **			// esto esta para que no rompa la compilación
-**********************/
-void lock(mutex* lock_v) {}
-void unlock(mutex* lock_v) {}
-void yield() {}
-
 /*****************
 **  Global Data **
 *****************/
 int total;
-mutex forks[MAX_PHILOSOPHERS];
+mutex_t forks[MAX_PHILOSOPHERS];
 
-mutex semLock;
+mutex_t semLock;
 volatile int sem;
 
-mutex editLock;
+mutex_t editLock;
 volatile edit_t edit[MAX_PHILOSOPHERS];
 
 /***************
 **  Semaphore **
 ***************/
-void grabSem(mutex* lock_v, volatile int* value) {
+void grabSem(mutex_t* lock_v, volatile int* value) {
 	while(true) {
 		lock(lock_v);
 		if( (*value)>0 ) {
@@ -50,7 +40,7 @@ void grabSem(mutex* lock_v, volatile int* value) {
 	}
 }
 
-void releaseSem(mutex* lock_v, volatile int* value) {
+void releaseSem(mutex_t* lock_v, volatile int* value) {
 	lock(lock_v);
 	(*value)++;
 	unlock(lock_v);
@@ -101,16 +91,19 @@ void philosopher(int pos, int left) {
 void init() {
 	total = INIT_PHILOSOPHERS;
 	sem = total-1;
-	semLock = INIT_MUTEX;
-	editLock = INIT_MUTEX;
+	initMutex(&semLock);
+	initMutex(&editLock);
 	for(int i=0; i<MAX_PHILOSOPHERS; i++) {
-		forks[i] = INIT_MUTEX;
+		initMutex(& (forks[i]) );
 		edit[i] = NO_ACTION;
 	}
 }
 void launchPhilosopher(int pos, int left) {
 	// new process stuff here
-	philosopher(pos, left);
+
+	//newProcess(void * entryPoint, char* name, bool foreground);
+	//philosopher(pos, left);
+	
 	// new process stuff here
 }
 void action(int pos, edit_t value) {

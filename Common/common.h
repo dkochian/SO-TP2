@@ -37,6 +37,7 @@
 	#define UNBLOCKPROCESS		16
 	#define PS					17
 	#define PID					18
+	#define YIELD				19
 
 	//Keyboard
 	#define EMPTY				0

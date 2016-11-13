@@ -6,6 +6,7 @@ GLOBAL _cli
 GLOBAL _sti
 GLOBAL _enter_region
 GLOBAL _leave_region
+GLOBAL yield
 
 EXTERN timerTickHandler
 EXTERN keyboardHandler
@@ -123,6 +124,21 @@ skip:
   
   sti
   iretq
+
+;------------------------------------------------------------
+; Process yield, emul _timerTickHandler but without cli, sti, & out
+;------------------------------------------------------------
+yield:
+  pushaq
+
+  mov rdi, rsp
+  call timerTickHandler
+  cmp rax, 0
+  je skip2
+  mov rsp, rax
+skip2:
+  popaq
+  ret
 
 ;------------------------------------------------------------
 ; keyboard idt handler -> processed in C

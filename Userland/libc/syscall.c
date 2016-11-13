@@ -81,3 +81,8 @@ int pid() {
 
 	return res;
 }
+
+void yield() {
+	_syscall(YIELD, NULL, NULL, NULL);
+}
+
