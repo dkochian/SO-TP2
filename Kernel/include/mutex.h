@@ -3,6 +3,9 @@
 
   #include "../../Common/common.h"
 
+  #define INIT_MUTEX 0x0
+  #define LOCKED_MUTEX 0x01
+
   
   #define CAS_LOCK(sl)     __sync_lock_test_and_set(sl, 1)
   #define CLEAR_LOCK(sl) __sync_lock_release(sl)
