@@ -12,6 +12,10 @@
 
 #include <clock.h>
 
+#include <test1.h>
+#include <test2.h>
+#include "system/include/tests.h"
+
 extern uint8_t text;
 extern uint8_t rodata;
 extern uint8_t data;
@@ -115,7 +119,7 @@ int main() {
 	}
 	else
 		print("OK", GREEN);
-	
+
 	print(" ]", -1);
 	printNewline();
 
@@ -126,7 +130,7 @@ int main() {
 	}
 	else
 		print("OK", GREEN);
-	
+
 	print(" ]", -1);
 	printNewline();
 
@@ -144,11 +148,25 @@ int main() {
 
 	if(!status)
 		return 0;
-	
+
 	//clear();
 
+	print("MMU TEST							[ ", -1);
+	if (mmuStackTest() == true) {
+		print("OK", GREEN);
+	} else {
+		print("ERROR", COLOR_ERROR);
+		status = false;
+	}
+	print(" ]", -1);
+	printNewline();
 
-	//Test multi-task
+	//	MI TEST
+//	newProcess("test2", (uint64_t)&test2, 0, NULL);
+//	newProcess("test1", (uint64_t)&test1, 0, NULL);
+
+
+//	Test multi-task
 	uint64_t pA;
 	uint64_t pB;
 	print("Creating process A", -1);
@@ -176,9 +194,6 @@ int main() {
 		printDec(pB, -1);
 		printNewline();
 	}
-	
-	//newProcess(&sampleCodeModuleAddress, "SHELL", true);
-	//((EntryPoint)sampleCodeModuleAddress)();
 
 	return 0;
 }
