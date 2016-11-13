@@ -4,8 +4,8 @@
 #include "../drivers/include/video.h"
 #include "../drivers/include/keyboard.h"
 #include "../include/clock.h"
-#include "scheduler/scheduler.h"
-#include "scheduler/process.h"
+#include "scheduler/include/scheduler.h"
+#include "scheduler/include/process.h"
 
 static void write(int out, char* str, int size);
 static void read(int in, char* buffer, char aux);
@@ -39,7 +39,7 @@ void sysCallHandler(uint64_t rax, uint64_t rbx, uint64_t rcx, uint64_t rdx) {
 		case FREE:
 			k_free((void *) rbx);
 			break;
-		case NEWPROCESS:
+		/*case NEWPROCESS:
 			newProcess((void *) rbx, (char *) rcx,(bool)rdx);
 			break;
 		case KILLPROCESS:
@@ -56,18 +56,12 @@ void sysCallHandler(uint64_t rax, uint64_t rbx, uint64_t rcx, uint64_t rdx) {
 			break;
 		case PID:
 			*((int *) rbx) = ((uint64_t) getPID());
-			break;
+			break;*/
 		default:
 			write(STDERR, "Error: Invalid system call.", 28);
 			break;
 	}
 }
-/*
-uint64_t syscall_ps(uint64_t rdi, uint64_t rsi, uint64_t rdx, uint64_t r10, uint64_t r8, uint64_t r9) {
-	printProcesses();
-	return 1;
-}
-*/
 
 static void write(int out, char* str, int size) {
 	switch(out) {

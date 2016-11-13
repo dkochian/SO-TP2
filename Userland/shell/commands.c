@@ -26,7 +26,7 @@ void helpCommand(char* str) {
 		return;
 	}
 	for(int index = 0; index < MAX_COMMANDS; index++) {
-		if(struc[index].created == TRUE && strcmp(str, struc[index].name) == 0) {
+		if(struc[index].created == true && strcmp(str, struc[index].name) == 0) {
 			printn(struc[index].help);
 			return;
 		}
@@ -64,7 +64,7 @@ void commandsCommand(char* str) {
 	printn("---------- Commands ---------");
 	
 	for(int index = 0; index < MAX_COMMANDS; index++){
-		if(struc[index].created == TRUE){
+		if(struc[index].created == true){
 			putchar('\t');
 			printColor(struc[index].name, COLOR_INFO);
 			print(": ");
@@ -210,9 +210,9 @@ void fractalCommand(char* str) {
 	}
 	fractal(readNumber());
 	toast("PRESS Q KEY TO RETURN TO THE CONSOLE...", WHITE);
-	while(TRUE) {
+	while(true) {
 		char
-			c = getchar(FALSE);
+			c = getchar(false);
 
 		if(c == 'q' || c == 'Q')
 			break;

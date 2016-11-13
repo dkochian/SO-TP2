@@ -7,12 +7,6 @@ GLOBAL _sti
 GLOBAL _enter_region
 GLOBAL _leave_region
 
-GLOBAL _yield
-
-EXTERN switchUserToKernel
-EXTERN switchKernelToUser
-EXTERN switchAtomic
-
 EXTERN timerTickHandler
 EXTERN keyboardHandler
 EXTERN sysCallHandler
@@ -27,24 +21,26 @@ SECTION .text
 align 8
 %macro pushaq 0
     
-   ;Save registers to the stack.
-   ;--------------------------------
+  ;Save registers to the stack.
+  ;--------------------------------
 
-   push rax      ;save current rax
-   push rbx      ;save current rbx
-   push rcx      ;save current rcx
-   push rdx      ;save current rdx
-   push rbp      ;save current rbp
-   push rdi      ;save current rdi
-   push rsi      ;save current rsi
-   push r8         ;save current r8
-   push r9         ;save current r9
-   push r10      ;save current r10
-   push r11      ;save current r11
-   push r12      ;save current r12
-   push r13      ;save current r13
-   push r14      ;save current r14
-   push r15      ;save current r15
+  push rax      ;save current rax
+  push rbx      ;save current rbx
+  push rcx      ;save current rcx
+  push rdx      ;save current rdx
+  push rbp      ;save current rbp
+  push rdi      ;save current rdi
+  push rsi      ;save current rsi
+  push r8       ;save current r8
+  push r9       ;save current r9
+  push r10      ;save current r10
+  push r11      ;save current r11
+  push r12      ;save current r12
+  push r13      ;save current r13
+  push r14      ;save current r14
+  push r15      ;save current r15
+  push gs
+  push fs
   
   %endmacro ;end of macro definition
 
@@ -54,69 +50,28 @@ align 8
 align 8
 
 %macro popaq 0
-   ;Restore registers from the stack.
-   ;--------------------------------
+  ;Restore registers from the stack.
+  ;--------------------------------
 
-   pop r15         ;restore current r15
-   pop r14         ;restore current r14
-   pop r13         ;restore current r13
-   pop r12         ;restore current r12
-   pop r11         ;restore current r11
-   pop r10         ;restore current r10
-   pop r9         ;restore current r9
-   pop r8         ;restore current r8
-   pop rsi         ;restore current rsi
-   pop rdi         ;restore current rdi
-   pop rbp         ;restore current rbp
-   pop rdx         ;restore current rdx
-   pop rcx         ;restore current rcx
-   pop rbx         ;restore current rbx
-   pop rax         ;restore current rax
+  pop fs
+  pop gs
+  pop r15         ;restore current r15
+  pop r14         ;restore current r14
+  pop r13         ;restore current r13
+  pop r12         ;restore current r12
+  pop r11         ;restore current r11
+  pop r10         ;restore current r10
+  pop r9          ;restore current r9
+  pop r8          ;restore current r8
+  pop rsi         ;restore current rsi
+  pop rdi         ;restore current rdi
+  pop rbp         ;restore current rbp
+  pop rdx         ;restore current rdx
+  pop rcx         ;restore current rcx
+  pop rbx         ;restore current rbx
+  pop rax         ;restore current rax
 
 %endmacro;end of macro definition
-
-
-; for context switching
-%macro  pushState 0
-  push rax
-  push rbx
-  push rcx
-  push rdx
-  push rbp
-  push rdi
-  push rsi
-  push r8
-  push r9
-  push r10
-  push r11
-  push r12
-  push r13
-  push r14
-  push r15
-  push fs
-  push gs
-%endmacro
-
-%macro  popState 0
-  pop gs
-  pop fs
-  pop r15
-  pop r14
-  pop r13
-  pop r12
-  pop r11
-  pop r10
-  pop r9
-  pop r8
-  pop rsi
-  pop rdi
-  pop rbp
-  pop rdx
-  pop rcx
-  pop rbx
-  pop rax
-%endmacro
-
 
 ;------------------------------------------------------------
 ; sti wrapper for C
@@ -145,34 +100,27 @@ _write_port:
     pop rbp  
     ret
 
-_yield:
-  cli
-  pushState
-
-  mov rdi, rsp
-  call switchAtomic
-  mov rsp, rax
-
-  popState
-  sti
-  ret
-
 ;------------------------------------------------------------
 ; Timer tick idt handler -> processed in C
 ;------------------------------------------------------------
 _timerTickHandler:
   cli
-  pushState
+  pushaq
 
   mov rdi, rsp
-  call switchAtomic
-  mov rsp, rax
-
   call timerTickHandler
-  mov al, 0x20
-  out 0x20, al
+  mov rbx, rax            ;backup rax and use rbx instead
 
-  popState
+  mov al,20h
+  out 20h,al
+
+  cmp rbx, 0
+  je skip
+  mov rsp, rbx
+
+skip:
+  popaq
+  
   sti
   iretq
 

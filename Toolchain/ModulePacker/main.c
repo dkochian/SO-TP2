@@ -55,7 +55,7 @@ int buildImage(array_t fileArray, char *output_file) {
 
 	if((target = fopen(output_file, "w")) == NULL) {
 		printf("Can't create target file\n");
-		return FALSE;
+		return false;
 	}
 
 	//First, write the kernel
@@ -81,7 +81,7 @@ int buildImage(array_t fileArray, char *output_file) {
 
 	} 
 	fclose(target);
-	return TRUE;
+	return true;
 }
 
 
@@ -91,10 +91,10 @@ int checkFiles(array_t fileArray) {
 	for(; i < fileArray.length ; i++) {
 		if(access(fileArray.array[i], R_OK)) {
 			printf("Can't open file: %s\n", fileArray.array[i]);
-			return FALSE;
+			return false;
 		}
 	}
-	return TRUE;
+	return true;
 
 }
 
@@ -115,7 +115,7 @@ int write_file(FILE *target, FILE *source) {
 		fwrite(buffer, 1, read, target);
 	}
 
-	return TRUE;
+	return true;
 }
 
 

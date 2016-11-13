@@ -7,7 +7,8 @@
 #include "drivers/include/video.h"
 #include "system/include/syscalls.h"
 #include "drivers/include/keyboard.h"
-#include "system/scheduler/process.h"
+#include "system/scheduler/include/process.h"
+#include "system/scheduler/include/scheduler.h"
 
 #include <clock.h>
 
@@ -97,38 +98,86 @@ void * initializeKernelBinary()
 }
 
 int main() {
+	bool status = true;
+
+	clear();
 
 	k_initialize();
-	print("MMU ready.", -1);
+	print("Memory Manager	[ ", -1);
+	print("OK", GREEN);
+	print(" ]", -1);
 	printNewline();
 
-	_accelPIT();
-	print("Accelerated IRQ0 to 1000Hz.", -1);
+	print("Proces Manager	[ ", -1);
+	if(buildProcessManager() == false) {
+		print("ERROR", COLOR_ERROR);
+		status = false;
+	}
+	else
+		print("OK", GREEN);
+	
+	print(" ]", -1);
+	printNewline();
+
+	print("Scheduler						[ ", -1);
+	if(buildScheduler() == false) {
+		print("ERROR", COLOR_ERROR);
+		status = false;
+	}
+	else
+		print("OK", GREEN);
+	
+	print(" ]", -1);
 	printNewline();
 
 	buildIDT();
-	print("Interrupt Descriptor Table is ready.", -1);
+	print("IDT												[ ", -1);
+	print("OK", GREEN);
+	print(" ]", -1);
 	printNewline();
 
 	keyboardInit();
-	print("Keyboard ready.", -1);
+	print("Keyboard							[ ", -1);
+	print("OK", GREEN);
+	print(" ]", -1);
 	printNewline();
+
+	if(!status)
+		return 0;
 	
-	print("Loading EntryPoint....", -1);
-	printNewline();
-	clear();
+	//clear();
 
 
 	//Test multi-task
+	uint64_t pA;
+	uint64_t pB;
 	print("Creating process A", -1);
 	printNewline();
-	newProcess(processA, "Process A", TRUE);
+	pA = newProcess("Process A", processA, 0, NULL);
+	if(pA == INVALID_PROCESS_ID) {
+		print("Couldn't create process A", -1);
+		printNewline();
+	}
+	else {
+		print("Process A id: ", -1);
+		printDec(pA, -1);
+		printNewline();
+	}
+
 	print("Creating process B", -1);
 	printNewline();
-	newProcess(processB, "Process B", TRUE);
-
-
-	//newProcess(&sampleCodeModuleAddress, "SHELL", TRUE);
+	pB = newProcess("Process B", processB, 0, NULL);
+	if(pB == INVALID_PROCESS_ID) {
+		print("Couldn't create process B", -1);
+		printNewline();
+	}
+	else {
+		print("Process B id: ", -1);
+		printDec(pB, -1);
+		printNewline();
+	}
+	
+	//newProcess(&sampleCodeModuleAddress, "SHELL", true);
 	//((EntryPoint)sampleCodeModuleAddress)();
 
 	return 0;
@@ -140,7 +189,7 @@ static int processA(int argc, char **argv) {
 	print("Process A is running", -1);
 	printNewline();
 
-	while(TRUE) {
+	while(true) {
 		print("Process A: row ", -1);
 		printDec(counter++, -1);
 		printNewline();
@@ -157,7 +206,7 @@ static int processB(int argc, char **argv) {
 	print("Process B is running", -1);
 	printNewline();
 
-	while(TRUE) {
+	while(true) {
 		print("Process B: row ", -1);
 		printDec(counter++, -1);
 		printNewline();

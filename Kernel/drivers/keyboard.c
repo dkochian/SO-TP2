@@ -48,8 +48,8 @@ void keyboardInit() {
 
 	kb.writeIndex = 0;
 	kb.readIndex = 0;
-	kb.capsOn = FALSE;
-	kb.shiftOn = FALSE;
+	kb.capsOn = false;
+	kb.shiftOn = false;
 	lineIndex = 0;
 }
 
@@ -66,7 +66,7 @@ char getKey(char write) {
 	if(kb.readIndex == KB_SIZE)
 		kb.readIndex = 0;
 
-	if(c != EMPTY && write == TRUE)
+	if(c != EMPTY && write == true)
 		putChar(c, -1); //Print the char to the console
 
 	return c;
@@ -79,9 +79,9 @@ static void addKeyBuffer(int key) {
 	if(key == CAPS)
 		kb.capsOn = !kb.capsOn;
 	else if(key == SHIFTR || key == SHIFTL)
-		kb.shiftOn = TRUE;
+		kb.shiftOn = true;
 	else if(key == SHIFTR_RL || key == SHIFTL_RL)
-		kb.shiftOn = FALSE;
+		kb.shiftOn = false;
 	else if(!((key >> 7) & 0x1)) {
 		if(kb.capsOn)
 			keyboard = 2;

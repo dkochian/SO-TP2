@@ -1,25 +1,24 @@
-#include "mutex.h"
+#include "include/mutex.h"
 
-
-void lock(bool volatile * lock) {
+void lock(bool volatile *lock) {
 	while(__sync_lock_test_and_set(lock, 0x01)) {
 		//switch_task(1);	//yield??
 	}
 }
 
-void unlock(bool volatile * lock) {
+void unlock(bool volatile *lock) {
 	__sync_lock_release(lock);
 }
 
 // Use only within interrupt, guaranteing uninterrupted execution.
-bool isLockOpenRightThisInstant(bool volatile * lock) {
+bool isLockOpenRightThisInstant(bool volatile *lock) {
 	if(__sync_lock_test_and_set(lock, 0x01)) {
 		// sync returned true, therefore wasn't grabbed
-		return FALSE;
+		return false;
 	} else {
 		// sync returned false, therefore was grabbed
 		__sync_lock_release(lock);
-		return TRUE;
+		return true;
 	}
 }
 
@@ -44,7 +43,7 @@ static LockStruct *mutexVar = NULL;
 
 void initMutex(){
     mutexVar = k_malloc(sizeof(LockStruct));
-    mutexVar->m_locked = FALSE;
+    mutexVar->m_locked = false;
 }*/
 
 /**
@@ -57,7 +56,7 @@ void initMutex(){
  * Unlocks the lock. 
  */
 /*void unlock() {
-    mutexVar->m_locked = FALSE;
+    mutexVar->m_locked = false;
 }*/
 /*
 static bool compareAndSet(bool expectedValue, bool newValue){

@@ -20,21 +20,21 @@ int
 	bIndex;
 commandExec
 	commandTable[MAX_COMMANDS] = {
-		{TRUE, "echo", "Prints the input.", "Usage: echo <text>", &echoCommand},
-		{TRUE, "help", "Prints information about a command.", "Usage: help (command)", &helpCommand},
-		{TRUE, "clear", "Clears the screen", "Usage: clear", &clearCommand},
-		{TRUE, "commands", "Prints all commands.", "Usage: commands", &commandsCommand},
-		{TRUE, "time", "Prints the time.", "Usage: time", &timeCommand},
-		{TRUE, "date", "Prints the date.", "Usage: date", &dateCommand},
-		{TRUE, "sleep", "Sleeps the system.", "Usage: sleep <seconds>", &sleepCommand},
-		{TRUE, "fractal", "Draws a fractal. To exit the demostration press Esc key", "Usage: fractal", &fractalCommand},
-		{TRUE, "credits", "Prints the OS credits.", "Usage: credits", &creditsCommand},
-		{TRUE, "color", "Sets the color of the shell text.", 	"Usage: color <code>\n\n------------- Color codes ------------\n0 Black          1 Blue\n2 Green          3 Cyan\n4 Red            5 Magenta\n6 Brown          7 Light Gray\n8 Dark Grey      9 Light Blue\n10 Light Green   11 Light Cyan\n12 Light Red     13 Light Magenta\n14 Yellow        15 White\n--------------------------------------", &colorCommand},
-		{TRUE, "disclaimer", "Must read", "Usage: disclaimer", &disclaimerCommand},
-		{TRUE, "background", "Sets the color of the shell background.", 	"Usage: background <code>\n\n------------- Color codes ------------\n0 Black          1 Blue\n2 Green          3 Cyan\n4 Red            5 Magenta\n6 Brown          7 Light Gray\n8 Dark Grey      9 Light Blue\n10 Light Green   11 Light Cyan\n12 Light Red     13 Light Magenta\n14 Yellow        15 White\n--------------------------------------", &colorBgCommand},
-		{TRUE, "pid", "Prints the process pid.", "Usage: pid", &pidCommand},
-		{TRUE, "kill", "Kills the selected process.", "Usage: kill <pid>", &killCommand},
-		{TRUE, "ps", "Prints all the processes information.", "Usage: ps", &ps}
+		{true, "echo", "Prints the input.", "Usage: echo <text>", &echoCommand},
+		{true, "help", "Prints information about a command.", "Usage: help (command)", &helpCommand},
+		{true, "clear", "Clears the screen", "Usage: clear", &clearCommand},
+		{true, "commands", "Prints all commands.", "Usage: commands", &commandsCommand},
+		{true, "time", "Prints the time.", "Usage: time", &timeCommand},
+		{true, "date", "Prints the date.", "Usage: date", &dateCommand},
+		{true, "sleep", "Sleeps the system.", "Usage: sleep <seconds>", &sleepCommand},
+		{true, "fractal", "Draws a fractal. To exit the demostration press Esc key", "Usage: fractal", &fractalCommand},
+		{true, "credits", "Prints the OS credits.", "Usage: credits", &creditsCommand},
+		{true, "color", "Sets the color of the shell text.", 	"Usage: color <code>\n\n------------- Color codes ------------\n0 Black          1 Blue\n2 Green          3 Cyan\n4 Red            5 Magenta\n6 Brown          7 Light Gray\n8 Dark Grey      9 Light Blue\n10 Light Green   11 Light Cyan\n12 Light Red     13 Light Magenta\n14 Yellow        15 White\n--------------------------------------", &colorCommand},
+		{true, "disclaimer", "Must read", "Usage: disclaimer", &disclaimerCommand},
+		{true, "background", "Sets the color of the shell background.", 	"Usage: background <code>\n\n------------- Color codes ------------\n0 Black          1 Blue\n2 Green          3 Cyan\n4 Red            5 Magenta\n6 Brown          7 Light Gray\n8 Dark Grey      9 Light Blue\n10 Light Green   11 Light Cyan\n12 Light Red     13 Light Magenta\n14 Yellow        15 White\n--------------------------------------", &colorBgCommand},
+		{true, "pid", "Prints the process pid.", "Usage: pid", &pidCommand},
+		{true, "kill", "Kills the selected process.", "Usage: kill <pid>", &killCommand},
+		{true, "ps", "Prints all the processes information.", "Usage: ps", &ps}
 
 	};
 
@@ -42,7 +42,7 @@ int main(int argc, char ** argv) {
 
 	printn("main called");
 	
-	newProcess((void *)&shell, "SHELL", TRUE);
+	newProcess((void *)&shell, "SHELL", true);
 
 	shell();
 	while(1) { }
@@ -62,9 +62,9 @@ static void shell() {
 
 	printHeader();
 
-	while(TRUE) {
-		//printn("[SHELL] while(TRUE)");
-		c = getchar(TRUE);
+	while(true) {
+		//printn("[SHELL] while(true)");
+		c = getchar(true);
 
 		if(insertToBuffer(c) == 1) {
 			printn("0");
@@ -176,8 +176,8 @@ static int bufferHasAlpha() {
 
 static void clearBuffer(commandData* cmd) {
 	int i = 0;
-	int flag = FALSE;
-	while(TRUE) {
+	int flag = false;
+	while(true) {
 		flag = (i < MAX_BUFFER) & (i < MAX_ARG_BUFFER);
 		if(i < MAX_BUFFER)
 			cmd->name[i] = '\0';
@@ -191,7 +191,7 @@ static void clearBuffer(commandData* cmd) {
 
 static int executeCommand(commandData cmd) {
 	for(int index = 0; index < MAX_COMMANDS; index++) {
-		if(commandTable[index].created == TRUE && strcmp(cmd.name, commandTable[index].name) == 0) {
+		if(commandTable[index].created == true && strcmp(cmd.name, commandTable[index].name) == 0) {
 			commandTable[index].func(cmd.args);
 			return 1;
 		}

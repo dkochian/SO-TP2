@@ -4,9 +4,15 @@
 
 	#include <stdint.h>
 
-	#define TRUE				1
-	#define FALSE				!TRUE
+	//Utils
+	#define NULL				0x0
+	#define MAX_BUFFER			128
 
+	//boolean values
+	#define true				1
+	#define false				!true
+
+	//Misc
 	#define STDOUT				1
 	#define STDERR				2
 	#define STDIN				3
@@ -14,6 +20,7 @@
 	#define TOAST				5
 	#define BGCOLOR				6
 
+	//System calls ids
 	#define SYSREAD				3
 	#define SYSWRITE			4
 	#define SETCOLOR			5
@@ -31,14 +38,12 @@
 	#define PS					17
 	#define PID					18
 
+	//Keyboard
 	#define EMPTY				0
-
-	#define NULL				0x0
-
-	#define MAX_BUFFER			128
 	#define WIDTH 				128
 	#define KB_SIZE				112
 
+	//Colors
 	#define BLACK				0
 	#define BLUE				1
 	#define GREEN				2
@@ -62,6 +67,9 @@
 	#define COLOR_CLEAR			BLACK
 	#define COLOR_INFO			BLUE
 	#define COLOR_NULL			(-1)
+
+	//Process
+	#define INVALID_PROCESS_ID	(-1)
 
 	typedef struct {
 		uint8_t

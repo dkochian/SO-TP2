@@ -4,8 +4,8 @@
 #include <argp.h>
 
 
-#define FALSE 0
-#define TRUE !FALSE
+#define false 0
+#define true !false
 
 #define BUFFER_SIZE 128
 

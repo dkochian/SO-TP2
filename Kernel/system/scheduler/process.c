@@ -1,86 +1,213 @@
-//BASED ON Wyrm/Process
-#include "process.h"
-#include "scheduler.h"
+#include "../include/mmu.h"
+#include "include/process.h"
+#include "../include/mutex.h"
+#include "include/scheduler.h"
 
-static uint64_t currentPid = 50;
+#include "../../drivers/include/video.h"
 
-extern void _yield(void);
-static void initProcess(process_entry_t process_entry, uint64_t argc, void *argv);
+extern void _timerTickHandler();
 
-static void * toStackAddress(void * page) {
-	return (uint8_t *) page + PAGE_SIZE - 0x10;
+static void freeProcessId(uint64_t id);
+static uint64_t getNewProcessId(process *p);
+static process *getProcessFromId(uint64_t id);
+static int startProcess(func f, int argc, char **argv);
+static void *buildStacKFrame(void *rsp, func f, int argc, char **argv);
+
+static process **process_table;
+static bool volatile mutex;
+
+bool buildProcessManager() {
+	process_table = (process **) k_malloc(sizeof(process*)*MAX_PROCESSES);
+
+	if(process_table == NULL)
+		return false;
+
+	for(int i=0; i<MAX_PROCESSES; i++)
+		process_table[i] = NULL;
+
+	return true;
 }
 
-static void * fillStackFrame(void * userStack, process_entry_t process_entry, uint64_t argc, char* argv[] ) {
+uint64_t newProcess(char* name, func f, int argc, char **argv) {
+	process *p;
+	uint64_t rsp;
 
-	StackFrame * frame = (StackFrame *) userStack - 1;
+	p = (process *) k_malloc(sizeof(process));
+	if(p == NULL)
+		return INVALID_PROCESS_ID;
 
-	frame->gs = 0x001;
-	frame->fs = 0x002;
-	frame->r15 = 0x003;
-	frame->r14 = 0x004;
-	frame->r13 = 0x005;
-	frame->r12 = 0x006;
-	frame->r11 = 0x007;
-	frame->r10 = 0x008;
-	frame->r9 = 0x009;
-	frame->r8 = 0x00A;
-	frame->rsi = argc;
-	frame->rdi = (uint64_t) process_entry;
-	frame->rbp = 0x00D;
-	frame->rdx = (uint64_t) argv;
-	frame->rcx = 0x00F;
-	frame->rbx = 0x010;
-	frame->rax = 0x011;
-	
-	frame->rip = (uint64_t) &initProcess;//entryPoint;
-	frame->cs = 0x008;
-	frame->eflags = 0x202;
-	frame->rsp = (uint64_t) &(frame->base);
-	frame->ss = 0x000;
-	frame->base = 0x000;
+	p->id = getNewProcessId(p);
+	if(p->id == INVALID_PROCESS_ID) {
+		k_free(p);
 
-	return frame;
-}
-
-static void initProcess(process_entry_t process_entry, uint64_t argc, void *argv) {
-	process_entry(argc, argv);
-	removeProcessFromScheduler(getCurrProcess());
-	_yield();
-	return;
-}
-
-static void strcpy(char* to, char* from) {
-	while( *from != '\0' ) {
-		*to = *from;
-		to++;
-		from++;
+		return INVALID_PROCESS_ID;
 	}
-	*to = '\0';
+
+	rsp = (uint64_t) k_malloc(STACK_SIZE);
+	if(rsp == NULL) {
+		freeProcessId(p->id);
+		k_free(p);
+
+		return INVALID_PROCESS_ID;
+	}
+
+	p->wait_list = buildList(&equal);
+	if(p->wait_list == NULL) {
+		freeProcessId(p->id);
+		k_free((void *) rsp);
+		k_free(p);
+
+		return INVALID_PROCESS_ID;
+	}
+
+	p->name = name;
+	p->s_frame = rsp;
+	p->state = WAITING;
+
+	rsp += STACK_SIZE - 1 - sizeof(stack_frame);
+	p->rsp = (uint64_t) buildStacKFrame((void *)rsp, f, argc, argv);
+
+	process *father = getCurrentProcess();
+	if(father == NULL)
+		father = 0;
+
+	p->father = father->id;
+
+	addProcess(p);	//Add the process to the scheduler
+
+	return p->id;
 }
 
-Process* newProcess(process_entry_t process_entry, char* name, bool foreground) {//, uint64_t argc, void *argv) {
-	Process* process = k_malloc(sizeof(Process));
-	strcpy(process->name, name);
-	process->process_entry = process_entry;
-	process->userStackPage = newStackFrame();
-	process->kernelStackPage = newStackFrame();
-	process->userStack = toStackAddress(process->userStackPage);
-	process->kernelStack = toStackAddress(process->kernelStackPage);
-	process->pid = currentPid++;
-	process->state = P_WAIT;
+void freeProcess(int pid) {
+	process *p = getProcessFromId(pid);
 
-	process->userStack = fillStackFrame(process->userStack, process->process_entry, 0, NULL);
+	if(p == NULL)
+		return;
 
-	addProcessToScheduler(process, foreground);
+	removeProcess(p);	//Remove the process from the scheduler
+	freeProcessId(pid);	//Free the process id
 
-	process_entry(0, NULL);
-
-	return process;
+	destroyList(p->wait_list);
+	k_free((void *) p->s_frame);
+	k_free(p);
 }
 
-void freeProcess(Process* process) {
-	removeStackFrame(process->userStack);
-	removeStackFrame(process->kernelStack);
-	k_free(process);
+void addWaitProcess(process *child) {
+	if(child == NULL)
+		return;
+
+	process *father = getProcessFromId(child->father);
+
+	if(father == NULL)
+		return;
+
+	add(father->wait_list, child);
+
+	if(father->state != BLOCKED)
+		father->state = BLOCKED;
+}
+
+void removeWaitProcess(process *child) {
+	if(child == NULL)
+		return;
+
+	process *father = getProcessFromId(child->father);
+
+	if(father == NULL)
+		return;
+
+	remove(father->wait_list, child);
+
+	if(isEmpty(father->wait_list) == true)
+		father->state = WAITING;
+}
+
+process *getFirstWaitProcess(process *father) {
+	if(father == NULL)
+		return NULL;
+
+	return getFirst(father->wait_list);
+}
+
+bool equal(process *p1, process *p2) {
+	return p1->id == p2->id;
+}
+
+static process *getProcessFromId(uint64_t id) {
+	if(id == INVALID_PROCESS_ID || id < 0 || id > MAX_PROCESSES - 1)
+		return NULL;
+
+	process *p = NULL;
+
+	lock(&mutex);
+	p = process_table[id];
+	unlock(&mutex);
+
+	return p;
+}
+
+static int startProcess(func f, int argc, char **argv) {
+	f(argc, argv);
+	removeProcess(getCurrentProcess());
+	_timerTickHandler();
+	return 0;
+}
+
+static void *buildStacKFrame(void *rsp, func f, int argc, char **argv) {
+	stack_frame *s_frame = (stack_frame *) rsp;
+
+	s_frame->gs = 0x001;
+	s_frame->fs = 0x002;
+	s_frame->r15 = 0x003;
+	s_frame->r14 = 0x004;
+	s_frame->r13 = 0x005;
+	s_frame->r12 = 0x006;
+	s_frame->r11 = 0x007;
+	s_frame->r10 = 0x008;
+	s_frame->r9 = 0x009;
+	s_frame->r8 = 0x00A;
+	s_frame->rsi = argc;
+	s_frame->rdi = (uint64_t) f;
+	s_frame->rbp = 0x00D;
+	s_frame->rdx = (uint64_t) argv;
+	s_frame->rcx = 0x00F;
+	s_frame->rbx = 0x010;
+	s_frame->rax = 0x011;
+	
+	s_frame->rip = (uint64_t) &startProcess;
+	s_frame->cs = 0x008;
+	s_frame->eflags = 0x202;
+	s_frame->rsp = (uint64_t) &(s_frame->base);
+	s_frame->ss = 0x000;
+	s_frame->base = 0x000;
+
+	return s_frame;
+}
+
+static uint64_t getNewProcessId(process *p) {
+	if(p == NULL)
+		return INVALID_PROCESS_ID;
+
+	uint64_t id = INVALID_PROCESS_ID;
+
+	lock(&mutex);
+	for(int i=0; i<MAX_PROCESSES; i++) {
+		if(process_table[i] == NULL) {
+			id = i;
+			process_table[i] = p;
+			break;
+		}
+	}
+	unlock(&mutex);
+
+	return id;
+}
+
+static void freeProcessId(uint64_t id) {
+	if(id == INVALID_PROCESS_ID || id < 0 || id > MAX_PROCESSES - 1)
+		return;
+
+	lock(&mutex);
+	process_table[id] = NULL;
+	unlock(&mutex);
 }

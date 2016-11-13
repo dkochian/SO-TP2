@@ -1,7 +1,7 @@
 #ifndef __MUTEX_H__
   #define __MUTEX_H__
 
-  #include "../Common/common.h"
+  #include "../../Common/common.h"
 
   
   #define CAS_LOCK(sl)     __sync_lock_test_and_set(sl, 1)

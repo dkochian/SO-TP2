@@ -1,8 +1,10 @@
 #ifndef _INC_TIMERTICK_
-#define _INC_TIMERTICK_
+	#define _INC_TIMERTICK_
 
+	#define TICK_TO_SWICH_PROCESS	15// Should be 2 or 1 (we must change the clock I guess)
 
-void timerTickHandler();
+	#include <stdint.h>
 
+	uint64_t timerTickHandler(uint64_t s_frame) ;
 
 #endif

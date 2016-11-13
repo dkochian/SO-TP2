@@ -1,255 +1,115 @@
-//BASED ON Wyrm/Scheduler
-#include "scheduler.h"
-#include "../drivers/include/video.h"
-#include "../mutex.h"
+#include "../include/atom.h"
+#include "include/process.h"
+#include "include/scheduler.h"
 
+#include "../../drivers/include/video.h"
+#include "../include/clock.h"
 
-/**********************
-**  Current Process  **
-**********************/
+static process *schedule();
+static void killProcess(process *p);
 
-static bool volatile mutex;			// grab this before touching any other variable
-static int processCounter = 0;
-static ProcessSlot* current = NULL;
-static ProcessSlot* foreground;
+static list process_list;
+static process* current_process;
 
-static ProcessSlot* foregroundDefault;	// set with shell on first add
+static int dummyP(int argc, char **argv);
 
-//ver despues donde meter la funcion. klib?
-int strcmp(char *str1, char *str2) {
-	while((*str1 == *str2) && (*str1 != '\0')) {
-		str1++;
-		str2++;
-	}
-	if(*str1 > *str2)
-		return 1;
-	if(*str1 < *str2)
-		return -1;
-	return 0;
+bool buildScheduler() {
+	process_list = buildList(&equal);
+
+	if(process_list == NULL)
+		return false;
+
+	newProcess("master of the puppets (ini)", NULL, 0, NULL);
+	print("current: ", -1);
+	print(current_process->name, -1);
+	print(" || rsp: 0x", -1);
+	printHex(current_process->rsp, -1);
+	printNewline();
+	return true;
 }
 
-static void schedule() {
-	if( !isLockOpenRightThisInstant(&mutex) )
+bool addProcess(process *p) {
+	bool res = false;
+
+	if(p == NULL)
+		return res;
+
+	_cli();
+	if(isEmpty(process_list) == true)
+		current_process = p;
+
+	res = add(process_list, p);
+	_sti();
+
+	return res;
+}
+
+bool removeProcess(process *p) {
+	bool res = false;
+
+	if(p == NULL)
+		return res;
+
+	_cli();
+	res = remove(process_list, p);
+	killProcess(p);
+	_sti();
+
+	return res;
+}
+
+process *getCurrentProcess() {
+	return current_process;
+}
+
+uint64_t contextSwitch(uint64_t stack) {
+	if(current_process == NULL)
+		return 0;
+
+	current_process->rsp = stack;
+	current_process->state = WAITING;
+
+	current_process = schedule();
+	if(current_process == NULL) {
+		return 0;
+	}
+
+	current_process->state = RUNNING;
+
+	return current_process->rsp;
+}
+
+static void killProcess(process *p) {			//We should have to run sheduler again if the killed process is the one that's running right now
+	process *child;
+
+	if(p == NULL)
 		return;
-	ProcessSlot* aux = current;
-	
-	bool found = FALSE;
-	while(!found){
-		aux = aux->next;
-		switch(aux->process->state) {
-			case P_WAIT: {
-				// next in line
-				current->process->state = P_WAIT;
-				aux->process->state = P_RUN;
-				current = aux;
-				found = TRUE;
-				//printProcesses();
-				//sleep(2);
-			}
-			break;
-			case P_RUN: {
-				// merry go round
-				found = TRUE;
-				//printProcesses();
-				//sleep(2);
-			}
-			break;
-			case P_BLOCK:
-			default: {
-				// keep going round
-				;
-			}
-		}
-	}
-}
-
-// Used by scheduler/process.c/newProcess(). Don't use externaly!
-void addProcessToScheduler(Process* process, bool f) {
-	ProcessSlot* aux = newProcessSlot();
-	process->state = P_WAIT;
-	aux->process = process;
-	lock(&mutex);
-
-	if(processCounter==0) {
-		foregroundDefault = aux;
-		aux->next = aux;
-		current = aux;
-	} else {
-		aux->next = current->next;
-		current->next = aux;
-	}
-	if(f) {
-		foreground = aux;
-	}
-	processCounter++;
-	unlock(&mutex);
-}
-
-void removeProcessFromScheduler(Process* process) {
-	if( strcmp(process->name, "SHELL")==0 ) {
-		// can't kill the shell
+	if(p->id == 0) //You can't kill dummy
 		return;
+
+	child = getFirstWaitProcess(p);
+	while(child != NULL) {
+		killProcess(child);
+		child = getFirstWaitProcess(p);
 	}
-	int found = 0;
-	if (process == NULL) {
-		return;
-		//TODO: log de errores.
-		//fprintf(stderr, "Failed to remove process: Process is NULL\n");
-	}
-	ProcessSlot* first = current;
-	ProcessSlot* prev = first;
-	ProcessSlot* aux = prev->next;
-	do {
-		if (aux->process == process) {
-			if( foregroundDefault == aux) {
-				// can't kill foregroundDefault (i.e. SHELL)
-				break;
-			}
-			if (aux == current){
-				current = aux->next;
-			}
-			prev->next = aux->next;
-			if(aux == foreground)
-				foreground = foregroundDefault;
-			freeProcess(aux->process);
-			removeProcessSlot(aux);
-			found = 1;
-			break;
-		}
-		prev = aux;
-		aux = aux->next;
-	} while (prev != first);
 
-	if (!found) {
-		//TODO: log de errores.
-		//fprintf(stderr, "Failed to remove process: Process not found on Scheduler list\n");
-	} else {
-		processCounter--;
-	}
-	return;
+	freeProcess(p->id);
 }
 
-/***********************
-**  Helper Functions  **
-***********************/
-
-void* switchAtomic(void* rsp) {
-	if(processCounter==0)
-		return rsp;
-	current->process->userStack = rsp;
-	schedule();
-	return current->process->userStack;
-}
-
-void* switchUserToKernel(void* rsp) {
-	Process* process = current->process;
-	process->userStack = rsp;
-	return process->kernelStack;
-}
-
-void* switchKernelToUser() {
-	schedule();
-	return current->process->userStack;
-}
-
-
-
-Process* getProcess(uint64_t pid){
-	int found = 0;
-	ProcessSlot* resp = current;
-
-	if(resp->process == NULL){
+static process *schedule() {
+	if(process_list == NULL)
 		return NULL;
-	}
 
-	do{
-		if(resp->process->pid == pid)
-			found = 1;
-		else
-			resp = resp->next;
-	}while(!found && current != resp);
+	if(isEmpty(process_list) == true)
+		return NULL;
 
-	if(!found)
-		resp->process = NULL;
+	process *p;
 
-	return resp->process;
+	do {
+		p = peekFirst(process_list);
+		if(p == NULL)
+			break;
+	} while(p->state == BLOCKED || p->id == 0);
+
+	return p;//if it's NULL, it'll return NULL
 }
-
-Process* getCurrProcess(){
-	return current->process;
-}
-
-uint64_t getPID(){
-	return current->process->pid;
-}
-
-bool killProcess(uint64_t pid){
-	if(pid < 1)
-		return FALSE;
-	lock(&mutex);
-	Process *process = getProcess(pid);
-	if (process == NULL){
-		unlock(&mutex);
-		return FALSE;
-	}
-
-	removeProcessFromScheduler(process);
-	unlock(&mutex);
-	return TRUE;
-}
-
-bool blockProcess(uint64_t pid){
-	lock(&mutex);
-	Process *process = getProcess(pid);
-	if(process == NULL){
-		unlock(&mutex);
-		return FALSE;
-	} else if (current->process == process){
-		schedule();
-	}
-	process->state = P_BLOCK;
-	unlock(&mutex);
-	return TRUE;
-}
-
-bool unblockProcess(uint64_t pid){
-	lock(&mutex);
-	Process *process = getProcess(pid);
-	if(process == NULL){
-		unlock(&mutex);
-		return FALSE;
-	}
-	process->state = P_WAIT;
-	unlock(&mutex);
-	return TRUE;
-}
-
-void printProcesses(){
-	lock(&mutex);
-	ProcessSlot* aux = current;
-
-	if(aux->process == NULL){
-		print("NULL",-1);
-		unlock(&mutex);
-		return;
-	}
-	print("PID -------------Process Name",-1);
-	putChar('\n',-1);
-	do{
-		printDec(aux->process->pid,-1);
-		print("                  ",-1);
-		print(aux->process->name,-1);
-		putChar('\n',-1);
-		
-		aux = aux->next;
-	}while(current != aux);
-	
-	unlock(&mutex);
-}
-/*
-void yield() {
-	lock(&mutex);
-	//	make call to timerTickHandler (ASM) 
-	unlock(&mutex);
-}
-*/

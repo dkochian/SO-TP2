@@ -1,6 +1,7 @@
 #ifndef _INC_IDT_
 	#define _INC_IDT_
 
+	#include "atom.h"
 	#include "../include/common.h"
 
 	#define INTERRUPT_GATE		0xE
@@ -30,9 +31,6 @@
 	extern void _timerTickHandler();
 	extern void _keyboardHandler();
 	extern void _sysCallHandler();
-	extern void _cli(void);
-	extern void _sti(void);
 	extern void _write_port(int16_t, int16_t);
-	extern void _accel(void);
 
 #endif
