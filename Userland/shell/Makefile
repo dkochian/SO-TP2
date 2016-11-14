@@ -1,7 +1,7 @@
 include ../Makefile.inc
 
 MODULE=shellModule.bin
-SOURCES=$(wildcard *.c)
+SOURCES=_loader.c shell.c commands.c fractals.c philosophers.c
 OBJECTS=$(SOURCES:.c=.o)
 LIBC=-L../ -lc
 

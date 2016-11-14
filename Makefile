@@ -1,4 +1,4 @@
-all: toolchain bootloader kernel userland video image
+all: toolchain bootloader kernel userland image
 
 toolchain:
 	@cd Toolchain; make all --no-print-directory
@@ -25,4 +25,4 @@ clean:
 run: clean all
 	qemu-system-x86_64 -hda Image/x64BareBonesImage.qcow2 -m 512 -vga std
 
-.PHONY: toolchain bootloader image collections kernel userland video all clean run
+.PHONY: toolchain bootloader image collections kernel userland all clean run
