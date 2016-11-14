@@ -8,7 +8,7 @@ static int current = 0;
 void k_initialize() {
 
 	for(current = 0; current < PAGE_TABLE_ENTRIES; current++) {
-		memory_stack[current] = (void *) (DATA_ADDRESS + current * PAGE_SIZE);
+		memory_stack[current] = (void *) (DATA_ADDRESS + current * PAGE_SIZE + 1);
 	}
 }
 

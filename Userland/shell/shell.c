@@ -43,8 +43,6 @@ int main(int argc, char ** argv) {
 	commandData
 		cmd;
 
-	printn("hola");
-
 	cmd.name = malloc(MAX_BUFFER*sizeof(char));
 	cmd.args = malloc(MAX_ARG_BUFFER*sizeof(char));
 
@@ -57,23 +55,15 @@ int main(int argc, char ** argv) {
 		c = getchar(true);
 
 		if(insertToBuffer(c) == 1) {
-			printn("0");
 			int
 				result = parseBuffer(&cmd);//if result==0 empty line, result==1 try to execute command, result == -1 command's name is too long
-			printn("1");
 			resetBuffer();
-			print("cmd.name: ");
-			printn(cmd.name);
-			print("cmd.args: ");
-			printn(cmd.args);
 			if(result == -1) {
-				printn("1.1");
 				printColor("Error", COLOR_ERROR);
 				printn(": The command's name is too long (AKA: It doesn't exists.)");
 				printn("Info: Use \"commands\" to see all avaliable commands.");
 			}
 			else if(result == 1) {
-				printn("1.2");
 				if(!executeCommand(cmd)) {
 					printColor("Error", COLOR_ERROR);
 					printn(": The command doesn't exists.");
