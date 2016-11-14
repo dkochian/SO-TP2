@@ -11,7 +11,7 @@ char getchar(char write) {
 	char
 		c = EMPTY;
 
-	while(c == EMPTY)
+	//while(c == EMPTY)
 		read(STDIN, &c, write);
 
 	return c;

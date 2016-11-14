@@ -8,23 +8,20 @@
 static process *schedule();
 static void killProcess(process *p);
 
-static list process_list;
+static list waiting_list;
+static list blocked_list;
 static process* current_process;
 
-static int dummyP(int argc, char **argv);
+//static bool volatile mutex;
 
 bool buildScheduler() {
-	process_list = buildList(&equal);
+	waiting_list = buildList(&equal);
+	blocked_list = buildList(&equal);
 
-	if(process_list == NULL)
+	if(waiting_list == NULL || blocked_list == NULL)
 		return false;
 
 	newProcess("master of the puppets (ini)", NULL, 0, NULL);
-	print("current: ", -1);
-	print(current_process->name, -1);
-	print(" || rsp: 0x", -1);
-	printHex(current_process->rsp, -1);
-	printNewline();
 	return true;
 }
 
@@ -35,10 +32,10 @@ bool addProcess(process *p) {
 		return res;
 
 	_cli();
-	if(isEmpty(process_list) == true)
+	if(isEmpty(waiting_list) == true)
 		current_process = p;
 
-	res = add(process_list, p);
+	res = add(waiting_list, p);
 	_sti();
 
 	return res;
@@ -51,11 +48,20 @@ bool removeProcess(process *p) {
 		return res;
 
 	_cli();
-	res = remove(process_list, p);
+	res = remove(waiting_list, p);
 	killProcess(p);
 	_sti();
 
 	return res;
+}
+
+void blockProcess(uint64_t pid) {
+	process *p = getProcessFromId(pid);
+
+	if(p == NULL)
+		return;
+
+	p->state = BLOCKED;
 }
 
 process *getCurrentProcess() {
@@ -97,16 +103,16 @@ static void killProcess(process *p) {			//We should have to run sheduler again i
 }
 
 static process *schedule() {
-	if(process_list == NULL)
+	if(waiting_list == NULL)
 		return NULL;
 
-	if(isEmpty(process_list) == true)
+	if(isEmpty(waiting_list) == true)
 		return NULL;
 
 	process *p;
 
 	do {
-		p = peekFirst(process_list);
+		p = peekFirst(waiting_list);
 		if(p == NULL)
 			break;
 	} while(p->state == BLOCKED || p->id == 0);

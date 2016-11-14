@@ -51,7 +51,6 @@ int main(int argc, char ** argv) {
 	printHeader();
 
 	while(true) {
-		//printn("[SHELL] while(true)");
 		c = getchar(true);
 
 		if(insertToBuffer(c) == 1) {

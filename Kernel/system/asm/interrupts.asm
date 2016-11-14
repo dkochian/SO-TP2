@@ -190,7 +190,7 @@ _enter_region:        ; A "jump to" tag; function entry point.
   mov rdi, rax
   mov rax,1
   xchg rax,rdi      ; Test and Set Lock; flag is the
-                     ; shared variable; it is copied
+                      ; shared variable; it is copied
                      ; into the register rax and flag
                      ; then atomically set to 1.
 
