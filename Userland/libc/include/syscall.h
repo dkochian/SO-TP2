@@ -3,7 +3,7 @@
 
 	#include "../../../Common/common.h"
 
-	extern void _syscall(int, int, int, int);
+	extern void _syscall(int, int, int, int, int);
 
 	void syscall(int id, int type, uintptr_t* addr, char size);
 	void write(int type, char* str, int size);

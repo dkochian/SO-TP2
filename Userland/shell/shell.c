@@ -5,6 +5,8 @@
 #include <commands.h>
 #include "../../Common/common.h"
 
+#include "include/philosophers.h"
+
 static int insertToBuffer(char c);
 static void resetBuffer();
 static int parseBuffer(commandData* cmd);
@@ -47,6 +49,8 @@ int main(int argc, char ** argv) {
 	cmd.args = malloc(MAX_ARG_BUFFER*sizeof(char));
 
 	bIndex = 0;
+
+	//philosophers();
 
 	printHeader();
 

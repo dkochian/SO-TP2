@@ -51,15 +51,31 @@ static void releaseSem(mutex_t* lock_v, volatile int* value) {
 /******************
 **  Philosopher  **
 ******************/
-static void philosopher(int pos, int left) {
+static int philosopher(int argc, char** argv) {
+	printn("...");
+	int pos = (char) argv[0];
+	int left = (char) argv[1];
+
+	print("Generated Philosopher N°: ");
+	printNum(pos);
+	printNewline();
+
 	int right = pos;
 	bool alive = true;
 	while(alive) {
 		// THINKING
+		printNum(pos);
+		printn(" is thinking...");
+		sleep(2);
+
 		grabSem(&semLock, &sem);
 		lock(& (forks[right]) );
 		lock(& (forks[left]) );
 		// EAT
+		printNum(pos);
+		printn(" is eating...");
+		sleep(2);		
+
 		unlock(& (forks[right]) );
 		unlock(& (forks[left]) );
 		releaseSem(&semLock, &sem);
@@ -85,6 +101,7 @@ static void philosopher(int pos, int left) {
 		edit[pos] = NO_ACTION;
 		unlock(&editLock);
 	}
+	return 0;
 }
 
 /**************
@@ -102,12 +119,9 @@ static void init() {
 }
 
 static void launchPhilosopher(int pos, int left) {
-	// new process stuff here
-
-	//newProcess(void * entryPoint, char* name, bool foreground);
-	//philosopher(pos, left);
-	
-	// new process stuff here
+	int argc = 2;
+	char argv[2] = {(char)pos, (char)left};
+	newProcess("pChild", philosopher, argc, (char**) argv);
 }
 
 static void action(int pos, edit_t value) {
@@ -162,8 +176,10 @@ static void exitNicely() {
 **  Main  **
 ***********/
 void philosophers() {
+	printn("loading philosophers......");
 	init();
 	for(int i=0; i<total; i++) {
+		printn("help pls");
 		launchPhilosopher(i, (i+1)%total );
 	}
 	bool exitFlag = false;
