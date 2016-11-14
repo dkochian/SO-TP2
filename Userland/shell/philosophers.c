@@ -5,6 +5,8 @@
 #include "include/philosophers.h"
 #include "../../Common/common.h"
 
+// WHY U TROLL ME SO, PHILOSOPHER?!?!
+
 //	http://pseudomuto.com/development/2014/03/01/dining-philosophers-in-c/
 
 typedef enum {
@@ -26,7 +28,7 @@ volatile edit_t edit[MAX_PHILOSOPHERS];
 /***************
 **  Semaphore **
 ***************/
-/*static void grabSem(mutex_t* lock_v, volatile int* value) {
+static void grabSem(mutex_t* lock_v, volatile int* value) {
 	while(true) {
 		lock(lock_v);
 		if( (*value)>0 ) {
@@ -38,18 +40,18 @@ volatile edit_t edit[MAX_PHILOSOPHERS];
 			yield();
 		}
 	}
-}*/
+}
 
-/*static void releaseSem(mutex_t* lock_v, volatile int* value) {
+static void releaseSem(mutex_t* lock_v, volatile int* value) {
 	lock(lock_v);
 	(*value)++;
 	unlock(lock_v);
-}*/
+}
 
 /******************
 **  Philosopher  **
 ******************/
-/*static void philosopher(int pos, int left) {
+static void philosopher(int pos, int left) {
 	int right = pos;
 	bool alive = true;
 	while(alive) {
@@ -83,12 +85,12 @@ volatile edit_t edit[MAX_PHILOSOPHERS];
 		edit[pos] = NO_ACTION;
 		unlock(&editLock);
 	}
-}*/
+}
 
 /**************
 **  Control  **
 **************/
-/*static void init() {
+static void init() {
 	total = INIT_PHILOSOPHERS;
 	sem = total-1;
 	initMutex(&semLock);
@@ -154,12 +156,12 @@ static void exitNicely() {
 	for(int i = total-1; i>=0; i--) {
 		action(i, KILL);
 	}
-}*/
+}
 
 /***********
 **  Main  **
 ***********/
-/*void philosophers() {
+void philosophers() {
 	init();
 	for(int i=0; i<total; i++) {
 		launchPhilosopher(i, (i+1)%total );
@@ -189,4 +191,4 @@ static void exitNicely() {
 			exitFlag = true;
 		}
 	}
-}*/
+}
