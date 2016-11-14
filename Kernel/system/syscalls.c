@@ -40,7 +40,7 @@ void sysCallHandler(uint64_t rax, uint64_t rbx, uint64_t rcx, uint64_t rdx) {
 			k_free((void *) rbx);
 			break;
 		case NEWPROCESS:
-			newProcess((char *) rbx, (func) rcx,(int)rdx, NULL);
+			newProcess((char *) rbx, (func) rcx, (int)rdx, NULL);
 			break;
 		/*case KILLPROCESS:
 			killProcess((uint64_t) rbx);
@@ -58,7 +58,7 @@ void sysCallHandler(uint64_t rax, uint64_t rbx, uint64_t rcx, uint64_t rdx) {
 			*((int *) rbx) = ((uint64_t) getPID());
 			break;*/
 		case YIELD:
-			yield();
+			_yield();
 			break;
 		default:
 			write(STDERR, "Error: Invalid system call.", 28);

@@ -20,6 +20,5 @@
 
 	int main(int argc, char ** argv);
 	commandExec* getAllCommands();
-	void shellPrint(char* str, short mustPrint, short newline);
 	
 #endif

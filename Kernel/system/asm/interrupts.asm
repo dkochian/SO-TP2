@@ -6,7 +6,7 @@ GLOBAL _cli
 GLOBAL _sti
 GLOBAL _enter_region
 GLOBAL _leave_region
-GLOBAL yield
+GLOBAL _yield
 
 EXTERN timerTickHandler
 EXTERN keyboardHandler
@@ -128,7 +128,7 @@ skip:
 ;------------------------------------------------------------
 ; Process yield, emul _timerTickHandler but without cli, sti, & out
 ;------------------------------------------------------------
-yield:
+_yield:
   pushaq
 
   mov rdi, rsp

@@ -8,7 +8,9 @@
 
 	#define STACK_SIZE		0x800000
 
-	extern void yield();
+	extern void _yield();
+
+	typedef int (*func) (int, char **);
 
 	typedef enum process_state {
 		RUNNING,

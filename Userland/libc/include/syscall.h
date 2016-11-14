@@ -24,6 +24,6 @@
 	void unblock(uint64_t pid);
 	void ps();
 	int pid();
-	void yield();
+	void yield();	
 
 #endif

@@ -50,17 +50,14 @@ void k_free(void * page) {
 
 /*static char*
 	mem = (char*) 0x3C00;//0xF000;
-
 void k_initialize() {
 	return;
 }
-
 void *k_malloc(size_t size){
 	void* result = mem;
 	mem += size;
 	return result;
 }
-
 void k_free(void *ptr) {
 	return;
 }*/

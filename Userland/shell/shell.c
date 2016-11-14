@@ -5,7 +5,6 @@
 #include <commands.h>
 #include "../../Common/common.h"
 
-static void shell();
 static int insertToBuffer(char c);
 static void resetBuffer();
 static int parseBuffer(commandData* cmd);
@@ -39,21 +38,12 @@ commandExec
 	};
 
 int main(int argc, char ** argv) {
-
-	printn("main called");
-	
-	newProcess("SHELL", shell, NULL, NULL);
-
-	shell();
-	while(1) { }
-	return 1;
-}
-
-static void shell() {
 		char
 		c;
 	commandData
 		cmd;
+
+	printn("hola");
 
 	cmd.name = malloc(MAX_BUFFER*sizeof(char));
 	cmd.args = malloc(MAX_ARG_BUFFER*sizeof(char));

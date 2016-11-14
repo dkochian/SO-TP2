@@ -26,7 +26,7 @@ volatile edit_t edit[MAX_PHILOSOPHERS];
 /***************
 **  Semaphore **
 ***************/
-void grabSem(mutex_t* lock_v, volatile int* value) {
+/*static void grabSem(mutex_t* lock_v, volatile int* value) {
 	while(true) {
 		lock(lock_v);
 		if( (*value)>0 ) {
@@ -38,18 +38,18 @@ void grabSem(mutex_t* lock_v, volatile int* value) {
 			yield();
 		}
 	}
-}
+}*/
 
-void releaseSem(mutex_t* lock_v, volatile int* value) {
+/*static void releaseSem(mutex_t* lock_v, volatile int* value) {
 	lock(lock_v);
 	(*value)++;
 	unlock(lock_v);
-}
+}*/
 
 /******************
 **  Philosopher  **
 ******************/
-void philosopher(int pos, int left) {
+/*static void philosopher(int pos, int left) {
 	int right = pos;
 	bool alive = true;
 	while(alive) {
@@ -83,12 +83,12 @@ void philosopher(int pos, int left) {
 		edit[pos] = NO_ACTION;
 		unlock(&editLock);
 	}
-}
+}*/
 
 /**************
 **  Control  **
 **************/
-void init() {
+/*static void init() {
 	total = INIT_PHILOSOPHERS;
 	sem = total-1;
 	initMutex(&semLock);
@@ -98,7 +98,8 @@ void init() {
 		edit[i] = NO_ACTION;
 	}
 }
-void launchPhilosopher(int pos, int left) {
+
+static void launchPhilosopher(int pos, int left) {
 	// new process stuff here
 
 	//newProcess(void * entryPoint, char* name, bool foreground);
@@ -106,7 +107,8 @@ void launchPhilosopher(int pos, int left) {
 	
 	// new process stuff here
 }
-void action(int pos, edit_t value) {
+
+static void action(int pos, edit_t value) {
 	lock(&editLock);
 	edit[pos] = value;
 	unlock(&editLock);
@@ -124,7 +126,7 @@ void action(int pos, edit_t value) {
 	return;
 }
 
-bool addPhilosopher() {
+static bool addPhilosopher() {
 	if(total>=MAX_PHILOSOPHERS)
 		return false;
 	launchPhilosopher(total, total-1);
@@ -136,7 +138,7 @@ bool addPhilosopher() {
 	return true;
 }
 
-bool removePhilosopher() {
+static bool removePhilosopher() {
 	if(total<=MIN_PHILOSOPHERS)
 		return false;
 	grabSem(&semLock, &sem);
@@ -147,16 +149,17 @@ bool removePhilosopher() {
 	total--;
 	return true;
 }
-void exitNicely() {
+
+static void exitNicely() {
 	for(int i = total-1; i>=0; i--) {
 		action(i, KILL);
 	}
-}
+}*/
 
 /***********
 **  Main  **
 ***********/
-void philosophers() {
+/*void philosophers() {
 	init();
 	for(int i=0; i<total; i++) {
 		launchPhilosopher(i, (i+1)%total );
@@ -186,4 +189,4 @@ void philosophers() {
 			exitFlag = true;
 		}
 	}
-}
+}*/

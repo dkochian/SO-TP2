@@ -1,6 +1,7 @@
 /* _loader.c */
 #include <stdint.h>
 #include <stdio.h>
+#include <syscall.h>
 
 #include "include/shell.h"
 
@@ -14,7 +15,9 @@ int _start(int argc, char ** argv) {
 	memset(&bss, 0, &endOfBinary - &bss);
 	printn("_start called");
 
-	main(argc, argv);
+	newProcess("Master fucking King!!!!!", main, 0, NULL);
+
+	while(true) {}
 	
 	return 0xDEADBEEF;
 }
