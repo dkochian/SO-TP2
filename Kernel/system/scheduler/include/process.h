@@ -10,8 +10,6 @@
 
 	extern void yield();
 
-	typedef int (*func) (int, char **);
-
 	typedef enum process_state {
 		RUNNING,
 		BLOCKED,

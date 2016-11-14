@@ -39,10 +39,10 @@ void sysCallHandler(uint64_t rax, uint64_t rbx, uint64_t rcx, uint64_t rdx) {
 		case FREE:
 			k_free((void *) rbx);
 			break;
-		/*case NEWPROCESS:
-			newProcess((void *) rbx, (char *) rcx,(bool)rdx);
+		case NEWPROCESS:
+			newProcess((char *) rbx, (func) rcx,(int)rdx, NULL);
 			break;
-		case KILLPROCESS:
+		/*case KILLPROCESS:
 			killProcess((uint64_t) rbx);
 			break;
 		case BLOCKPROCESS:

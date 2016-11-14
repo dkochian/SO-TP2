@@ -42,7 +42,7 @@ int main(int argc, char ** argv) {
 
 	printn("main called");
 	
-	newProcess((void *)&shell, "SHELL", true);
+	newProcess("SHELL", shell, NULL, NULL);
 
 	shell();
 	while(1) { }

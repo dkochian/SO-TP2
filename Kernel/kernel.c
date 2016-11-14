@@ -150,7 +150,7 @@ int main() {
 		return 0;
 
 	//clear();
-
+/*
 	print("MMU TEST							[ ", -1);
 	if (mmuStackTest() == true) {
 		print("OK", GREEN);
@@ -165,7 +165,7 @@ int main() {
 //	newProcess("test2", (uint64_t)&test2, 0, NULL);
 //	newProcess("test1", (uint64_t)&test1, 0, NULL);
 
-
+*/
 //	Test multi-task
 	uint64_t pA;
 	uint64_t pB;
@@ -194,6 +194,8 @@ int main() {
 		printDec(pB, -1);
 		printNewline();
 	}
+
+	//((EntryPoint)sampleCodeModuleAddress)();
 
 	return 0;
 }

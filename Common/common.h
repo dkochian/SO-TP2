@@ -98,4 +98,6 @@
 
 	typedef char bool;
 
+	typedef int (*func) (int, char **);
+
 #endif

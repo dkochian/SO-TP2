@@ -55,8 +55,8 @@ void free(void *ptr) {
 	_syscall(FREE, (uintptr_t) ptr, NULL, NULL);
 }
 
-void newProcess(void * entryPoint, char* name, bool foreground) {
-	_syscall(NEWPROCESS, (uintptr_t) entryPoint, (uintptr_t) name, foreground);
+void newProcess(char * name, func f, int argc, char** argv) {
+	_syscall(NEWPROCESS, (uintptr_t) name, (uintptr_t)name, argc);
 }
 
 void kill(uint64_t pid) {
