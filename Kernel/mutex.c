@@ -1,23 +1,49 @@
 #include "include/mutex.h"
+#include "system/scheduler/include/scheduler.h"
+#include "system/include/mmu.h"
 
-void lock(bool volatile *lock) {
-  while(__sync_lock_test_and_set(lock, LOCKED_MUTEX)) {
-    //switch_task(1); //yield??
-  }
+#include "drivers/include/video.h"
+
+extern void _lock(bool volatile *lock);
+extern void _unlock(bool volatile *lock);
+
+mutex *initLock() {
+    mutex *l = (mutex *) k_malloc(sizeof(mutex));
+
+    if(l == NULL)
+        return NULL;
+
+    l->q_list = buildList(&equal);
+    
+    if(l->q_list == NULL) {
+        k_free(l);
+        return NULL;
+    }
+
+    l->lock = false;
+
+    if(l->q_list == NULL) {
+        k_free(l);
+        return NULL;
+    }
+
+    return l;
 }
 
-void unlock(bool volatile *lock) {
-  __sync_lock_release(lock);
+void destroyLock(mutex *l) {
+    destroyList(l->q_list);
+    k_free(l);
 }
 
-// Use only within interrupt, guaranteing uninterrupted execution.
-bool isLockOpenRightThisInstant(bool volatile *lock) {
-  if(__sync_lock_test_and_set(lock, LOCKED_MUTEX)) {
-    // sync returned true, therefore wasn't grabbed
-    return false;
-  } else {
-    // sync returned false, therefore was grabbed
-    __sync_lock_release(lock);
-    return true;
-  }
+void lock(mutex *l, process *p) {
+    add(l->q_list, p);
+    blockProcess(p->id);
+    _lock(&l->lock);
+}
+
+void unlock(mutex *l) {
+    process *p;
+    _unlock(&l->lock);
+    p = getFirst(l->q_list);
+    unBlockProcess(p->id);
 }

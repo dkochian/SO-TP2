@@ -53,6 +53,7 @@
 		uint64_t father;
 		uint64_t s_frame;
 		uint64_t rsp;
+		bool foreground;
 
 		list wait_list;
 
@@ -63,9 +64,9 @@
 	bool buildProcessManager();
 	void addWaitProcess(process *child);
 	bool equal(process *p1, process *p2);
+	process *getProcessFromId(uint64_t id);
 	void removeWaitProcess(process *child);
 	process *getFirstWaitProcess(process *father);
 	uint64_t newProcess(char* name, func f, int argc, char **argv);
-	
 
 #endif

@@ -1,9 +1,11 @@
-#include "include/keyboard.h"
 #include "include/video.h"
+#include "include/keyboard.h"
+#include "../include/mutex.h"
+#include "../system/scheduler/include/scheduler.h"
 
 static void addKeyBuffer(int key);
 
-unsigned char kb_map[3][85] = {
+static unsigned char kb_map[3][85] = {
 	{
 		DO_NOTHING, ESCAPE, '1', '2', '3', '4', '5', '6', '7', '8', '9', '0', '-', '=', '\b',
 		DO_NOTHING, 'q', 'w', 'e', 'r', 't', 'y', 'u', 'i', 'o', 'p', '[', ']', '\n',
@@ -33,14 +35,17 @@ unsigned char kb_map[3][85] = {
 	}//Caps On
 };
 
-char
-	lineBuffer[KB_SIZE];
-int
-	lineIndex;
-kbStatus
-	kb;
+static char lineBuffer[KB_SIZE];
+static int lineIndex;
+static kbStatus	kb;
+static mutex *kb_mutex;
 
-void keyboardInit() {
+bool keyboardInit() {
+	kb_mutex = initLock();
+
+	if(kb_mutex == NULL)
+		return false;
+
 	for(int i = 0; i < KB_SIZE; ++i) {
 		kb.buffer[i] = EMPTY;
 		lineBuffer[i] = EMPTY;
@@ -51,15 +56,22 @@ void keyboardInit() {
 	kb.capsOn = false;
 	kb.shiftOn = false;
 	lineIndex = 0;
+
+	return true;
 }
 
 void keyboardHandler(unsigned char key) {
 	addKeyBuffer(key);
+	unlock(kb_mutex);
 }
 
-char getKey(char write) {
-	char
-		c = kb.buffer[kb.readIndex];
+char getKey(char write, process *p) {
+	char c;
+	
+	if(kb.buffer[kb.readIndex] == EMPTY)
+		lock(kb_mutex, p);
+
+	c = kb.buffer[kb.readIndex];
 	
 	kb.buffer[kb.readIndex++] = EMPTY; //Remove the readed char from the buffer
 

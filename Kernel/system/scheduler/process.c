@@ -1,4 +1,5 @@
 #include "../include/mmu.h"
+#include "../include/atom.h"
 #include "include/process.h"
 #include "../include/mutex.h"
 #include "include/scheduler.h"
@@ -9,12 +10,10 @@ extern void _timerTickHandler();
 
 static void freeProcessId(uint64_t id);
 static uint64_t getNewProcessId(process *p);
-static process *getProcessFromId(uint64_t id);
 static int startProcess(func f, int argc, char **argv);
 static void *buildStacKFrame(void *rsp, func f, int argc, char **argv);
 
 static process **process_table;
-static bool volatile mutex;
 
 bool buildProcessManager() {
 	process_table = (process **) k_malloc(sizeof(process*)*MAX_PROCESSES);
@@ -63,6 +62,11 @@ uint64_t newProcess(char* name, func f, int argc, char **argv) {
 	p->name = name;
 	p->s_frame = rsp;
 	p->state = WAITING;
+	p->foreground = false;
+
+	//remove and use syscall (this is only for testing)
+	if(p->id == 1)
+		setForeground(p->id);
 
 	rsp += STACK_SIZE - 1 - sizeof(stack_frame);
 	p->rsp = (uint64_t) buildStacKFrame((void *)rsp, f, argc, argv);
@@ -133,21 +137,23 @@ bool equal(process *p1, process *p2) {
 	return p1->id == p2->id;
 }
 
-static process *getProcessFromId(uint64_t id) {
+process *getProcessFromId(uint64_t id) {
 	if(id == INVALID_PROCESS_ID || id < 0 || id > MAX_PROCESSES - 1)
 		return NULL;
 
 	process *p = NULL;
 
-	lock(&mutex);
+	_cli();
 	p = process_table[id];
-	unlock(&mutex);
+	_sti();
 
 	return p;
 }
 
 static int startProcess(func f, int argc, char **argv) {
-	f(argc, argv);
+	if(f == NULL)
+		f(argc, argv);
+
 	removeProcess(getCurrentProcess());
 	_timerTickHandler();
 	return 0;
@@ -190,7 +196,7 @@ static uint64_t getNewProcessId(process *p) {
 
 	uint64_t id = INVALID_PROCESS_ID;
 
-	lock(&mutex);
+	_cli();
 	for(int i=0; i<MAX_PROCESSES; i++) {
 		if(process_table[i] == NULL) {
 			id = i;
@@ -198,7 +204,7 @@ static uint64_t getNewProcessId(process *p) {
 			break;
 		}
 	}
-	unlock(&mutex);
+	_sti();
 
 	return id;
 }
@@ -207,7 +213,7 @@ static void freeProcessId(uint64_t id) {
 	if(id == INVALID_PROCESS_ID || id < 0 || id > MAX_PROCESSES - 1)
 		return;
 
-	lock(&mutex);
+	_cli();
 	process_table[id] = NULL;
-	unlock(&mutex);
+	_sti();
 }

@@ -5,9 +5,13 @@
 	#include "process.h"
 
 	bool buildScheduler();
-	bool addProcess(process *pid);
-	bool removeProcess(process *pid);
-	uint64_t contextSwitch(uint64_t stack);
 	process *getCurrentProcess();
+	bool addProcess(process *pid);
+	void blockProcess(uint64_t pid);
+	bool removeProcess(process *pid);
+	void unBlockProcess(uint64_t pid);
+	uint64_t contextSwitch(uint64_t stack);
+	void setForeground(uint64_t pid);
+	process *getForeground();
 
 #endif

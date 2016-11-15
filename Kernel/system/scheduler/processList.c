@@ -1,17 +1,19 @@
 #include "include/processList.h"
 #include "../system/include/mmu.h"
+#include "../include/common.h"
 
 #include "../../drivers/include/video.h"
 
 typedef struct node {
 	element_t	item;
-	struct node *prev;
+	struct node *next;
 } node;
 
 struct list {
 	node *head;
 	node *tail;
-	int size;
+	node *cursor;
+	size_t size;
 	bool (*cmp) (element_t , element_t);
 };
 
@@ -22,6 +24,10 @@ list buildList(bool (*f) (element_t , element_t)) {
 		return NULL;
 
 	l->cmp = f;
+	l->head = NULL;
+	l->tail = NULL;
+	l->cursor = NULL;
+	l->size = 0;
 
 	return l;
 }
@@ -32,7 +38,7 @@ void destroyList(list l) {
 
 	while(current != NULL) {
 		tmp = current;
-		current = current->prev;
+		current = current->next;
 		k_free(tmp);
 	}
 
@@ -46,14 +52,14 @@ bool add(list l, element_t item) {
 		return false;
 
 	n->item = item;
-	n->prev = NULL;
+	n->next = NULL;
 
 	if(l->head == NULL) {
 		l->head = n;
 		l->tail = n;
 	}
 	else {
-		l->tail->prev = n;
+		l->tail->next = n;
 		l->tail = n;
 	}
 
@@ -72,9 +78,9 @@ bool remove(list l, element_t item) {
 	while(current != NULL) {
 		if(l->cmp(current->item, item) == true) {
 			if(prev == NULL)
-				l->head = current->prev;
+				l->head = current->next;
 			else
-				prev->prev = current->prev;
+				prev->next = current->next;
 
 			if(current == l->tail)
 				l->tail = prev;
@@ -87,7 +93,7 @@ bool remove(list l, element_t item) {
 		}
 
 		prev = current;
-		current = current->prev;
+		current = current->next;
 	}
 
 	return found;
@@ -101,7 +107,7 @@ bool exists(list l, element_t item) {
 		if(l->cmp(current->item, item) == true)
 			return true;
 
-		current = current->prev;
+		current = current->next;
 	}
 
 	return false;
@@ -114,7 +120,7 @@ bool isEmpty(list l) {
 element_t getFirst(list l) {
 	node *tmp = l->head;
 	element_t item = tmp->item;
-	l->head = l->head->prev;
+	l->head = l->head->next;
 
 	k_free(tmp);
 	l->size --;
@@ -129,11 +135,55 @@ element_t peekFirst(list l) {
 	node *tmp = l->head;
 	element_t item = tmp->item;
 
-	l->head = l->head->prev;
-	l->tail->prev = tmp;
+	l->head = l->head->next;
+	l->tail->next = tmp;
 	l->tail = tmp;
 	
-	tmp->prev = NULL;
+	tmp->next = NULL;
 
 	return item;
+}
+
+bool setNext(list l, element_t item) {
+	node *current;
+	node *prev;
+
+	current = l->head;
+	prev = NULL;
+
+	while(current != NULL) {
+		if(l->cmp(current->item, item) == true) {
+			if(prev != NULL)
+				prev->next = current->next;
+
+			break;
+		}
+
+		prev = current;
+		current = current->next;
+	}
+
+	if(current == NULL)
+		return false;
+
+	current->next = l->head->next;
+	l->head = current;
+
+	return true;
+}
+
+element_t get(list l) {
+	if(l->cursor == NULL)
+		l->cursor = l->head;
+	else
+		l->cursor = l->cursor->next;
+
+	if(l->cursor == NULL)
+		return NULL;
+
+	return l->cursor->item;
+}
+
+void resetCursor(list l) {
+	l->cursor = NULL;
 }

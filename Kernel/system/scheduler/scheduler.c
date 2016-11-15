@@ -5,20 +5,18 @@
 #include "../../drivers/include/video.h"
 #include "../include/clock.h"
 
+extern void _timerTickHandler();
+
 static process *schedule();
 static void killProcess(process *p);
 
 static list waiting_list;
-static list blocked_list;
-static process* current_process;
-
-//static bool volatile mutex;
+static process *current_process;
 
 bool buildScheduler() {
 	waiting_list = buildList(&equal);
-	blocked_list = buildList(&equal);
 
-	if(waiting_list == NULL || blocked_list == NULL)
+	if(waiting_list == NULL)
 		return false;
 
 	newProcess("master of the puppets (ini)", NULL, 0, NULL);
@@ -64,6 +62,51 @@ void blockProcess(uint64_t pid) {
 	p->state = BLOCKED;
 }
 
+void unBlockProcess(uint64_t pid) {
+	process *p = getProcessFromId(pid);
+
+	if(p == NULL)
+		return;
+
+	p->state = WAITING;
+
+	_cli();
+	setNext(waiting_list, p);
+	_sti();
+
+	_timerTickHandler();
+}
+
+void setForeground(uint64_t pid) {
+	process *p = getProcessFromId(pid);
+
+	if(p == NULL)
+		return;
+
+	process *current;
+
+	do {
+		current = get(waiting_list);
+		current->foreground = false;
+	} while(current != NULL);
+
+	resetCursor(waiting_list);
+
+	p->foreground = true;	
+}
+
+process *getForeground() {
+	process *current;
+
+	do {
+		current = get(waiting_list);
+	} while(current != NULL && current->foreground == false);
+
+	resetCursor(waiting_list);
+
+	return current;
+}
+
 process *getCurrentProcess() {
 	return current_process;
 }
@@ -75,12 +118,20 @@ uint64_t contextSwitch(uint64_t stack) {
 	current_process->rsp = stack;
 	current_process->state = WAITING;
 
+	print("old: ", -1);
+	print(current_process->name, -1);
+	print(" || new: ", -1);
+
 	current_process = schedule();
-	if(current_process == NULL) {
+
+	print(current_process->name, -1);
+	printNewline();
+
+	if(current_process == NULL)
 		return 0;
-	}
 
 	current_process->state = RUNNING;
+	current_process->foreground = true;
 
 	return current_process->rsp;
 }

@@ -13,9 +13,8 @@ void * memset(void * destiny, int32_t c, uint64_t length);
 int _start(int argc, char ** argv) {
 	//Clean BSS
 	memset(&bss, 0, &endOfBinary - &bss);
-	printn("_start called");
 
-	newProcess("Master fucking King!!!!!", main, 0, NULL);
+	newProcess("Shell", main, 0, NULL);
 
 	while(true) {}
 	

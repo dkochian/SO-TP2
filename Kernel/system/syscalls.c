@@ -97,8 +97,10 @@ static void write(int out, char* str, int size) {
 }
 
 void read(int in, char* buffer, char aux) {
-	if(in == STDIN)
-		*buffer = getKey(aux);
+	if(in == STDIN) {
+		process *p = getForeground();
+		*buffer = getKey(aux, p);
+	}
 	else if(in == COLOR)
 		*buffer = getDefaultColor();
 }

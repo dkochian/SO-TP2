@@ -1,6 +1,8 @@
 #ifndef __KB__H__
 	#define __KB__H__
+
 	#include "../../include/common.h"
+	#include "../../system/scheduler/include/process.h"
 
 	#define DO_NOTHING		0
 	#define ESCAPE			1
@@ -24,8 +26,8 @@
 			buffer[KB_SIZE];
 	} kbStatus;
 
-	void keyboardInit();
+	bool keyboardInit();
 	void keyboardHandler(unsigned char key);
-	char getKey(char write);
+	char getKey(char write, process* p);
 
 #endif

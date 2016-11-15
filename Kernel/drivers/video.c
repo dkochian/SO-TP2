@@ -42,6 +42,21 @@ ColorRGB
 		{255,	255,	255}
 	};
 
+void printA() {
+	print("printing A", -1);
+	printNewline();
+}
+
+void printB() {
+	print("printing B", -1);
+	printNewline();
+}
+
+void printC() {
+	print("printing C", -1);
+	printNewline();
+}
+
 void print(const char* str, char color) {
 	for(int i = 0; str[i] != '\0' && isValidOffset(ROW(offset), COL(offset)); i++) {
 		printChar(str[i], ROW(offset), COL(offset), color);
