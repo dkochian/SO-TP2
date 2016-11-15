@@ -10,8 +10,6 @@
 #include "system/scheduler/include/process.h"
 #include "system/scheduler/include/scheduler.h"
 
-#include <clock.h>
-
 extern uint8_t text;
 extern uint8_t rodata;
 extern uint8_t data;
@@ -24,8 +22,9 @@ static const uint64_t PageSize = 0x1000;
 static void * const sampleCodeModuleAddress = (void*)0x400000;
 static void * const sampleDataModuleAddress = (void*)0x500000;
 
+/*#include <clock.h>
 static int processA(int argc, char **argv);
-static int processB(int argc, char **argv);
+static int processB(int argc, char **argv);*/
 
 typedef void* (*EntryPoint)();
 
@@ -130,6 +129,7 @@ int main() {
 	print(" ]", -1);
 	printNewline();
 
+
 	buildIDT();
 	print("IDT												[ ", -1);
 	print("OK", GREEN);
@@ -149,10 +149,16 @@ int main() {
 	if(!status)
 		return 0;
 	
+	//_accelPIT();	scheduler runs and crashes everything
+	/*print("PIT acceleration									[ ", -1);
+	print("NOT OK", RED);
+	print(" ]", -1);
+	printNewline();*/
+	
 	clear();
 
 	//Test multi-task
-	uint64_t pA;
+	/*uint64_t pA;
 	uint64_t pB;
 	print("Creating process A", -1);
 	printNewline();
@@ -178,14 +184,14 @@ int main() {
 		print("Process B id: ", -1);
 		printDec(pB, -1);
 		printNewline();
-	}
+	}*/
 
 	((EntryPoint)sampleCodeModuleAddress)();
 
 	return 0;
 }
 
-static int processA(int argc, char **argv) {
+/*static int processA(int argc, char **argv) {
 	static int counter = 0;
 
 	print("Process A is running", -1);
@@ -217,4 +223,4 @@ static int processB(int argc, char **argv) {
 	}
 
 	return 0;
-}
+}*/

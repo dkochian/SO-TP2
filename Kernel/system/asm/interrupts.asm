@@ -111,7 +111,7 @@ _timerTickHandler:
     cli
     pushaq
 
-    call printB
+    ;call printB
     mov rdi, rsp
     call timerTickHandler
     mov rbx, rax            ;backup rax and use rbx instead
@@ -123,7 +123,7 @@ _timerTickHandler:
     je skip
     mov rsp, rbx
 
-    skip:
+skip:
     popaq
 
     sti
@@ -141,7 +141,7 @@ _yield:
     je skip2
     mov rsp, rax
 
-    skip2:
+skip2:
     popaq
     ret
 
@@ -153,7 +153,7 @@ _keyboardHandler:
     push rdi
     push rax
 
-    ;call printC
+    call printC
     xor rax, rax
     in al, 60h
     and rax,0xFF
@@ -175,9 +175,7 @@ _keyboardHandler:
 ;------------------------------------------------------------
 _sysCallHandler:
     ;cli
-    pushaq  
     call sysCallHandler
-    popaq
     ;sti
     iretq
 
@@ -187,7 +185,7 @@ _sysCallHandler:
 _lock:
     push rax
 
-    ;call printA
+    call printA
     mov rax, 1
     xchg rax, rdi
     test eax, eax

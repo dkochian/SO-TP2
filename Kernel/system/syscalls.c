@@ -10,52 +10,52 @@
 static void write(int out, char* str, int size);
 static void read(int in, char* buffer, char aux);
 
-void sysCallHandler(uint64_t rax, uint64_t rbx, uint64_t rcx, uint64_t rdx) {
-	switch(rax) {
+void sysCallHandler(uint64_t arg1, uint64_t arg2, uint64_t arg3, uint64_t arg4, uint64_t arg5) {
+	switch(arg1) {
 		case SYSWRITE:
-			write(rbx, (char*) rcx, (int) rdx);
+			write(arg2, (char*) arg3, (int) arg4);
 			break;
 		case SYSREAD:
-			read(rbx, (char*) rcx, (char) rdx);
+			read(arg2, (char*) arg3, (char) arg4);
 			break;
 		case CLEAR:
 			clear();
 			break;
 		case GETTIME:
-			getTime((timeStruct*) rbx);
+			getTime((timeStruct*) arg2);
 			break;
 		case GETDATE:
-			getDate(rbx);
+			getDate(arg2);
 			break;
 		case SLEEP:
-			sleep((int) rbx);
+			sleep((int) arg2);
 			break;
 		case DRAWPIXEL:
-			printPixel((int) rbx, (int) rdx, (ColorRGB*) rcx);
+			printPixel((int) arg2, (int) arg4, (ColorRGB*) arg3);
 			break;
 		case MALLOC:
-			*((uintptr_t *) rcx) = (uint64_t) k_malloc((size_t) rbx);
+			*((uintptr_t *) arg3) = (uint64_t) k_malloc((size_t) arg2);
 			break;
 		case FREE:
-			k_free((void *) rbx);
+			k_free((void *) arg2);
 			break;
 		case NEWPROCESS:
-			newProcess((char *) rbx, (func) rcx, (int)rdx, NULL);
+			newProcess((char *) arg2, (func) arg3, (int)arg4, (char**)arg5);
 			break;
 		/*case KILLPROCESS:
-			killProcess((uint64_t) rbx);
+			killProcess((uint64_t) arg2);
 			break;
 		case BLOCKPROCESS:
-			blockProcess((uint64_t) rbx);
+			blockProcess((uint64_t) arg2);
 			break;
 		case UNBLOCKPROCESS:
-			unblockProcess((uint64_t) rbx);
+			unblockProcess((uint64_t) arg2);
 			break;
 		case PS:
 			printProcesses();
 			break;
 		case PID:
-			*((int *) rbx) = ((uint64_t) getPID());
+			*((int *) arg2) = ((uint64_t) getPID());
 			break;*/
 		case YIELD:
 			_yield();

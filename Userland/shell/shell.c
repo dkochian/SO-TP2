@@ -5,6 +5,8 @@
 #include <commands.h>
 #include "../../Common/common.h"
 
+#include "include/philosophers.h"
+
 static int insertToBuffer(char c);
 static void resetBuffer();
 static int parseBuffer(commandData* cmd);
@@ -52,8 +54,8 @@ int main(int argc, char ** argv) {
 
 	while(true) {
 		c = getchar(true);
-		printn("fuck");
-		sleep(1);
+		/*printn("fuck");
+		sleep(1);*/
 
 		if(insertToBuffer(c) == 1) {
 			int

@@ -118,20 +118,19 @@ uint64_t contextSwitch(uint64_t stack) {
 	current_process->rsp = stack;
 	current_process->state = WAITING;
 
-	print("old: ", -1);
+	/*print("old: ", -1);
 	print(current_process->name, -1);
-	print(" || new: ", -1);
+	print(" || new: ", -1);*/
 
 	current_process = schedule();
 
-	print(current_process->name, -1);
-	printNewline();
+	/*print(current_process->name, -1);
+	printNewline();*/
 
 	if(current_process == NULL)
 		return 0;
 
 	current_process->state = RUNNING;
-	current_process->foreground = true;
 
 	return current_process->rsp;
 }
@@ -168,5 +167,5 @@ static process *schedule() {
 			break;
 	} while(p->state == BLOCKED || p->id == 0);
 
-	return p;//if it's NULL, it'll return NULL
+	return p;
 }

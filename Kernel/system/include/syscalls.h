@@ -3,6 +3,6 @@
 
 	#include "../include/common.h"
 
-	void sysCallHandler(uint64_t rax, uint64_t rbx, uint64_t rcx, uint64_t rdx);
+	void sysCallHandler(uint64_t arg1, uint64_t arg2, uint64_t arg3, uint64_t arg4, uint64_t arg5);
 
 #endif

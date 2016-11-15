@@ -5,6 +5,7 @@
 #include "include/scheduler.h"
 
 #include "../../drivers/include/video.h"
+#include "../../include/lib.h"
 
 extern void _timerTickHandler();
 
@@ -64,8 +65,7 @@ uint64_t newProcess(char* name, func f, int argc, char **argv) {
 	p->state = WAITING;
 	p->foreground = false;
 
-	//remove and use syscall (this is only for testing)
-	if(p->id == 1)
+	if(p->id == 1)//it's hardcoded for testing only
 		setForeground(p->id);
 
 	rsp += STACK_SIZE - 1 - sizeof(stack_frame);
@@ -151,7 +151,7 @@ process *getProcessFromId(uint64_t id) {
 }
 
 static int startProcess(func f, int argc, char **argv) {
-	if(f == NULL)
+	if(f != NULL)
 		f(argc, argv);
 
 	removeProcess(getCurrentProcess());

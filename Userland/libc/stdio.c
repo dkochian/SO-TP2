@@ -8,8 +8,7 @@ void putchar(char c) {
 }
 
 char getchar(char write) {
-	char
-		c = EMPTY;
+	char c;
 
 	read(STDIN, &c, write);
 

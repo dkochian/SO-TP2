@@ -1,6 +1,8 @@
 #include "include/video.h"
 #include "include/font.h"
 
+#include "../include/clock.h"
+
 #define ROW(cursor_offset) ((cursor_offset)/WIDTH)
 #define COL(cursor_offset) ((cursor_offset)%WIDTH)
 
@@ -45,6 +47,7 @@ ColorRGB
 void printA() {
 	print("printing A", -1);
 	printNewline();
+	sleep(2);
 }
 
 void printB() {
