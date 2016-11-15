@@ -4,6 +4,7 @@
 #include "include/scheduler.h"
 
 #include "../../drivers/include/video.h"
+#include "../../include/lib.h"
 
 extern void _timerTickHandler();
 
@@ -60,12 +61,42 @@ uint64_t newProcess(char* name, func f, int argc, char **argv) {
 		return INVALID_PROCESS_ID;
 	}
 
+	char** argv2 = k_malloc(sizeof(char*)*argc);
+	if(argv2==NULL) {
+		destroyList(p->wait_list);
+		freeProcessId(p->id);
+		k_free((void *) rsp);
+		k_free(p);
+
+		return INVALID_PROCESS_ID;
+	}
+	for(int i=0; i<argc; i++) {
+		char* arg = k_malloc(sizeof(char)*64);
+
+		if(arg==NULL) {
+			for(int j=0; j<i; j++)
+				k_free(arg);
+			k_free(argv2);
+			destroyList(p->wait_list);
+			freeProcessId(p->id);
+			k_free((void *) rsp);
+			k_free(p);
+
+			return INVALID_PROCESS_ID;
+
+		}
+
+
+		argv2[i]=arg;
+		strcpy(argv2[i], argv[i]);
+	}
+
 	p->name = name;
 	p->s_frame = rsp;
 	p->state = WAITING;
 
 	rsp += STACK_SIZE - 1 - sizeof(stack_frame);
-	p->rsp = (uint64_t) buildStacKFrame((void *)rsp, f, argc, argv);
+	p->rsp = (uint64_t) buildStacKFrame((void *)rsp, f, argc, argv2);
 
 	process *father = getCurrentProcess();
 	if(father == NULL)

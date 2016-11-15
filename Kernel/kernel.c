@@ -130,6 +130,7 @@ int main() {
 	print(" ]", -1);
 	printNewline();
 
+
 	buildIDT();
 	print("IDT												[ ", -1);
 	print("OK", GREEN);
@@ -145,7 +146,13 @@ int main() {
 	if(!status)
 		return 0;
 	
-	clear();
+	//_accelPIT();	scheduler runs and crashes everything
+	print("PIT acceleration									[ ", -1);
+	print("NOT OK", RED);
+	print(" ]", -1);
+	printNewline();
+	
+	//clear();
 
 
 	//Test multi-task
@@ -176,7 +183,7 @@ int main() {
 		printDec(pB, -1);
 		printNewline();
 	}*/
-		
+
 	((EntryPoint)sampleCodeModuleAddress)();
 
 	return 0;

@@ -1,7 +1,7 @@
 #ifndef _INC_TIMERTICK_
 	#define _INC_TIMERTICK_
 
-	#define TICK_TO_SWICH_PROCESS	15// Should be 2 or 1 (we must change the clock I guess)
+	#define TICK_TO_SWICH_PROCESS	2// Should be 2 or 1 (we must change the clock I guess)
 
 	#include <stdint.h>
 

@@ -1,6 +1,7 @@
 #include <syscall.h>
 #include <stdio.h>
 #include <string.h>
+#include <integer.h>
 #include <mutex.h>
 #include "include/philosophers.h"
 #include "../../Common/common.h"
@@ -52,9 +53,8 @@ static void releaseSem(mutex_t* lock_v, volatile int* value) {
 **  Philosopher  **
 ******************/
 static int philosopher(int argc, char** argv) {
-	printn("...");
-	int pos = (char) argv[0];
-	int left = (char) argv[1];
+	int pos = strintPos(argv[0]);
+	int left = strintPos(argv[1]);
 
 	print("Generated Philosopher N°: ");
 	printNum(pos);
@@ -64,20 +64,27 @@ static int philosopher(int argc, char** argv) {
 	bool alive = true;
 	while(alive) {
 		// THINKING
-		printNum(pos);
-		printn(" is thinking...");
-		sleep(2);
-
+			printNum(pos);
+			printn(" is thinking...");
+		sleep(5);
+			printNum(pos);
+			printn(" is hungry.");
 		grabSem(&semLock, &sem);
 		lock(& (forks[right]) );
+			printNum(pos);
+			printn(" grabbed right fork.");
 		lock(& (forks[left]) );
+			printNum(pos);
+			printn(" grabbed left fork.");
 		// EAT
-		printNum(pos);
-		printn(" is eating...");
+			printNum(pos);
+			printn(" is eating...");
 		sleep(2);		
 
 		unlock(& (forks[right]) );
 		unlock(& (forks[left]) );
+			printNum(pos);
+			printn(" dropped both forks.");
 		releaseSem(&semLock, &sem);
 
 		lock(&editLock);
@@ -120,8 +127,12 @@ static void init() {
 
 static void launchPhilosopher(int pos, int left) {
 	int argc = 2;
-	char argv[2] = {(char)pos, (char)left};
-	newProcess("pChild", philosopher, argc, (char**) argv);
+	char arg1[8];
+	char arg2[8];
+	itoa(pos, arg1);
+	itoa(left, arg2);
+	char* argv[2] = {arg1, arg2};
+	newProcess("pChild", philosopher, argc, argv);
 }
 
 static void action(int pos, edit_t value) {
@@ -176,10 +187,9 @@ static void exitNicely() {
 **  Main  **
 ***********/
 void philosophers() {
-	printn("loading philosophers......");
+	printn("Loading Philosophers...");
 	init();
 	for(int i=0; i<total; i++) {
-		printn("help pls");
 		launchPhilosopher(i, (i+1)%total );
 	}
 	bool exitFlag = false;
