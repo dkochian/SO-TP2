@@ -62,14 +62,14 @@ bool keyboardInit() {
 
 void keyboardHandler(unsigned char key) {
 	addKeyBuffer(key);
-	//unlock(kb_mutex);
+	unlock(kb_mutex);
 }
 
 char getKey(char write, process *p) {
 	char c;
 	
-	/*if(kb.buffer[kb.readIndex] == EMPTY)
-		lock(kb_mutex, p);*/
+	if(kb.buffer[kb.readIndex] == EMPTY)
+		lock(kb_mutex, p);
 
 	c = kb.buffer[kb.readIndex];
 	

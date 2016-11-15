@@ -167,7 +167,7 @@ bool setNext(list l, element_t item) {
 		return false;
 
 	current->next = l->head->next;
-	l->head = current;
+	l->head->next = current;
 
 	return true;
 }

@@ -108,7 +108,7 @@ _write_port:
 ; Timer tick idt handler -> processed in C
 ;------------------------------------------------------------
 _timerTickHandler:
-    cli
+    ;cli
     pushaq
 
     ;call printB
@@ -126,7 +126,7 @@ _timerTickHandler:
 skip:
     popaq
 
-    sti
+    ;sti
     iretq
 
 ;------------------------------------------------------------
@@ -149,11 +149,11 @@ skip2:
 ; keyboard idt handler -> processed in C
 ;------------------------------------------------------------
 _keyboardHandler:
-    cli
+    ;cli
     push rdi
     push rax
 
-    call printC
+    ;call printC
     xor rax, rax
     in al, 60h
     and rax,0xFF
@@ -167,7 +167,7 @@ _keyboardHandler:
     pop rax
     pop rdi
 
-    sti
+    ;sti
     iretq
 
 ;------------------------------------------------------------
@@ -185,7 +185,7 @@ _sysCallHandler:
 _lock:
     push rax
 
-    call printA
+    ;call printA
     mov rax, 1
     xchg rax, rdi
     test eax, eax
