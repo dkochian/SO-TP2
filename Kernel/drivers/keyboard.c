@@ -38,13 +38,13 @@ static unsigned char kb_map[3][85] = {
 static char lineBuffer[KB_SIZE];
 static int lineIndex;
 static kbStatus	kb;
-static mutex *kb_mutex;
+//static mutex *kb_mutex;
 
 bool keyboardInit() {
-	kb_mutex = initLock();
+	/*kb_mutex = initLock();
 
 	if(kb_mutex == NULL)
-		return false;
+		return false;*/
 
 	for(int i = 0; i < KB_SIZE; ++i) {
 		kb.buffer[i] = EMPTY;
@@ -62,14 +62,13 @@ bool keyboardInit() {
 
 void keyboardHandler(unsigned char key) {
 	addKeyBuffer(key);
-	unlock(kb_mutex);
+	//signal(&sem)
 }
 
 char getKey(char write, process *p) {
 	char c;
-	
-	if(kb.buffer[kb.readIndex] == EMPTY)
-		lock(kb_mutex, p);
+
+	//wait(sem)
 
 	c = kb.buffer[kb.readIndex];
 	

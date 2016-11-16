@@ -11,6 +11,7 @@ GLOBAL _yield
 EXTERN timerTickHandler
 EXTERN keyboardHandler
 EXTERN sysCallHandler
+EXTERN contextSwitch
 EXTERN printA
 EXTERN printB
 EXTERN printC
@@ -136,7 +137,7 @@ _yield:
     pushaq
 
     mov rdi, rsp
-    call timerTickHandler
+    call contextSwitch
     cmp rax, 0
     je skip2
     mov rsp, rax
@@ -183,23 +184,12 @@ _sysCallHandler:
 ; _lock & _unlock
 ;------------------------------------------------------------
 _lock:
-    push rax
-
-    ;call printA
     mov rax, 1
-    xchg rax, rdi
-    test eax, eax
-    jnz _lock
-
-    pop rax
+    xchg rax, [rdi]
     ret
 
-
 _unlock:
-    push rax
-
     mov rax,0
-    xchg rax, rdi
+    xchg rax, [rdi]
 
-    pop rax
     ret

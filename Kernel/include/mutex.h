@@ -7,13 +7,13 @@
     #include "../system/scheduler/include/processList.h"
     
     typedef struct mutex {
-        bool volatile lock;
+        int lock;
         list q_list;
     } mutex;
 
     mutex *initLock();
     void destroyLock(mutex *l);
-    void lock(mutex *l, process *p);
+    void lock(mutex *l);
     void unlock(mutex *l);
 
 #endif

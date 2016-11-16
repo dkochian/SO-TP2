@@ -4,8 +4,8 @@
 
 #include "drivers/include/video.h"
 
-extern void _lock(bool volatile *lock);
-extern void _unlock(bool volatile *lock);
+extern int _lock(int *lock);
+extern void _unlock(int *lock);
 
 mutex *initLock() {
     mutex *l = (mutex *) k_malloc(sizeof(mutex));
@@ -35,13 +35,19 @@ void destroyLock(mutex *l) {
     k_free(l);
 }
 
-void lock(mutex *l, process *p) {
-    add(l->q_list, p);
-    blockProcess(p->id);
-    _lock(&l->lock);
+void lock(mutex *l) {
+    while(_lock(&l->lock) == 1) {
+        process *p = getCurrentProcess();
+        if(exists(l->q_list, p) == false) {
+            add(l->q_list, p);
+            blockProcess(p->id);
+        }
+
+        _yield();
+    }
 }
 
-void unlock(mutex *l) {
+void unlock(mutex *l) {//review
     process *p;
     _unlock(&l->lock);
     p = getFirst(l->q_list);
