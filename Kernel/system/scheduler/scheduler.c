@@ -135,8 +135,11 @@ uint64_t contextSwitch(uint64_t stack) {
 	/*print("old: ", -1);
 	print(current_process->name, -1);
 	print(" || new: ", -1);*/
+	current_process->foreground = false;
 
 	current_process = schedule();
+
+	current_process->foreground = true;
 
 	/*print(current_process->name, -1);
 	printNewline();*/
@@ -216,7 +219,7 @@ psContext * processesStatus(){
 
 	for(i = 1; i < aux ; i++ ){
 
-		res->processes[i] = k_malloc(sizeof(char) * 100);
+		res->processes[i] = k_malloc(sizeof(char ) * 100);
 		k_itoa(p->id, buffer);
 		k_strcat(res->processes[i],  buffer);
 		k_strcat(res->processes[i], "&");

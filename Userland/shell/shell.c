@@ -177,6 +177,10 @@ static void clearBuffer(commandData* cmd) {
 static int executeCommand(commandData cmd) {
 	for(int index = 0; index < MAX_COMMANDS; index++) {
 		if(commandTable[index].created == true && strcmp(cmd.name, commandTable[index].name) == 0) {
+			//newProcess(cmd.name, commandTable[index].func, NULL, cmd.args);
+			//if(strcmp(cmd->name, "fractal") != 0)
+			//	sys_waitpid(pid);
+
 			commandTable[index].func(cmd.args);
 			return 1;
 		}
