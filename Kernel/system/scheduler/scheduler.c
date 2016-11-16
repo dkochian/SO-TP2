@@ -6,6 +6,7 @@
 #include "../include/clock.h"
 #include "../include/mutex.h"
 #include "../include/string.h"
+#include "../include/mmu.h"
 
 extern void _timerTickHandler();
 
@@ -23,7 +24,7 @@ bool buildScheduler() {
 	if(waiting_list == NULL)
 		return false;
 
-	newProcess("master of the puppets", NULL, 0, NULL);
+	newProcess("PuppetMaster", NULL, 0, NULL);
 
 	s_mutex = initLock();
 	if (s_mutex == NULL) 

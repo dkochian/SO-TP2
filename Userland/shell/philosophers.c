@@ -127,11 +127,15 @@ static void init() {
 
 static void launchPhilosopher(int pos, int left) {
 	int argc = 2;
-	char arg1[8];
-	char arg2[8];
+
+	char** argv = (char**) malloc(sizeof(char*)*argc);
+	char* arg1 = (char*) malloc(sizeof(char*)*64);
+	char* arg2 = (char*) malloc(sizeof(char*)*64);
 	itoa(pos, arg1);
 	itoa(left, arg2);
-	char* argv[2] = {arg1, arg2};
+	argv[0] = arg1;
+	argv[1] = arg2;
+	printNum(pos);
 	newProcess("pChild", philosopher, argc, argv);
 }
 

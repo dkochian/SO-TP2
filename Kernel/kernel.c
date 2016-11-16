@@ -150,12 +150,12 @@ int main() {
 		return 0;
 	
 	_accelPIT();	//scheduler runs and crashes everything
-	print("PIT turbo									[ ", -1);
+	print("PIT turbo						[ ", -1);
 	print("OK", GREEN);
 	print(" ]", -1);
 	printNewline();
 	
-	clear();
+	//clear();
 
 	//Tests
 	//startSchedulerTest();

@@ -35,7 +35,8 @@ commandExec
 		{true, "background", "Sets the color of the shell background.", 	"Usage: background <code>\n\n------------- Color codes ------------\n0 Black          1 Blue\n2 Green          3 Cyan\n4 Red            5 Magenta\n6 Brown          7 Light Gray\n8 Dark Grey      9 Light Blue\n10 Light Green   11 Light Cyan\n12 Light Red     13 Light Magenta\n14 Yellow        15 White\n--------------------------------------", &colorBgCommand},
 		{true, "pid", "Prints the process pid.", "Usage: pid", &pidCommand},
 		{true, "kill", "Kills the selected process.", "Usage: kill <pid>", &killCommand},
-		{true, "ps", "Prints all the processes information.", "Usage: ps", &psCommand}
+		{true, "ps", "Prints all the processes information.", "Usage: ps", &psCommand},
+		{true, "philosophers", "Starts Dining Philosophers problem.", "Usage: philosophers", &philosophers}
 
 	};
 
