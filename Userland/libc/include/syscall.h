@@ -24,6 +24,11 @@
 	void unblock(uint64_t pid);
 	psContext *ps();
 	void pid(int *res);
-	void yield();	
+	void yield();
+
+	void* sysMutexInit();
+	void sysMutexLock(void* m);
+	void sysMutexUnlock(void* m);
+	void sysMutexDestroy(void* m);
 
 #endif

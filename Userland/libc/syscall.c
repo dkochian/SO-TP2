@@ -77,6 +77,20 @@ void yield() {
 	_syscall(YIELD, NULL, NULL, NULL, NULL);
 }
 
+void* sysMutexInit() {
+	uintptr_t res = NULL;
+	_syscall(MINIT, NULL, (uintptr_t) &res, NULL, NULL);
+	return (void *) res;
+}
+void sysMutexLock(void* m) {
+	_syscall(MLOCK, NULL, (uintptr_t) m, NULL, NULL);
+}
+void sysMutexUnlock(void* m) {
+	_syscall(MUNLOCK, NULL, (uintptr_t) m, NULL, NULL);
+}
+void sysMutexDestroy(void* m) {
+	_syscall(MDESTROY, NULL, (uintptr_t) m, NULL, NULL);
+}
 /*
 mutex *mutexInit() {
 	uintptr_t res = NULL;

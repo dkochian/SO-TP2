@@ -107,6 +107,7 @@ static int insertToBuffer(char c) {
 
 		return 0;
 	}
+	//print("h");
 	return 1;
 }
 
