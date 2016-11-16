@@ -21,34 +21,39 @@ void startLockTest() {
 	}
 
 	print("Creating process C", -1);
-	printNewline();
+	//printNewline();
 	pC = newProcess("Process C", processC, 0, NULL);
 	if(pC == INVALID_PROCESS_ID) {
 		print("Couldn't create process C", -1);
 		printNewline();
 	}
 	else {
-		print("Process C id: ", -1);
+		print(" id: ", -1);
 		printDec(pC, -1);
 		printNewline();
 	}
 
 	print("Creating process D", -1);
-	printNewline();
+	//printNewline();
 	pD = newProcess("Process D", processD, 0, NULL);
 	if(pD == INVALID_PROCESS_ID) {
 		print("Couldn't create process D", -1);
 		printNewline();
 	}
 	else {
-		print("Process D id: ", -1);
+		print(" id: ", -1);
 		printDec(pD, -1);
 		printNewline();
+	}
+
+	while(true) {
+		blockProcess(getCurrentProcess()->id);
+		_yield();
 	}
 }
 
 int processC(int argc, char **argv) {
-	print("process C OK", -1);
+	print("-C-OK-", -1);
 	printNewline();
 	
 	while(true) {
@@ -65,7 +70,7 @@ int processC(int argc, char **argv) {
 }
 
 int processD(int argc, char **argv) {
-	print("process D OK", -1);
+	print("-D-OK-", -1);
 	printNewline();
 
 	while(true) {

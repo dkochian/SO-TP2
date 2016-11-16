@@ -149,11 +149,11 @@ int main() {
 	if(!status)
 		return 0;
 	
-	//_accelPIT();	scheduler runs and crashes everything
-	/*print("PIT acceleration									[ ", -1);
-	print("NOT OK", RED);
+	_accelPIT();	//scheduler runs and crashes everything
+	print("PIT turbo			 		[ ", -1);
+	print("OK", GREEN);
 	print(" ]", -1);
-	printNewline();*/
+	printNewline();
 	
 	clear();
 

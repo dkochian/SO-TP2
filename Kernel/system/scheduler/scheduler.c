@@ -19,7 +19,7 @@ bool buildScheduler() {
 	if(waiting_list == NULL)
 		return false;
 
-	newProcess("master of the puppets (ini)", NULL, 0, NULL);
+	newProcess("PuppetMaster", NULL, 0, NULL);
 	return true;
 }
 
@@ -71,10 +71,11 @@ void unBlockProcess(uint64_t pid) {
 
 	p->state = WAITING;
 
-	_cli();
+	//_cli();
 	setNext(waiting_list, p);
-	printList(waiting_list);
-	_sti();
+	//_sti();
+
+	//_timerTickHandler();
 }
 
 void setForeground(uint64_t pid) {
@@ -116,17 +117,19 @@ uint64_t contextSwitch(uint64_t stack) {
 		return 0;
 
 	current_process->rsp = stack;
-	current_process->state = WAITING;
-
-	print("old: ", -1);
+	if(current_process->state != BLOCKED)
+		current_process->state = WAITING;
+/*
+	print("-||", -1);
 	print(current_process->name, -1);
-	print(" || new: ", -1);
-
+	print(" -> ", -1);
+*/	
 	current_process = schedule();
-
+/*	
 	print(current_process->name, -1);
+	print("||-", -1);
 	printNewline();
-
+*/	
 	if(current_process == NULL)
 		return 0;
 
@@ -140,7 +143,7 @@ static void killProcess(process *p) {			//We should have to run sheduler again i
 
 	if(p == NULL)
 		return;
-	if(p->id == 0) //You can't kill dummy
+	if(p->id == 0) //You can't kill PuppetMaster
 		return;
 
 	child = getFirstWaitProcess(p);
@@ -165,7 +168,7 @@ static process *schedule() {
 		p = peekFirst(waiting_list);
 		if(p == NULL)
 			break;
-	} while(p->state == BLOCKED || p->id == 0);
+	} while(p->state == BLOCKED);
 
 	return p;
 }

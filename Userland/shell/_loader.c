@@ -16,6 +16,9 @@ int _start(int argc, char ** argv) {
 
 	newProcess("Shell", main, 0, NULL);
 
+	//blockProcess(getCurrentProcess());
+	//_yield();
+
 	while(true) {}
 	
 	return 0xDEADBEEF;

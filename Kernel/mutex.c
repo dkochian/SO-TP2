@@ -40,24 +40,25 @@ void lock(mutex *l) {
         process *p = getCurrentProcess();
         if(exists(l->q_list, p) == false) {
             add(l->q_list, p);
-            print("lock list:", -1);
-            printNewline();
-            printList(l->q_list);
+            //print("lock list:", -1);
+            //printNewline();
+            //printList(l->q_list);
             blockProcess(p->id);
+        } else {
+            print("WTF", -1);
         }
-
         _yield();
     }
 }
 
 void unlock(mutex* l) {
-    print("unlock called", -1);
-    printNewline();
-    printSize(l->q_list);
+    //print("unlock called", -1);
+    //printNewline();
+    //printSize(l->q_list);
     if(isEmpty(l->q_list) == false) {
-        print("unlock list:", -1);
-        printNewline();
-        printList(l->q_list);
+        //print("unlock list:", -1);
+        //printNewline();
+        //printList(l->q_list);
         process* p = getFirst(l->q_list);
         unBlockProcess(p->id);
     } else {
