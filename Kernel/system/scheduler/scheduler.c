@@ -63,6 +63,7 @@ void blockProcess(uint64_t pid) {
 }
 
 void unBlockProcess(uint64_t pid) {
+	print("LOL", -1);
 	process *p = getProcessFromId(pid);
 
 	if(p == NULL)
@@ -72,9 +73,8 @@ void unBlockProcess(uint64_t pid) {
 
 	_cli();
 	setNext(waiting_list, p);
+	printList(waiting_list);
 	_sti();
-
-	_timerTickHandler();
 }
 
 void setForeground(uint64_t pid) {
@@ -118,14 +118,14 @@ uint64_t contextSwitch(uint64_t stack) {
 	current_process->rsp = stack;
 	current_process->state = WAITING;
 
-	/*print("old: ", -1);
+	print("old: ", -1);
 	print(current_process->name, -1);
-	print(" || new: ", -1);*/
+	print(" || new: ", -1);
 
 	current_process = schedule();
 
-	/*print(current_process->name, -1);
-	printNewline();*/
+	print(current_process->name, -1);
+	printNewline();
 
 	if(current_process == NULL)
 		return 0;

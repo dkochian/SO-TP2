@@ -48,21 +48,26 @@ void startLockTest() {
 }
 
 int processC(int argc, char **argv) {
+	print("process C OK", -1);
+	printNewline();
+	
 	while(true) {
 		lock(m);
-		print("lock 1 passed", -1);
-		printNewline();
 		var = 1;
 		print("processC: ", -1);
 		printDec(var, -1);
 		printNewline();
 		unlock(m);
+		//sleep(1);
 	}
 
 	return 0;
 }
 
 int processD(int argc, char **argv) {
+	print("process D OK", -1);
+	printNewline();
+
 	while(true) {
 		lock(m);
 		var = 2;
@@ -70,6 +75,7 @@ int processD(int argc, char **argv) {
 		printDec(var, -1);
 		printNewline();
 		unlock(m);
+		//sleep(1);
 	}
 
 	return 0;

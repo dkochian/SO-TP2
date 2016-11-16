@@ -122,7 +122,7 @@ element_t getFirst(list l) {
 	element_t item = tmp->item;
 	l->head = l->head->next;
 
-	k_free(tmp);
+	//k_free(tmp);
 	l->size --;
 
 	return item;
@@ -186,4 +186,27 @@ element_t get(list l) {
 
 void resetCursor(list l) {
 	l->cursor = NULL;
+}
+
+void printList(list l) {
+	int index = 1;
+	node *current = l->head;
+
+	while(current != NULL) {
+		printDec(index++, -1);
+		print(": ", -1);
+		print(current->item->name, -1);
+		print(" (id: ", -1);
+		printDec(current->item->id, -1);
+		print(")", -1);
+		printNewline();
+
+		current = current->next;
+	}
+}
+
+void printSize(list l) {
+	print("list size: ", -1);
+	printDec(l->size, -1);
+	printNewline();
 }

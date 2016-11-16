@@ -22,4 +22,7 @@
 	bool setNext(list l, element_t item);
 	list buildList(bool (*f) (element_t , element_t));
 
+	void printList(list l);
+	void printSize(list l);
+
 #endif
