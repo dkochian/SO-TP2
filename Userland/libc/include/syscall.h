@@ -22,8 +22,8 @@
 	void kill(uint64_t pid);
 	void block(uint64_t pid);
 	void unblock(uint64_t pid);
-	void ps();
-	int pid();
+	psContext *ps();
+	void pid(int *res);
 	void yield();	
 
 #endif

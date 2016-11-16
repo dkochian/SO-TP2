@@ -33,11 +33,13 @@
 	#define FREE				12
 	#define NEWPROCESS			13	
 	#define KILLPROCESS			14
-	#define BLOCKPROCESS		15
-	#define UNBLOCKPROCESS		16
-	#define PS					17
-	#define PID					18
-	#define YIELD				19
+	#define PS					15
+	#define PID					16
+	#define YIELD				17
+	#define MINIT				18
+	#define MLOCK				19
+	#define MUNLOCK				20
+	#define MDESTROY			21
 
 	//Keyboard
 	#define EMPTY				0
@@ -93,6 +95,16 @@
 	  		g,
 	  		b;
 	} ColorRGB;
+
+	/*typedef struct mutex {
+        int lock;
+        list q_list;
+    } mutex;*/
+
+    typedef struct psContext{
+     	uint64_t numbProcess;
+     	char **processes;
+   }psContext;
 
 	typedef unsigned int size_t;
 

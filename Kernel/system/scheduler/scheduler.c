@@ -4,6 +4,8 @@
 
 #include "../../drivers/include/video.h"
 #include "../include/clock.h"
+#include "../include/mutex.h"
+#include "../include/string.h"
 
 extern void _timerTickHandler();
 
@@ -13,13 +15,20 @@ static void killProcess(process *p);
 static list waiting_list;
 static process *current_process;
 
+static mutex *s_mutex;
+
 bool buildScheduler() {
 	waiting_list = buildList(&equal);
 
 	if(waiting_list == NULL)
 		return false;
 
-	newProcess("master of the puppets (ini)", NULL, 0, NULL);
+	newProcess("master of the puppets", NULL, 0, NULL);
+
+	s_mutex = initLock();
+	if (s_mutex == NULL) 
+		return false;
+	
 	return true;
 }
 
@@ -29,12 +38,12 @@ bool addProcess(process *p) {
 	if(p == NULL)
 		return res;
 
-	_cli();
+	lock(s_mutex);
 	if(isEmpty(waiting_list) == true)
 		current_process = p;
 
 	res = add(waiting_list, p);
-	_sti();
+	unlock(s_mutex);
 
 	return res;
 }
@@ -45,10 +54,14 @@ bool removeProcess(process *p) {
 	if(p == NULL)
 		return res;
 
-	_cli();
+	lock(s_mutex);
 	res = remove(waiting_list, p);
+	if (!k_strcmp(p->name, "Shell")){
+		clear();
+		print("See you on the other side....", RED);
+	}
 	killProcess(p);
-	_sti();
+	unlock(s_mutex);
 
 	return res;
 }
@@ -63,7 +76,6 @@ void blockProcess(uint64_t pid) {
 }
 
 void unBlockProcess(uint64_t pid) {
-	print("LOL", -1);
 	process *p = getProcessFromId(pid);
 
 	if(p == NULL)
@@ -71,10 +83,10 @@ void unBlockProcess(uint64_t pid) {
 
 	p->state = WAITING;
 
-	_cli();
+	lock(s_mutex);
 	setNext(waiting_list, p);
 	printList(waiting_list);
-	_sti();
+	unlock(s_mutex);
 }
 
 void setForeground(uint64_t pid) {
@@ -116,23 +128,27 @@ uint64_t contextSwitch(uint64_t stack) {
 		return 0;
 
 	current_process->rsp = stack;
-	current_process->state = WAITING;
+	if(current_process->state != BLOCKED)
+		current_process->state = WAITING;
 
-	print("old: ", -1);
+	/*print("old: ", -1);
 	print(current_process->name, -1);
-	print(" || new: ", -1);
+	print(" || new: ", -1);*/
 
 	current_process = schedule();
 
-	print(current_process->name, -1);
-	printNewline();
-
+	/*print(current_process->name, -1);
+	printNewline();*/
 	if(current_process == NULL)
 		return 0;
 
 	current_process->state = RUNNING;
 
 	return current_process->rsp;
+}
+
+uint64_t getCurrentPid(){
+	return current_process->id;
 }
 
 static void killProcess(process *p) {			//We should have to run sheduler again if the killed process is the one that's running right now
@@ -165,7 +181,46 @@ static process *schedule() {
 		p = peekFirst(waiting_list);
 		if(p == NULL)
 			break;
-	} while(p->state == BLOCKED || p->id == 0);
+	} while(p->state == BLOCKED );
 
 	return p;
+}
+
+psContext * processesStatus(){
+
+	char buffer[10] = {0};
+	uint64_t aux = getNumerProcess();
+	int i;
+
+	psContext * res = k_malloc(sizeof(psContext));
+	res->numbProcess = aux;
+	res->processes = k_malloc(sizeof(char)* aux);
+
+	res->processes[0] = k_malloc(sizeof(char) * 60);
+	k_itoa(current_process->id, buffer);
+	k_strcat(res->processes[0], buffer);
+	k_strcat(res->processes[0], "&");
+	k_strcat(res->processes[0], current_process->name);
+	k_strcat(res->processes[0], "&");
+	k_itoa(current_process->state, buffer);
+	k_strcat(res->processes[0], buffer);
+
+	list wProcessList = waiting_list;
+	resetCursor(wProcessList);
+
+	process * p = get(wProcessList);
+
+	for(i = 1; i < aux ; i++ ){
+
+		res->processes[i] = k_malloc(sizeof(char) * 100);
+		k_itoa(p->id, buffer);
+		k_strcat(res->processes[i],  buffer);
+		k_strcat(res->processes[i], "&");
+		k_strcat(res->processes[i], p->name);
+		k_strcat(res->processes[i], "&");
+		k_itoa(p->state, buffer);
+		k_strcat(res->processes[i], buffer);
+		get(wProcessList);
+	}
+	return res;
 }

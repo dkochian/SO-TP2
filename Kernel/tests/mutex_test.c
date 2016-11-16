@@ -46,7 +46,8 @@ void startLockTest() {
 		printNewline();
 	}
 }
-
+static int counter = 0;
+static int counter2 = 0;
 int processC(int argc, char **argv) {
 	print("process C OK", -1);
 	printNewline();
@@ -58,6 +59,13 @@ int processC(int argc, char **argv) {
 		printDec(var, -1);
 		printNewline();
 		unlock(m);
+		if (counter == 3){
+			counter = 0;
+			clear();
+		}else{
+			counter++;
+		}
+		
 		//sleep(1);
 	}
 
@@ -75,6 +83,12 @@ int processD(int argc, char **argv) {
 		printDec(var, -1);
 		printNewline();
 		unlock(m);
+		if (counter2 == 2){
+			counter2 = 0;
+			clear();
+		}else{
+			counter2++;
+		}
 		//sleep(1);
 	}
 

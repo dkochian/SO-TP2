@@ -63,25 +63,35 @@ void kill(uint64_t pid) {
 	_syscall(KILLPROCESS, pid, NULL, NULL, NULL);
 }
 
-void block(uint64_t pid) {
-	_syscall(BLOCKPROCESS, pid, NULL, NULL, NULL);
+psContext* ps() {
+	uintptr_t res = NULL;
+	_syscall(PS, (uintptr_t) &res, NULL, NULL, NULL);
+	return (psContext *) res;
 }
 
-void unblock(uint64_t pid) {
-	_syscall(UNBLOCKPROCESS, pid, NULL, NULL, NULL);
-}
-
-void ps() {
-	_syscall(PS, NULL, NULL, NULL, NULL);
-}
-
-int pid() {
-	int  res = -1;
-	_syscall(PID, (uintptr_t) &res, NULL, NULL, NULL);
-
-	return res;
+void pid(int *res) {
+	_syscall(PID,(uintptr_t) res, NULL, NULL, NULL);
 }
 
 void yield() {
 	_syscall(YIELD, NULL, NULL, NULL, NULL);
 }
+
+/*
+mutex *mutexInit() {
+	uintptr_t res = NULL;
+	_syscall(MINIT, NULL, (uintptr_t) &res, NULL, NULL);
+	return (mutex *) res;
+}
+
+void mutexLock(mutex *m){
+	_syscall(MLOCK, NULL, (uintptr_t) m, NULL, NULL);
+}
+
+void mutexUnlock(mutex *m){
+	_syscall(MUNLOCK, NULL, (uintptr_t) m, NULL, NULL);
+}
+
+void mutexDestroy(mutex *m){
+	_syscall(MDESTROY, NULL, (uintptr_t) m, NULL, NULL);
+}*/

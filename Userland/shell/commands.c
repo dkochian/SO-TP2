@@ -13,12 +13,6 @@ void echoCommand(char* str) {
 	printn(str);
 }
 
-void pidCommand() {
-	int resp = pid();
-	printNum(resp);
-	putchar('\n');
-}
-
 void helpCommand(char* str) {
 	commandExec* struc = getAllCommands();
 	if(str[0] == '\0') {
@@ -35,9 +29,65 @@ void helpCommand(char* str) {
 	printn(": The command do not exist.");
 }
 
-void killCommand(char* pid) {
-	int pidNumber = strint(pid);
-	if(pidNumber == -1 || strlen(pid) == 0) {
+void pidCommand(char *str) {
+	if(strlen(str)) {
+		helpCommand("pid");
+		return;
+	}
+	int  res = -1;
+	pid(&res);
+	printColor("El pid actual es : ", LIGHT_BLUE);
+	printNum(res);
+	printNewline();	
+}
+
+void psCommand(char *str){
+	psContext * allProcess = ps();
+
+	
+	printColor("Number of processes: ", LIGHT_GRAY);
+	printNum(allProcess->numbProcess);
+	printNewline();
+
+	int max = allProcess->numbProcess;
+	int i;
+	int term = 0;
+	for( i = 0; i < max; i++){
+		int index = 0;
+		char c = allProcess->processes[i][index];
+		
+		printColor("PID : ", LIGHT_MAGENTA);
+		while( c != '\0'){
+			c = allProcess->processes[i][index++];
+			
+			if (term == 2)	{
+				term = 0;
+				if (c == '0')
+					printColor(" RUNNING", CYAN);
+				else if(c == '1')
+					printColor(" BLOCKED", RED);
+				else
+					printColor(" WAITING", LIGHT_BLUE);
+			} else if (c == '&' && term == 1){
+				printColor("       STATE :", LIGHT_MAGENTA);
+				term++;
+			}else if (c == '&' && term == 0){
+				printColor("    NAME : ", LIGHT_MAGENTA);
+				term++;
+			}else
+				putchar(c);
+		}
+		printColor("   USING MEMORY : ", LIGHT_MAGENTA);
+		print("4KB");
+		printNewline();
+	}
+	free(allProcess->processes);
+	free(allProcess);
+}
+
+void killCommand(char* str) {
+	int pidNumber = strint(str);
+	if(pidNumber == -1 || strlen(str) == 0) {
 		helpCommand("kill");
 		return;
 	}
@@ -305,4 +355,31 @@ static int readNumber(){
     index++;
   }
   return number;
+}
+
+
+
+void mutextest() {
+	/*mutex * m;
+	m = mutexInit();
+	if (m == NULL) 
+		printn("Mutex could not be created");
+	else
+		printn("Mutex created");
+
+	mutexLock(m);
+
+	if(m->lock == 1)
+		printColor("Locked successfully", COLOR_INFO);
+	else
+		printColor("Lock failed", COLOR_ERROR);
+
+	mutexUnlock(m);
+	if(m->lock == 0)
+		printColor("Unlocked successfully", COLOR_INFO);
+	else 
+		printColor("Unlock failed", COLOR_ERROR);
+
+	mutexDestroy(m);
+	printn("Mutex destroyed");*/
 }
