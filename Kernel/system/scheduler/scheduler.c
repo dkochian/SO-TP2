@@ -204,6 +204,9 @@ psContext * processesStatus(){
 	k_strcat(res->processes[0], "&");
 	k_itoa(current_process->state, buffer);
 	k_strcat(res->processes[0], buffer);
+	k_strcat(res->processes[0], "&");
+	k_itoa(current_process->foreground, buffer);
+	k_strcat(res->processes[0], buffer);
 
 	list wProcessList = waiting_list;
 	resetCursor(wProcessList);
@@ -219,6 +222,9 @@ psContext * processesStatus(){
 		k_strcat(res->processes[i], p->name);
 		k_strcat(res->processes[i], "&");
 		k_itoa(p->state, buffer);
+		k_strcat(res->processes[i], buffer);
+		k_strcat(res->processes[i], "&");
+		k_itoa(current_process->foreground, buffer);
 		k_strcat(res->processes[i], buffer);
 		get(wProcessList);
 	}

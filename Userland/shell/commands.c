@@ -60,24 +60,33 @@ void psCommand(char *str){
 		while( c != '\0'){
 			c = allProcess->processes[i][index++];
 			
-			if (term == 2)	{
-				term = 0;
+			if (c == '&' && term == 0){
+				printColor("   NAME : ", LIGHT_MAGENTA);
+				term++;
+			}else if (c == '&' && term == 1){
+				printColor("     STATE :", LIGHT_MAGENTA);
+				term++;
+			}else if (term == 2)	{
 				if (c == '0')
 					printColor(" RUNNING", CYAN);
 				else if(c == '1')
 					printColor(" BLOCKED", RED);
 				else
 					printColor(" WAITING", LIGHT_BLUE);
-			} else if (c == '&' && term == 1){
-				printColor("       STATE :", LIGHT_MAGENTA);
+
+				printColor("    FOREGROUND :", LIGHT_MAGENTA);
 				term++;
-			}else if (c == '&' && term == 0){
-				printColor("    NAME : ", LIGHT_MAGENTA);
-				term++;
+			} else if (term == 3) {
+				term = 0;
+				c = allProcess->processes[i][index++];
+				if (c == '1')	
+					printColor(" TRUE", YELLOW);
+				else
+					printColor(" FALSE", BROWN);
 			}else
 				putchar(c);
 		}
-		printColor("   USING MEMORY : ", LIGHT_MAGENTA);
+		printColor("     USING MEMORY : ", LIGHT_MAGENTA);
 		print("4KB");
 		printNewline();
 	}
