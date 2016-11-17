@@ -5,6 +5,7 @@
 #include <mutex.h>
 #include "include/philosophers.h"
 #include "../../Common/common.h"
+#include "include/commands.h"
 
 // WHY U TROLL ME SO, PHILOSOPHER?!?!
 
@@ -17,7 +18,7 @@ typedef enum {
 /*****************
 **  Global Data **
 *****************/
-int total;
+volatile static int total;
 mutex_u_t forks[MAX_PHILOSOPHERS];
 
 mutex_u_t semLock;
@@ -49,6 +50,35 @@ static void releaseSem(mutex_u_t lock_v, volatile int* value) {
 	unlock(lock_v);
 }
 
+#define LEFT false
+#define RIGHT true
+
+static void updateSquare(int pos, char color) {
+	int x = 16+ 32*(pos);
+	int y = 16;
+	int l = 16;
+	drawSquare((uint16_t)x, (uint16_t)y, (uint16_t)l, color);
+}
+
+static void updateState(int pos, bool hand, char color) {
+	if(hand==LEFT) {
+		int x = 16+ 32*(pos);
+		int y = 16;
+		int l = 8;
+		drawSquare((uint16_t)x, (uint16_t)y, (uint16_t)l, color);
+		y = 24;
+		drawSquare((uint16_t)x, (uint16_t)y, (uint16_t)l, color);
+	} else {
+		int x = 24+ 32*(pos);
+		int y = 16;
+		int l = 8;
+		drawSquare((uint16_t)x, (uint16_t)y, (uint16_t)l, color);
+		y = 24;
+		drawSquare((uint16_t)x, (uint16_t)y, (uint16_t)l, color);
+	}
+	
+}
+
 /******************
 **  Philosopher  **
 ******************/
@@ -56,38 +86,47 @@ static int philosopher(int argc, char** argv) {
 	int pos = strintPos(argv[0]);
 	int left = strintPos(argv[1]);
 
-	print("Generated Philosopher N°: ");
-	printNum(pos);
-	printNewline();
+	//print("Generated Philosopher N°: ");
+	//printNum(pos);
+	//printNewline();
 
 	int right = pos;
 	bool alive = true;
 	while(alive) {
+			updateSquare(pos, BLUE);
 		// THINKING
-			printNum(pos);
-			printn(" is thinking...");
-		sleep(5);
-			printNum(pos);
-			printn(" is hungry.");
+			//printNum(pos);
+			//printn(" is thinking...");
+		//sleep(1);
+			updateSquare(pos, MAGENTA);
+			//printNum(pos);
+			//printn(" is hungry.");
 		grabSem(&semLock, &sem);
+			updateSquare(pos, RED);
 		lock(& (forks[right]) );
-			printNum(pos);
-			printn(" grabbed right fork.");
+			updateState(pos, RIGHT, YELLOW);
+			//printNum(pos);
+			//printn(" grabbed right fork.");
 		lock(& (forks[left]) );
-			printNum(pos);
-			printn(" grabbed left fork.");
+			updateSquare(pos, GREEN);
+			//printNum(pos);
+			//printn(" grabbed left fork.");
 		// EAT
-			printNum(pos);
-			printn(" is eating...");
-		sleep(2);		
+			//printNum(pos);
+			//printn(" is eating...");
+		//sleep(1);		
 
 		unlock(& (forks[right]) );
+			updateState(pos, RIGHT, LIGHT_GREEN);
 		unlock(& (forks[left]) );
-			printNum(pos);
-			printn(" dropped both forks.");
+			updateState(pos, LEFT, LIGHT_GREEN);
+			//printNum(pos);
+			//printn(" dropped both forks.");
 		releaseSem(&semLock, &sem);
+			updateSquare(pos, LIGHT_BLUE);
 
 		lock(&editLock);
+			updateSquare(pos, WHITE);
 		switch( edit[pos] ) {
 			case INC: {
 				left++;
@@ -193,9 +232,12 @@ static void exitNicely() {
 void philosophers() {
 	printn("Loading Philosophers...");
 	init();
+	psCommand(NULL);
 	for(int i=0; i<total; i++) {
 		launchPhilosopher(i, (i+1)%total );
 	}
+	psCommand(NULL);
+	//while(true) {}
 	bool exitFlag = false;
 	char c;
 	while(!exitFlag) {
