@@ -43,6 +43,7 @@
 	#define BLOCKSELF			22
 	#define WAITPID				23
 	#define RELEASEPID			24
+	#define DRAWSQUARE			25
 
 	//Keyboard
 	#define EMPTY				0

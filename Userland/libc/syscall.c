@@ -99,3 +99,6 @@ void sysMutexDestroy(void* m) {
 void blockMyself() {
 	_syscall(BLOCKSELF, NULL, NULL, NULL, NULL, NULL);
 }
+void drawSquare(uint16_t x, uint16_t y, uint16_t l, char colorCode) {
+	_syscall(DRAWSQUARE, x, y, l, colorCode, NULL);
+}

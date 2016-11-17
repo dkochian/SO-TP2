@@ -32,5 +32,6 @@
 	void sysMutexDestroy(void* m);
 
 	void blockMyself();
+	void drawSquare(uint16_t x, uint16_t y, uint16_t l, char color);
 
 #endif

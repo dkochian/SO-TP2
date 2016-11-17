@@ -78,6 +78,9 @@ void sysCallHandler(uint64_t arg1, uint64_t arg2, uint64_t arg3, uint64_t arg4, 
 		case RELEASEPID:
 			//blockProcess(getCurrentProcess()->id);
 			break;
+		case DRAWSQUARE:
+			drawSquare((uint16_t) arg2, (uint16_t) arg3, (uint16_t) arg4, (char) arg5);
+			break;
 		default:
 			write(STDERR, "Error: Invalid system call.", 28);
 			break;
