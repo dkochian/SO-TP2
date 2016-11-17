@@ -115,3 +115,8 @@ void wPid(uint64_t pid) {
 void rPid(uint64_t pid) {
 	_syscall(RELEASEPID, pid, NULL, NULL, NULL, NULL);
 }
+
+void drawSquare(uint16_t x, uint16_t y, uint16_t l, char colorCode) {
+	_syscall(DRAWSQUARE, x, y, l, colorCode, NULL);
+
+}

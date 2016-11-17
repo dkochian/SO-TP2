@@ -57,12 +57,8 @@ void sysCallHandler(uint64_t arg1, uint64_t arg2, uint64_t arg3, uint64_t arg4, 
 		case YIELD:
 			_yield();
 			break;
-		case MINIT: {
+		case MINIT:
 			*((uintptr_t *) arg3) = (uint64_t) initLock();
-		   /* print("hola",-1);
-		    printDec((uint64_t) initLock(),-1);
-		    printNewline();*/
-		}
 			break;
 		case MLOCK:
 			lock((mutex*) arg3);
@@ -84,6 +80,9 @@ void sysCallHandler(uint64_t arg1, uint64_t arg2, uint64_t arg3, uint64_t arg4, 
 			break;
 		case RELEASEPID:
 			releasePid((uint64_t) arg2);
+			break;
+		case DRAWSQUARE:
+			drawSquare((uint16_t) arg2, (uint16_t) arg3, (uint16_t) arg4, (char) arg5);
 			break;
 		default:
 			write(STDERR, "Error: Invalid system call.", 28);

@@ -125,6 +125,22 @@ char getDefaultColor() {
 	return defaultColor;
 }
 
+void drawSquare(uint16_t x, uint16_t y, uint16_t l, char colorCode) {
+	ColorRGB color = getRGBColor(colorCode);
+
+	uint64_t vesaBufferInt = *(uint32_t *)0x5080;
+	unsigned char* vesaBuffer = (unsigned char *)vesaBufferInt;
+	unsigned char* address;
+	for(int i=0; i<l; i++) {
+		for(int j=0;j<l;j++) {
+			address = vesaBuffer + 3*(x+i + (y+j)*1024);
+			address[2] = color.r;
+			address[1] = color.g;
+			address[0] = color.b;
+		}
+	}
+}
+
 void printPixel(uint16_t x, uint16_t y, ColorRGB* color) {
 	uint64_t vesaBufferInt = *(uint32_t *)0x5080;
 	unsigned char * vesaBuffer = (unsigned char *)vesaBufferInt;;
