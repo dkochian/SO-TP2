@@ -50,7 +50,7 @@ void sysCallHandler(uint64_t arg1, uint64_t arg2, uint64_t arg3, uint64_t arg4, 
 			*((uintptr_t *) arg2) = (uint64_t) processesStatus();
 			break;
 		case PID:
-			*((uint64_t *) arg2) = ((uint64_t) getCurrentPid());
+			*((uintptr_t *) arg2) = getCurrentProcess()->id;
 			break;
 		case YIELD:
 			_yield();

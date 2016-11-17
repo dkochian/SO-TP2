@@ -69,7 +69,7 @@ psContext* ps() {
 	return (psContext *) res;
 }
 
-void pid(int *res) {
+void pid(uint64_t *res) {
 	_syscall(PID,(uintptr_t) res, NULL, NULL, NULL);
 }
 

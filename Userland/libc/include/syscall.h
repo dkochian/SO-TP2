@@ -23,7 +23,7 @@
 	void block(uint64_t pid);
 	void unblock(uint64_t pid);
 	psContext *ps();
-	void pid(int *res);
+	void pid(uint64_t *res);
 	void yield();
 
 	void* sysMutexInit();

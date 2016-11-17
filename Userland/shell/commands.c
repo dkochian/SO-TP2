@@ -34,11 +34,11 @@ void pidCommand(char *str) {
 		helpCommand("pid");
 		return;
 	}
-	int  res = -1;
+	uint64_t  res = -1;
 	pid(&res);
 	printColor("El pid actual es : ", LIGHT_BLUE);
 	printNum(res);
-	printNewline();	
+	printNewline();
 }
 
 void psCommand(char *str){
