@@ -24,8 +24,8 @@ static sem_t * itemMutex;
 static sem_t * emptyCount;
 static sem_t * fullCount;
 
-static int prodSleepTime = 0;
-static int consSleepTime = 0;
+static int prodSleepTime = 1;
+static int consSleepTime = 1;
 
 int producerConsumer(int argc, char ** argv) {
 	int i = 0;
