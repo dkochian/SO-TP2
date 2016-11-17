@@ -41,6 +41,8 @@
 	#define MUNLOCK				20
 	#define MDESTROY			21
 	#define BLOCKSELF			22
+	#define WAITPID				23
+	#define RELEASEPID			24
 
 	//Keyboard
 	#define EMPTY				0
@@ -97,14 +99,10 @@
 	  		b;
 	} ColorRGB;
 
-	/*typedef struct mutex {
-        int lock;
-        list q_list;
-    } mutex;*/
-
     typedef struct psContext{
      	uint64_t numbProcess;
      	char **processes;
+     	char separateChar;
    }psContext;
 
 	typedef unsigned int size_t;

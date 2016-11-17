@@ -16,10 +16,7 @@ int _start(int argc, char ** argv) {
 
 	newProcess("Shell", main, 0, NULL);
 
-	while(true) {
-		//blockMyself();
-		//yield();
-	}
+	while(true) {}
 	
 	return 0xDEADBEEF;
 }

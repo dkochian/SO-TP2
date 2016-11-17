@@ -2,6 +2,7 @@
 	#define _INC_STDIO_
 
 	void putchar(char c);
+	void putcharColor(char c, char color);
 	char getchar(char write);
 	void print(char* str);
 	void printColor(char* str, char color);

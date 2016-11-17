@@ -55,6 +55,12 @@ bool removeProcess(process *p) {
 	if(p == NULL)
 		return res;
 
+	if(p->id == 0){//You can't kill dummy
+		print("Master of the Puppets is undestructable....", RED);
+		printNewline();
+		return false;
+	} 
+		
 	lock(s_mutex);
 	res = remove(waiting_list, p);
 	if (!k_strcmp(p->name, "Shell")){
@@ -156,8 +162,6 @@ static void killProcess(process *p) {			//We should have to run sheduler again i
 
 	if(p == NULL)
 		return;
-	if(p->id == 0) //You can't kill dummy
-		return;
 
 	child = getFirstWaitProcess(p);
 	while(child != NULL) {
@@ -186,7 +190,7 @@ static process *schedule() {
 	return p;
 }
 
-psContext * processesStatus(){
+psContext *processesStatus(){
 
 	char buffer[10] = {0};
 	uint64_t aux = getNumerProcess();
@@ -195,6 +199,7 @@ psContext * processesStatus(){
 	psContext * res = k_malloc(sizeof(psContext));
 	res->numbProcess = aux;
 	res->processes = k_malloc(sizeof(char)* aux);
+	res->separateChar = '&';
 
 	res->processes[0] = k_malloc(sizeof(char) * 60);
 	k_itoa(current_process->id, buffer);
