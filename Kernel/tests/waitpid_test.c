@@ -5,19 +5,21 @@
 #include "../system/scheduler/include/process.h"
 #include "../system/scheduler/include/scheduler.h"
 
+static int processA(int argc, char **argv);
+
 void startWaitpidTest() {
 	uint64_t pE;
 
-	print("Creating process E", -1);
+	print("Creating \"Waitpid process A\"", -1);
 	printNewline();
-	pE = newProcess("Process E", processE, 0, NULL);
+	pE = newProcess("Waitpid process A", processA, 0, NULL);
 	if(pE == INVALID_PROCESS_ID) {
-		print("Couldn't create process E", -1);
+		print("Couldn't create \"Waitpid process A\"", -1);
 		printNewline();
 		return;
 	}
 
-	print("I'll wait for process E (id: ", -1);
+	print("I'll wait for \"Waitpid process A\" (id: ", -1);
 	printDec(pE, -1);
 	print(")", -1);
 	printNewline();
@@ -26,9 +28,9 @@ void startWaitpidTest() {
 	printNewline();
 }
 
-int processE(int argc, char **argv) {
+static int processA(int argc, char **argv) {
 	int counter = 0;
-	print("process E OK", -1);
+	print("Waitpid process A OK", -1);
 	printNewline();
 	
 	while(counter < 100) {

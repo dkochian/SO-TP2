@@ -4,46 +4,49 @@
 #include "../system/scheduler/include/process.h"
 #include "../system/scheduler/include/scheduler.h"
 
+static int processA(int argc, char **argv);
+static int processB(int argc, char **argv);
+
 void startSchedulerTest() {
 	uint64_t pA;
 	uint64_t pB;
 	
-	print("Creating process A", -1);
+	print("Creating \"Scheduler process A\"", -1);
 	printNewline();
-	pA = newProcess("Process A", processA, 0, NULL);
+	pA = newProcess("Scheduler process A", processA, 0, NULL);
 	if(pA == INVALID_PROCESS_ID) {
-		print("Couldn't create process A", -1);
+		print("Couldn't create \"Scheduler process A\"", -1);
 		printNewline();
 		return;
 	}
 	
-	print("Process A id: ", -1);
+	print("Scheduler process A id: ", -1);
 	printDec(pA, -1);
 	printNewline();
 
-	print("Creating process B", -1);
+	print("Creating \"Scheduler process B\"", -1);
 	printNewline();
-	pB = newProcess("Process B", processB, 0, NULL);
+	pB = newProcess("Scheduler process B", processB, 0, NULL);
 	if(pB == INVALID_PROCESS_ID) {
-		print("Couldn't create process B", -1);
+		print("Couldn't create \"Scheduler process B\"", -1);
 		printNewline();
 		freeProcess(pA);
 		return;
 	}
 	
-	print("Process B id: ", -1);
+	print("Scheduler process B id: ", -1);
 	printDec(pB, -1);
 	printNewline();
 }
 
-int processA(int argc, char **argv) {
+static int processA(int argc, char **argv) {
 	static int counter = 0;
 
-	print("Process A is running", -1);
+	print("Scheduler process A is running", -1);
 	printNewline();
 
 	while(true) {
-		print("Process A: row ", -1);
+		print("Scheduler process A: row ", -1);
 		printDec(counter++, -1);
 		printNewline();
 
@@ -53,14 +56,14 @@ int processA(int argc, char **argv) {
 	return 0;
 }
 
-int processB(int argc, char **argv) {
+static int processB(int argc, char **argv) {
 	static int counter = 0;
 
-	print("Process B is running", -1);
+	print("Scheduler process B is running", -1);
 	printNewline();
 
 	while(true) {
-		print("Process B: row ", -1);
+		print("Scheduler process B: row ", -1);
 		printDec(counter++, -1);
 		printNewline();
 

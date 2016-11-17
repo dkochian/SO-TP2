@@ -6,6 +6,7 @@
 #include "../../Common/common.h"
 
 #include "include/philosophers.h"
+#include "include/producerConsumer.h"
 
 static int insertToBuffer(char c);
 static void resetBuffer();
@@ -37,7 +38,8 @@ commandExec
 		{true, "kill", "Kills the selected process.", "Usage: kill <pid>", &killCommand},
 		{true, "ps", "Prints all the processes information.", "Usage: ps", &psCommand},
 		{true, "mTest", "Deployees mutext test.", "Usage: mTest", &mutextest},
-
+		{true, "philosophers", "Starts Dining Philosophers problem.", "Usage: philosophers", &philosophers}//,
+		//{true, "prodcon", "Starts ProducerConsumer program.", "Usage: producerconsumer", &producerConsumer}
 	};
 
 int main(int argc, char ** argv) {
