@@ -18,18 +18,18 @@ typedef enum {
 **  Global Data **
 *****************/
 int total;
-mutex_t forks[MAX_PHILOSOPHERS];
+mutex_u_t forks[MAX_PHILOSOPHERS];
 
-mutex_t semLock;
+mutex_u_t semLock;
 volatile int sem;
 
-mutex_t editLock;
+mutex_u_t editLock;
 volatile edit_t edit[MAX_PHILOSOPHERS];
 
 /***************
 **  Semaphore **
 ***************/
-static void grabSem(mutex_t* lock_v, volatile int* value) {
+static void grabSem(mutex_u_t lock_v, volatile int* value) {
 	while(true) {
 		lock(lock_v);
 		if( (*value)>0 ) {
@@ -43,7 +43,7 @@ static void grabSem(mutex_t* lock_v, volatile int* value) {
 	}
 }
 
-static void releaseSem(mutex_t* lock_v, volatile int* value) {
+static void releaseSem(mutex_u_t lock_v, volatile int* value) {
 	lock(lock_v);
 	(*value)++;
 	unlock(lock_v);
@@ -117,33 +117,37 @@ static int philosopher(int argc, char** argv) {
 static void init() {
 	total = INIT_PHILOSOPHERS;
 	sem = total-1;
-	initMutex(&semLock);
-	initMutex(&editLock);
+	semLock = initLock();
+	editLock = initLock();
 	for(int i=0; i<MAX_PHILOSOPHERS; i++) {
-		initMutex(& (forks[i]) );
+		forks[i] = initLock();
 		edit[i] = NO_ACTION;
 	}
 }
 
 static void launchPhilosopher(int pos, int left) {
 	int argc = 2;
-	char arg1[8];
-	char arg2[8];
+
+	char** argv = (char**) malloc(sizeof(char*)*argc);
+	char* arg1 = (char*) malloc(sizeof(char*)*64);
+	char* arg2 = (char*) malloc(sizeof(char*)*64);
 	itoa(pos, arg1);
 	itoa(left, arg2);
-	char* argv[2] = {arg1, arg2};
+	argv[0] = arg1;
+	argv[1] = arg2;
+	printNum(pos);
 	newProcess("pChild", philosopher, argc, argv);
 }
 
 static void action(int pos, edit_t value) {
-	lock(&editLock);
+	lock(editLock);
 	edit[pos] = value;
-	unlock(&editLock);
+	unlock(editLock);
 	bool done = false;
 	do {
-		lock(&editLock);
+		lock(editLock);
 		edit_t temp = edit[pos];
-		unlock(&editLock);
+		unlock(editLock);
 		if(temp == NO_ACTION) {
 			done = true;
 		} else {
@@ -158,9 +162,9 @@ static bool addPhilosopher() {
 		return false;
 	launchPhilosopher(total, total-1);
 	action(0, INC);
-	grabSem(&semLock, &sem);
+	grabSem(semLock, &sem);
 	sem++;
-	releaseSem(&semLock, &sem);
+	releaseSem(semLock, &sem);
 	total++;
 	return true;
 }
@@ -168,9 +172,9 @@ static bool addPhilosopher() {
 static bool removePhilosopher() {
 	if(total<=MIN_PHILOSOPHERS)
 		return false;
-	grabSem(&semLock, &sem);
+	grabSem(semLock, &sem);
 	sem--;
-	releaseSem(&semLock, &sem);
+	releaseSem(semLock, &sem);
 	action(0, DEC);
 	action(total-1, KILL);
 	total--;

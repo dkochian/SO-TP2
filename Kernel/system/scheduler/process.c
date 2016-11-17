@@ -16,6 +16,8 @@ static void *buildStacKFrame(void *rsp, func f, int argc, char **argv);
 
 static process **process_table;
 
+static mutex *p_mutex;
+
 bool buildProcessManager() {
 	process_table = (process **) k_malloc(sizeof(process*)*MAX_PROCESSES);
 
@@ -24,6 +26,10 @@ bool buildProcessManager() {
 
 	for(int i=0; i<MAX_PROCESSES; i++)
 		process_table[i] = NULL;
+
+	p_mutex = initLock();
+	if (p_mutex == NULL) 
+		return false;
 
 	return true;
 }
@@ -143,11 +149,26 @@ process *getProcessFromId(uint64_t id) {
 
 	process *p = NULL;
 
-	_cli();
+	lock(p_mutex);
 	p = process_table[id];
-	_sti();
+	unlock(p_mutex);
 
 	return p;
+}
+
+uint64_t getNumerProcess(){
+
+	uint64_t number = 0;
+
+	lock(p_mutex);
+	for(int i=0; i<MAX_PROCESSES; i++) {
+		if(process_table[i] != NULL) {
+			number++;
+		}
+	}
+	unlock(p_mutex);
+
+	return number;
 }
 
 static int startProcess(func f, int argc, char **argv) {
@@ -196,7 +217,7 @@ static uint64_t getNewProcessId(process *p) {
 
 	uint64_t id = INVALID_PROCESS_ID;
 
-	_cli();
+	lock(p_mutex);
 	for(int i=0; i<MAX_PROCESSES; i++) {
 		if(process_table[i] == NULL) {
 			id = i;
@@ -204,7 +225,7 @@ static uint64_t getNewProcessId(process *p) {
 			break;
 		}
 	}
-	_sti();
+	unlock(p_mutex);
 
 	return id;
 }
@@ -213,7 +234,7 @@ static void freeProcessId(uint64_t id) {
 	if(id == INVALID_PROCESS_ID || id < 0 || id > MAX_PROCESSES - 1)
 		return;
 
-	_cli();
+	lock(p_mutex);
 	process_table[id] = NULL;
-	_sti();
+	unlock(p_mutex);
 }

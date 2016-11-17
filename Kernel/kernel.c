@@ -149,19 +149,19 @@ int main() {
 	if(!status)
 		return 0;
 	
-	_accelPIT();	//scheduler runs and crashes everything
-	print("PIT turbo			 		[ ", -1);
+	_accelPIT();
+	print("PIT turbo						[ ", -1);
 	print("OK", GREEN);
 	print(" ]", -1);
 	printNewline();
 	
-	clear();
+	//clear();
 
 	//Tests
 	//startSchedulerTest();
-	startLockTest();
+	//startLockTest();
 
-	//((EntryPoint)sampleCodeModuleAddress)();
+	((EntryPoint)sampleCodeModuleAddress)();
 
 	return 0;
 }

@@ -22,8 +22,13 @@
 	void kill(uint64_t pid);
 	void block(uint64_t pid);
 	void unblock(uint64_t pid);
-	void ps();
-	int pid();
-	void yield();	
+	psContext *ps();
+	void pid(uint64_t *res);
+	void yield();
+
+	void* sysMutexInit();
+	void sysMutexLock(void* m);
+	void sysMutexUnlock(void* m);
+	void sysMutexDestroy(void* m);
 
 #endif

@@ -3,21 +3,23 @@
 
 	#include "../../../Common/common.h"
 
-	typedef volatile bool mutex_t;
+	typedef void* mutex_u_t;
 
 	/*
 	** Initialize the lock.
 	*/
-	void initMutex(mutex_t * lock);
+	mutex_u_t initLock();
 
 	/*
 	** Acquires the lock.
 	*/
-	void lock(mutex_t * lock);
+	void lock(mutex_u_t lock);
 
 	/*
 	** Releases the lock.
 	*/
-	void unlock(mutex_t * lock);
+	void unlock(mutex_u_t lock);
+
+	void destroyLock(mutex_u_t lock);
 
 #endif

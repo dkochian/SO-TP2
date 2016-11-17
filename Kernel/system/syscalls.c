@@ -4,6 +4,7 @@
 #include "../drivers/include/video.h"
 #include "../drivers/include/keyboard.h"
 #include "../include/clock.h"
+#include "../include/mutex.h"
 #include "scheduler/include/scheduler.h"
 #include "scheduler/include/process.h"
 
@@ -42,23 +43,29 @@ void sysCallHandler(uint64_t arg1, uint64_t arg2, uint64_t arg3, uint64_t arg4, 
 		case NEWPROCESS:
 			newProcess((char *) arg2, (func) arg3, (int)arg4, (char**)arg5);
 			break;
-		/*case KILLPROCESS:
-			killProcess((uint64_t) arg2);
-			break;
-		case BLOCKPROCESS:
-			blockProcess((uint64_t) arg2);
-			break;
-		case UNBLOCKPROCESS:
-			unblockProcess((uint64_t) arg2);
+		case KILLPROCESS:
+			removeProcess(getProcessFromId((uint64_t)arg2));
 			break;
 		case PS:
-			printProcesses();
+			*((uintptr_t *) arg2) = (uint64_t) processesStatus();
 			break;
 		case PID:
-			*((int *) arg2) = ((uint64_t) getPID());
-			break;*/
+			*((uintptr_t *) arg2) = getCurrentProcess()->id;
+			break;
 		case YIELD:
 			_yield();
+			break;
+		case MINIT:
+			*((uintptr_t *) arg3) = (uint64_t) initLock();
+			break;
+		case MLOCK:
+			lock((mutex*) arg3);
+			break;
+		case MUNLOCK:
+			unlock((mutex*) arg3);
+			break;
+		case MDESTROY:
+			destroyLock((mutex*) arg3);
 			break;
 		default:
 			write(STDERR, "Error: Invalid system call.", 28);
