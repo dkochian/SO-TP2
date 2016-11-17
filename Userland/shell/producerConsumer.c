@@ -23,8 +23,8 @@ sem_t * itemMutex;
 sem_t * emptyCount;
 sem_t * fullCount;
 
-int prodSleepTime = 0;
-int consSleepTime = 0;
+int prodSleepTime = 1;
+int consSleepTime = 1;
 
 int producerConsumer(int argc, char ** argv) {
 	int i = 0;
