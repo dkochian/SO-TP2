@@ -17,7 +17,7 @@ int _start(int argc, char ** argv) {
 	newProcess("Shell", main, 0, NULL);
 
 	while(true) {
-		// block myself
+		//blockMyself();
 		//yield();
 	}
 	

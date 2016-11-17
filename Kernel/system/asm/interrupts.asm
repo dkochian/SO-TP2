@@ -12,6 +12,7 @@ EXTERN timerTickHandler
 EXTERN keyboardHandler
 EXTERN sysCallHandler
 EXTERN contextSwitch
+EXTERN resetTickCounter
 EXTERN printA
 EXTERN printB
 EXTERN printC
@@ -135,6 +136,7 @@ skip:
 ;------------------------------------------------------------
 _yield:
     pushaq
+    call resetTickCounter
 
     mov rdi, rsp
     call contextSwitch

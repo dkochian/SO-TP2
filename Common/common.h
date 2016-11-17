@@ -40,6 +40,7 @@
 	#define MLOCK				19
 	#define MUNLOCK				20
 	#define MDESTROY			21
+	#define BLOCKSELF			22
 
 	//Keyboard
 	#define EMPTY				0
