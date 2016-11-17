@@ -38,7 +38,6 @@ commandExec
 		{true, "ps", "Prints all the processes information.", "Usage: ps", &psCommand},
 		{true, "mTest", "Deployees mutext test.", "Usage: mTest", &mutextest},
 
-
 	};
 
 int main(int argc, char ** argv) {
