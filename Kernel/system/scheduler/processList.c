@@ -188,6 +188,10 @@ void resetCursor(list l) {
 	l->cursor = NULL;
 }
 
+int getSize(list l) {
+	return l->size;
+}
+
 void printList(list l) {
 	int index = 1;
 	node *current = l->head;

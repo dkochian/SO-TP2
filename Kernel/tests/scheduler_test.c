@@ -14,12 +14,12 @@ void startSchedulerTest() {
 	if(pA == INVALID_PROCESS_ID) {
 		print("Couldn't create process A", -1);
 		printNewline();
+		return;
 	}
-	else {
-		print("Process A id: ", -1);
-		printDec(pA, -1);
-		printNewline();
-	}
+	
+	print("Process A id: ", -1);
+	printDec(pA, -1);
+	printNewline();
 
 	print("Creating process B", -1);
 	printNewline();
@@ -27,12 +27,13 @@ void startSchedulerTest() {
 	if(pB == INVALID_PROCESS_ID) {
 		print("Couldn't create process B", -1);
 		printNewline();
+		freeProcess(pA);
+		return;
 	}
-	else {
-		print("Process B id: ", -1);
-		printDec(pB, -1);
-		printNewline();
-	}
+	
+	print("Process B id: ", -1);
+	printDec(pB, -1);
+	printNewline();
 }
 
 int processA(int argc, char **argv) {

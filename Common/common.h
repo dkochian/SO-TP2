@@ -43,8 +43,7 @@
 	#define MISLOCK				22
 	#define BLOCKSELF			23
 	#define WAITPID				24
-	#define RELEASEPID			25
-	#define DRAWSQUARE			26
+	#define DRAWSQUARE			25
 
 
 	//Keyboard

@@ -21,6 +21,7 @@
 	bool exists(list l, element_t item);
 	bool setNext(list l, element_t item);
 	list buildList(bool (*f) (element_t , element_t));
+	int getSize(list l);
 
 	void printList(list l);
 	void printSize(list l);

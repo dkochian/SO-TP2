@@ -10,12 +10,13 @@
 extern void _timerTickHandler();
 
 static void freeProcessId(uint64_t id);
+static void addWaitProcess(process *child);
 static uint64_t getNewProcessId(process *p);
+static void removeWaitProcess(process *child);
 static int startProcess(func f, int argc, char **argv);
 static void *buildStacKFrame(void *rsp, func f, int argc, char **argv);
 
 static process **process_table;
-
 static mutex *p_mutex;
 
 bool buildProcessManager() {
@@ -95,6 +96,7 @@ void freeProcess(int pid) {
 		return;
 
 	removeProcess(p);	//Remove the process from the scheduler
+	removeWaitProcess(p);
 	freeProcessId(pid);	//Free the process id
 
 	destroyList(p->wait_list);
@@ -102,61 +104,13 @@ void freeProcess(int pid) {
 	k_free(p);
 }
 
-void addWaitProcess(process *child) {
-	if(child == NULL)
-		return;
-
-	process *father = getProcessFromId(child->father);
-
-	if(father == NULL)
-		return;
-
-	add(father->wait_list, child);
-
-	if(father->state != BLOCKED)
-		father->state = BLOCKED;
-}
-
-void removeWaitProcess(process *child) {
-	if(child == NULL)
-		return;
-
-	process *father = getProcessFromId(child->father);
-
-	if(father == NULL)
-		return;
-
-	remove(father->wait_list, child);
-
-	if(isEmpty(father->wait_list) == true)
-		father->state = WAITING;
-}
-
 void waitPid(uint64_t pid){
-	if (pid < 1)
-		return;
-
 	process *p = getProcessFromId(pid);
 
 	if(p == NULL)
 		return;
 
 	addWaitProcess(p);
-}
-
-void releasePid(uint64_t pid){
-	if (pid < 1)
-		return;
-
-	process *p = getProcessFromId(pid);
-
-	if(p == NULL)
-		return;
-
-	removeWaitProcess(p);
-
-	removeProcess(p);
-
 }
 
 process *getFirstWaitProcess(process *father) {
@@ -183,27 +137,44 @@ process *getProcessFromId(uint64_t id) {
 	return p;
 }
 
-uint64_t getNumerProcess(){
+static void addWaitProcess(process *child) {
+	if(child == NULL)
+		return;
 
-	uint64_t number = 0;
+	process *father = getProcessFromId(child->father);
 
-	lock(p_mutex);
-	for(int i=0; i<MAX_PROCESSES; i++) {
-		if(process_table[i] != NULL) {
-			number++;
-		}
+	if(father == NULL)
+		return;
+
+	add(father->wait_list, child);
+
+	if(father->state != BLOCKED) {
+		father->state = BLOCKED;
+		_yield();
 	}
-	unlock(p_mutex);
+}
 
-	return number;
+static void removeWaitProcess(process *child) {
+	if(child == NULL)
+		return;
+
+	process *father = getProcessFromId(child->father);
+
+	if(father == NULL)
+		return;
+
+	remove(father->wait_list, child);
+
+	if(isEmpty(father->wait_list) == true)
+		father->state = WAITING;
 }
 
 static int startProcess(func f, int argc, char **argv) {
 	if(f != NULL)
 		f(argc, argv);
 
-	removeProcess(getCurrentProcess());
-	_timerTickHandler();
+	freeProcess(getCurrentProcess()->id);
+	_yield();
 	return 0;
 }
 

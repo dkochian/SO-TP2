@@ -55,7 +55,8 @@ void unlock(mutex* l) {
     if(isEmpty(l->q_list) == false) {
         process* p = getFirst(l->q_list);
         unBlockProcess(p->id);
-    } else {
-        _unlock(&l->lock);
+        return;
     }
+    
+    _unlock(&l->lock);
 }

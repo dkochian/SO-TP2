@@ -49,7 +49,7 @@ bool addProcess(process *p) {
 	return res;
 }
 
-bool removeProcess(process *p) {
+bool removeProcess(process *p) { //should have locks but can't maybe caller (freeProcess also can't be locked)
 	bool res = false;
 
 	if(p == NULL)
@@ -61,14 +61,12 @@ bool removeProcess(process *p) {
 		return false;
 	} 
 		
-	lock(s_mutex);
 	res = remove(waiting_list, p);
-	if (!k_strcmp(p->name, "Shell")){
+	/*if(!k_strcmp(p->name, "Shell")) {
 		clear();
 		print("See you on the other side....", RED);
-	}
+	}*/
 	killProcess(p);
-	unlock(s_mutex);
 
 	return res;
 }
@@ -165,11 +163,9 @@ static void killProcess(process *p) {			//We should have to run sheduler again i
 
 	child = getFirstWaitProcess(p);
 	while(child != NULL) {
-		killProcess(child);
+		freeProcess(child->id);
 		child = getFirstWaitProcess(p);
 	}
-
-	freeProcess(p->id);
 }
 
 static process *schedule() {
@@ -185,15 +181,15 @@ static process *schedule() {
 		p = peekFirst(waiting_list);
 		if(p == NULL)
 			break;
-	} while(p->state == BLOCKED );
+	} while(p->state == BLOCKED);
 
 	return p;
 }
 
-psContext *processesStatus(){
+psContext *processesStatus() {
 
 	char buffer[10] = {0};
-	uint64_t aux = getNumerProcess();
+	int aux = getSize(waiting_list);
 	int i;
 
 	psContext * res = k_malloc(sizeof(psContext));

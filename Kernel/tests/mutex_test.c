@@ -1,4 +1,3 @@
-#include "../include/clock.h"
 #include "../include/mutex.h"
 #include "include/mutex_test.h"
 #include "../drivers/include/video.h"
@@ -26,12 +25,12 @@ void startLockTest() {
 	if(pC == INVALID_PROCESS_ID) {
 		print("Couldn't create process C", -1);
 		printNewline();
+		return;
 	}
-	else {
-		print("Process C id: ", -1);
-		printDec(pC, -1);
-		printNewline();
-	}
+
+	print("Process C id: ", -1);
+	printDec(pC, -1);
+	printNewline();
 
 	print("Creating process D", -1);
 	printNewline();
@@ -39,16 +38,17 @@ void startLockTest() {
 	if(pD == INVALID_PROCESS_ID) {
 		print("Couldn't create process D", -1);
 		printNewline();
+		freeProcess(pC);
+		return;
 	}
-	else {
-		print("Process D id: ", -1);
-		printDec(pD, -1);
-		printNewline();
-	}
+
+	print("Process D id: ", -1);
+	printDec(pD, -1);
+	printNewline();
 }
-static int counter = 0;
-static int counter2 = 0;
+
 int processC(int argc, char **argv) {
+	int counter = 0;
 	print("process C OK", -1);
 	printNewline();
 	
@@ -59,20 +59,19 @@ int processC(int argc, char **argv) {
 		printDec(var, -1);
 		printNewline();
 		unlock(m);
-		if (counter == 3){
+		if(counter == 3){
 			counter = 0;
 			clear();
-		}else{
-			counter++;
 		}
-		
-		//sleep(1);
+		else
+			counter++;
 	}
 
 	return 0;
 }
 
 int processD(int argc, char **argv) {
+	int counter = 0;
 	print("process D OK", -1);
 	printNewline();
 
@@ -83,13 +82,12 @@ int processD(int argc, char **argv) {
 		printDec(var, -1);
 		printNewline();
 		unlock(m);
-		if (counter2 == 2){
-			counter2 = 0;
+		if(counter == 2) {
+			counter = 0;
 			clear();
-		}else{
-			counter2++;
 		}
-		//sleep(1);
+		else
+			counter++;
 	}
 
 	return 0;

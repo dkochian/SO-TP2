@@ -62,11 +62,9 @@
 
 	void freeProcess(int pid);
 	bool buildProcessManager();
-	void addWaitProcess(process *child);
+	process *getFirstWaitProcess(process *father);	
 	bool equal(process *p1, process *p2);
 	process *getProcessFromId(uint64_t id);
-	void removeWaitProcess(process *child);
-	process *getFirstWaitProcess(process *father);
 	uint64_t newProcess(char* name, func f, int argc, char **argv);
 	void waitPid(uint64_t pid);
 	void releasePid(uint64_t pid);

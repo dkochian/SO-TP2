@@ -33,7 +33,6 @@ void getTime(timeStruct* timeSystem) {
 }
 
 void getDate(dateStruct* date) {
-	printn("dentro de syscall user");
 	_syscall(GETDATE, (uintptr_t) date, NULL, NULL, NULL, NULL);
 }
 
@@ -110,10 +109,6 @@ void blockMyself() {
 
 void wPid(uint64_t pid) {
 	_syscall(WAITPID, pid, NULL, NULL, NULL, NULL);
-}
-
-void rPid(uint64_t pid) {
-	_syscall(RELEASEPID, pid, NULL, NULL, NULL, NULL);
 }
 
 void drawSquare(uint16_t x, uint16_t y, uint16_t l, char colorCode) {

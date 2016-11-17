@@ -12,6 +12,7 @@
 
 //Tests (AKA should be removed)
 #include "tests/include/mutex_test.h"
+#include "tests/include/waitpid_test.h"
 #include "tests/include/scheduler_test.h"
 
 extern uint8_t text;
@@ -160,8 +161,9 @@ int main() {
 	//Tests
 	//startSchedulerTest();
 	//startLockTest();
+	startWaitpidTest();
 
-	((EntryPoint)sampleCodeModuleAddress)();
+	//((EntryPoint)sampleCodeModuleAddress)();
 
 	return 0;
 }
