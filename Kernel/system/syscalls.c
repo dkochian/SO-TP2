@@ -11,7 +11,7 @@
 static void write(int out, char* str, int size);
 static void read(int in, char* buffer, char aux);
 
-void sysCallHandler(uint64_t arg1, uint64_t arg2, uint64_t arg3, uint64_t arg4, uint64_t arg5) {
+void sysCallHandler(uint64_t arg1, uint64_t arg2, uint64_t arg3, uint64_t arg4, uint64_t arg5, uint64_t arg6) {
 	switch(arg1) {
 		case SYSWRITE:
 			write(arg2, (char*) arg3, (int) arg4);
@@ -25,8 +25,10 @@ void sysCallHandler(uint64_t arg1, uint64_t arg2, uint64_t arg3, uint64_t arg4, 
 		case GETTIME:
 			getTime((timeStruct*) arg2);
 			break;
-		case GETDATE:
+		case GETDATE:{
+			print("adentro DAte",-1);
 			getDate(arg2);
+		}
 			break;
 		case SLEEP:
 			sleep((int) arg2);
@@ -41,7 +43,7 @@ void sysCallHandler(uint64_t arg1, uint64_t arg2, uint64_t arg3, uint64_t arg4, 
 			k_free((void *) arg2);
 			break;
 		case NEWPROCESS:
-			newProcess((char *) arg2, (func) arg3, (int)arg4, (char**)arg5);
+			*((uintptr_t *) arg6) = newProcess((char *) arg2, (func) arg3, (int)arg4, (char**)arg5);
 			break;
 		case KILLPROCESS:
 			removeProcess(getProcessFromId((uint64_t)arg2));
@@ -66,6 +68,15 @@ void sysCallHandler(uint64_t arg1, uint64_t arg2, uint64_t arg3, uint64_t arg4, 
 			break;
 		case MDESTROY:
 			destroyLock((mutex*) arg3);
+			break;
+		case BLOCKSELF:
+			blockProcess(getCurrentProcess()->id);
+			break;
+		case WAITPID:
+			//blockProcess(getCurrentProcess()->id);
+			break;
+		case RELEASEPID:
+			//blockProcess(getCurrentProcess()->id);
 			break;
 		default:
 			write(STDERR, "Error: Invalid system call.", 28);

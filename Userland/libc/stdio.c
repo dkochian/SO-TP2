@@ -7,6 +7,14 @@ void putchar(char c) {
 	write(STDOUT, &c, 1);
 }
 
+void putcharColor(char c, char color) {
+	char bColor;
+	getColor(&bColor);
+	setColor(color);
+	putchar(c);
+	setColor(bColor);
+}
+
 char getchar(char write) {
 	char c;
 

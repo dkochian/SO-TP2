@@ -34,16 +34,14 @@ void pidCommand(char *str) {
 		helpCommand("pid");
 		return;
 	}
-	uint64_t  res = -1;
-	pid(&res);
 	printColor("El pid actual es : ", LIGHT_BLUE);
-	printNum(res);
+	printNum(pid());
 	printNewline();
 }
 
 void psCommand(char *str){
 	psContext * allProcess = ps();
-
+	char separate = allProcess->separateChar;
 	
 	printColor("Number of processes: ", LIGHT_GRAY);
 	printNum(allProcess->numbProcess);
@@ -60,10 +58,10 @@ void psCommand(char *str){
 		while( c != '\0'){
 			c = allProcess->processes[i][index++];
 			
-			if (c == '&' && term == 0){
+			if (c == separate && term == 0){
 				printColor("   NAME : ", LIGHT_MAGENTA);
 				term++;
-			}else if (c == '&' && term == 1){
+			}else if (c == separate && term == 1){
 				printColor("     STATE :", LIGHT_MAGENTA);
 				term++;
 			}else if (term == 2)	{
@@ -138,10 +136,9 @@ void dateCommand(char* str) {
 		helpCommand("date");
 		return;
 	}
-
 	dateStruct
 		date;
-
+	printn("adentro dateCommand");
 	getDate(&date);
 
 	print("Hoy es ");

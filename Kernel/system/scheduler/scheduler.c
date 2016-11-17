@@ -24,7 +24,7 @@ bool buildScheduler() {
 	if(waiting_list == NULL)
 		return false;
 
-	newProcess("PuppetMaster", NULL, 0, NULL);
+	newProcess("Master of the Puppets", NULL, 0, NULL);
 
 	s_mutex = initLock();
 	if (s_mutex == NULL) 
@@ -55,6 +55,12 @@ bool removeProcess(process *p) {
 	if(p == NULL)
 		return res;
 
+	if(p->id == 0){//You can't kill dummy
+		print("Master of the Puppets is undestructable....", RED);
+		printNewline();
+		return false;
+	} 
+		
 	lock(s_mutex);
 	res = remove(waiting_list, p);
 	if (!k_strcmp(p->name, "Shell")){
@@ -135,11 +141,7 @@ uint64_t contextSwitch(uint64_t stack) {
 	/*print("old: ", -1);
 	print(current_process->name, -1);
 	print(" || new: ", -1);*/
-	current_process->foreground = false;
-
 	current_process = schedule();
-
-	current_process->foreground = true;
 
 	/*print(current_process->name, -1);
 	printNewline();*/
@@ -159,8 +161,6 @@ static void killProcess(process *p) {			//We should have to run sheduler again i
 	process *child;
 
 	if(p == NULL)
-		return;
-	if(p->id == 0) //You can't kill dummy
 		return;
 
 	child = getFirstWaitProcess(p);
@@ -190,7 +190,7 @@ static process *schedule() {
 	return p;
 }
 
-psContext * processesStatus(){
+psContext *processesStatus(){
 
 	char buffer[10] = {0};
 	uint64_t aux = getNumerProcess();
@@ -199,6 +199,7 @@ psContext * processesStatus(){
 	psContext * res = k_malloc(sizeof(psContext));
 	res->numbProcess = aux;
 	res->processes = k_malloc(sizeof(char)* aux);
+	res->separateChar = '&';
 
 	res->processes[0] = k_malloc(sizeof(char) * 60);
 	k_itoa(current_process->id, buffer);

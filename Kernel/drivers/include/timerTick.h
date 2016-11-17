@@ -5,6 +5,7 @@
 
 	#include <stdint.h>
 
-	uint64_t timerTickHandler(uint64_t s_frame) ;
+	uint64_t timerTickHandler(uint64_t s_frame);
+	void resetTickCounter();
 
 #endif

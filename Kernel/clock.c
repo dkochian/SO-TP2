@@ -21,6 +21,7 @@ void getTime(uint64_t time) {
 }
 
 void getDate(uint64_t date) {
+	print("adentro DAte",-1);
 	dateStruct*
 		aux = (dateStruct*) date;
 	uint8_t
