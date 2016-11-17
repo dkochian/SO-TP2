@@ -16,21 +16,27 @@
 	void clear();
 	void sleep(int seconds);
 	void putPixel(uint16_t x, uint16_t y, ColorRGB* color);
+
 	void* malloc(size_t size);
 	void free(void *ptr);
+
 	uint64_t newProcess(char * name, func f, int argc, char** argv);
 	void kill(uint64_t pid);
 	void block(uint64_t pid);
 	void unblock(uint64_t pid);
 	psContext *ps();
 	uint64_t pid();
-	void yield();
+	void wPid(uint64_t pid);
+	void rPid(uint64_t pid);
 
+	void yield();
 	void* sysMutexInit();
 	void sysMutexLock(void* m);
 	void sysMutexUnlock(void* m);
 	void sysMutexDestroy(void* m);
+	void sysMutexIsLocked(void *m, bool *res);
 
 	void blockMyself();
+	void drawSquare(uint16_t x, uint16_t y, uint16_t l, char color);
 
 #endif

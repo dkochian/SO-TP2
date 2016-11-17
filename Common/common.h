@@ -40,9 +40,12 @@
 	#define MLOCK				19
 	#define MUNLOCK				20
 	#define MDESTROY			21
-	#define BLOCKSELF			22
-	#define WAITPID				23
-	#define RELEASEPID			24
+	#define MISLOCK				22
+	#define BLOCKSELF			23
+	#define WAITPID				24
+	#define RELEASEPID			25
+	#define DRAWSQUARE			26
+
 
 	//Keyboard
 	#define EMPTY				0

@@ -16,6 +16,6 @@ uint64_t timerTickHandler(uint64_t s_frame) {
 }
 
 void resetTickCounter() {
-	print("asdf", -1);
+	//print("asdf", -1);
 	tickCount = 0;
 }

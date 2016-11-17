@@ -15,5 +15,6 @@
     void destroyLock(mutex *l);
     void lock(mutex *l);
     void unlock(mutex *l);
+    bool isLock(mutex *l);
 
 #endif

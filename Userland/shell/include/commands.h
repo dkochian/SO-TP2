@@ -17,5 +17,6 @@
 	void disclaimerCommand(char* str);
 	void resetCommand(char* str);
 	void colorBgCommand(char* str);
+	void mutextest();
 
 #endif

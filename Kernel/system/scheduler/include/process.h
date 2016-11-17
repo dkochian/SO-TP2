@@ -68,5 +68,7 @@
 	void removeWaitProcess(process *child);
 	process *getFirstWaitProcess(process *father);
 	uint64_t newProcess(char* name, func f, int argc, char **argv);
+	void waitPid(uint64_t pid);
+	void releasePid(uint64_t pid);
 
 #endif

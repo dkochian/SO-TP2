@@ -23,6 +23,7 @@
 	void setBgDefaultColor(char color);
 	char getDefaultColor();
 	void printPixel(uint16_t x, uint16_t y, ColorRGB* color);
+	void drawSquare(uint16_t x, uint16_t y, uint16_t l, char color);
 	void printToast(const char* str, int size);
 
 #endif

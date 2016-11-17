@@ -69,14 +69,20 @@ void sysCallHandler(uint64_t arg1, uint64_t arg2, uint64_t arg3, uint64_t arg4, 
 		case MDESTROY:
 			destroyLock((mutex*) arg3);
 			break;
+		case MISLOCK:
+			*((uintptr_t *) arg2) =  isLock((mutex*) arg3);
+			break;
 		case BLOCKSELF:
 			blockProcess(getCurrentProcess()->id);
 			break;
 		case WAITPID:
-			//blockProcess(getCurrentProcess()->id);
+			waitPid((uint64_t) arg2);
 			break;
 		case RELEASEPID:
-			//blockProcess(getCurrentProcess()->id);
+			releasePid((uint64_t) arg2);
+			break;
+		case DRAWSQUARE:
+			drawSquare((uint16_t) arg2, (uint16_t) arg3, (uint16_t) arg4, (char) arg5);
 			break;
 		default:
 			write(STDERR, "Error: Invalid system call.", 28);
