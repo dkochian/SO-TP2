@@ -31,4 +31,6 @@
 	void sysMutexUnlock(void* m);
 	void sysMutexDestroy(void* m);
 
+	void blockMyself();
+
 #endif
