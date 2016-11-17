@@ -24,7 +24,7 @@ bool buildScheduler() {
 	if(waiting_list == NULL)
 		return false;
 
-	newProcess("PuppetMaster", NULL, 0, NULL);
+	newProcess("Master of the Puppets", NULL, 0, NULL);
 
 	s_mutex = initLock();
 	if (s_mutex == NULL) 
@@ -135,11 +135,7 @@ uint64_t contextSwitch(uint64_t stack) {
 	/*print("old: ", -1);
 	print(current_process->name, -1);
 	print(" || new: ", -1);*/
-	current_process->foreground = false;
-
 	current_process = schedule();
-
-	current_process->foreground = true;
 
 	/*print(current_process->name, -1);
 	printNewline();*/

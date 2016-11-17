@@ -33,6 +33,7 @@ void getTime(timeStruct* timeSystem) {
 }
 
 void getDate(dateStruct* date) {
+	printn("dentro de syscall user");
 	_syscall(GETDATE, (uintptr_t) date, NULL, NULL, NULL);
 }
 

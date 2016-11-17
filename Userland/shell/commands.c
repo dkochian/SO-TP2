@@ -34,7 +34,7 @@ void pidCommand(char *str) {
 		helpCommand("pid");
 		return;
 	}
-	uint64_t  res = -1;
+	uint32_t  res = -1;
 	pid(&res);
 	printColor("El pid actual es : ", LIGHT_BLUE);
 	printNum(res);
@@ -138,10 +138,9 @@ void dateCommand(char* str) {
 		helpCommand("date");
 		return;
 	}
-
 	dateStruct
 		date;
-
+	printn("adentro dateCommand");
 	getDate(&date);
 
 	print("Hoy es ");

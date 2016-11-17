@@ -155,7 +155,7 @@ int main() {
 	print(" ]", -1);
 	printNewline();
 	
-	//clear();
+	clear();
 
 	//Tests
 	//startSchedulerTest();
