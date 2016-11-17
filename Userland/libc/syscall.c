@@ -75,7 +75,7 @@ psContext* ps() {
 uint64_t pid() {
 	uint64_t res;
 	_syscall(PID,(uintptr_t) &res, NULL, NULL, NULL, NULL);
-	 return res;
+	return res;
 }
 
 void yield() {
@@ -87,15 +87,31 @@ void* sysMutexInit() {
 	_syscall(MINIT, NULL, (uintptr_t) &res, NULL, NULL, NULL);
 	return (void *) res;
 }
+
 void sysMutexLock(void* m) {
 	_syscall(MLOCK, NULL, (uintptr_t) m, NULL, NULL, NULL);
 }
+
 void sysMutexUnlock(void* m) {
 	_syscall(MUNLOCK, NULL, (uintptr_t) m, NULL, NULL, NULL);
 }
+
 void sysMutexDestroy(void* m) {
 	_syscall(MDESTROY, NULL, (uintptr_t) m, NULL, NULL, NULL);
 }
+
+void sysMutexIsLocked(void *m, bool*res) {
+	_syscall(MISLOCK, (uintptr_t) res, (uintptr_t) m, NULL, NULL, NULL);
+}
+
 void blockMyself() {
 	_syscall(BLOCKSELF, NULL, NULL, NULL, NULL, NULL);
+}
+
+void wPid(uint64_t pid) {
+	_syscall(WAITPID, pid, NULL, NULL, NULL, NULL);
+}
+
+void rPid(uint64_t pid) {
+	_syscall(RELEASEPID, pid, NULL, NULL, NULL, NULL);
 }

@@ -11,32 +11,38 @@ static int readNumber();
 
 void echoCommand(char* str) {
 	printn(str);
+	//rPid(pid());
 }
 
 void helpCommand(char* str) {
 	commandExec* struc = getAllCommands();
 	if(str[0] == '\0') {
 		printn(struc[1].help);
+		//rPid(pid());
 		return;
 	}
 	for(int index = 0; index < MAX_COMMANDS; index++) {
 		if(struc[index].created == true && strcmp(str, struc[index].name) == 0) {
 			printn(struc[index].help);
+			//rPid(pid());
 			return;
 		}
 	}
 	printColor("Error", COLOR_ERROR);
 	printn(": The command do not exist.");
+	//rPid(pid());
 }
 
 void pidCommand(char *str) {
 	if(strlen(str)) {
 		helpCommand("pid");
+		//rPid(pid());
 		return;
 	}
 	printColor("El pid actual es : ", LIGHT_BLUE);
 	printNum(pid());
 	printNewline();
+	//rPid(pid());
 }
 
 void psCommand(char *str){
@@ -90,28 +96,34 @@ void psCommand(char *str){
 	}
 	free(allProcess->processes);
 	free(allProcess);
+	//rPid(pid());
 }
 
 void killCommand(char* str) {
 	int pidNumber = strint(str);
 	if(pidNumber == -1 || strlen(str) == 0) {
 		helpCommand("kill");
+		//rPid(pid());
 		return;
 	}
 	kill((uint64_t) pidNumber);
+	//rPid(pid());
 }
 
 void clearCommand(char* str) {
 	if(strlen(str)) {
 		helpCommand("clear");
+		//rPid(pid());
 		return;
 	}
 	clear();
+	//rPid(pid());
 }
 
 void commandsCommand(char* str) {
 	if(strlen(str)) {
 		helpCommand("commands");
+		//rPid(pid());
 		return;
 	}
 
@@ -129,11 +141,13 @@ void commandsCommand(char* str) {
 		}
 	}	
 	printn("---------- End Commands ---------");
+	//rPid(pid());
 }
 
 void dateCommand(char* str) {
 	if(strlen(str)) {
 		helpCommand("date");
+		//rPid(pid());
 		return;
 	}
 	dateStruct
@@ -209,11 +223,13 @@ void dateCommand(char* str) {
 	print(" de 20");
 	printNum(date.year);
 	printNewline();
+	//rPid(pid());
 }
 
 void timeCommand(char* str) {
 	if(strlen(str)) {
 		helpCommand("time");
+		//rPid(pid());
 		return;
 	}
 
@@ -239,11 +255,13 @@ void timeCommand(char* str) {
 		printNum(0);
 	printNum(timeSystem.secs);
 	printNewline();
+	//rPid(pid());
 }
 
 void sleepCommand(char* str) {
 	if(!strlen(str)) {
 		helpCommand("sleep");
+		//rPid(pid());
 		return;
 	}
 	int
@@ -252,6 +270,7 @@ void sleepCommand(char* str) {
 	if(seconds == -1) {
 		printColor("Error", COLOR_ERROR);
 		printn(": Invalid number of seconds.");
+		//rPid(pid());
 		return;		
 	}
 
@@ -262,6 +281,7 @@ void fractalCommand(char* str) {
 	clearCommand(str);
 	if(strlen(str)) {
 		helpCommand("fractal");
+
 		return;
 	}
 	fractal(readNumber());
@@ -279,6 +299,7 @@ void fractalCommand(char* str) {
 void creditsCommand(char* str) {
 	if(strlen(str)) {
 		helpCommand("credits");
+		//rPid(pid());
 		return;
 	}
 
@@ -296,11 +317,13 @@ void creditsCommand(char* str) {
 	printnColor("\tFractal:", COLOR_INFO);
 	printn("Gaston Julia");
 	printn("-------------------------------");
+	//rPid(pid());
 }
 
 void colorCommand(char* str) {
 	if(!strlen(str)) {
 		helpCommand("color");
+		//rPid(pid());
 		return;
 	}
 
@@ -309,15 +332,18 @@ void colorCommand(char* str) {
 	if(color < 0 || color > 15) {
 		printColor("Error", COLOR_ERROR);
 		printn(": Invalid color. Type help color for more information");
+		//rPid(pid());
 		return;
 	}
 	
 	setColor(color);
+	//rPid(pid());
 }
 
 void colorBgCommand(char* str) {
 	if(!strlen(str)) {
 		helpCommand("background");
+		//rPid(pid());
 		return;
 	}
 
@@ -326,16 +352,19 @@ void colorBgCommand(char* str) {
 	if(color < 0 || color > 15) {
 		printColor("Error", COLOR_ERROR);
 		printn(": Invalid color. Type help color for more information");
+		//rPid(pid());
 		return;
 	}
 	
 	setBgColor(color);
 	clearCommand("");
+	//rPid(pid());
 }
 
 void disclaimerCommand(char* str) {
 	if(strlen(str)) {
 		helpCommand("disclaimer");
+		//rPid(pid());
 		return;
 	}
 
@@ -349,6 +378,7 @@ void disclaimerCommand(char* str) {
 	printColor ("BUTTERFLY", COLOR_ERROR);
 	printnColor(".                                           |", 0x07);
 	printnColor("|-----------------------------------------------------|", 0x07);
+	//rPid(pid());
 }
 
 static int readNumber(){
@@ -360,32 +390,51 @@ static int readNumber(){
     number += stringNumber[index];
     index++;
   }
+  //rPid(pid());
   return number;
 }
-
-
-
 void mutextest() {
-	/*mutex * m;
-	m = mutexInit();
-	if (m == NULL) 
-		printn("Mutex could not be created");
-	else
-		printn("Mutex created");
+	void * m;
+	bool lock;
 
-	mutexLock(m);
+	m = sysMutexInit();
+	if (m == NULL) {
+		printn("Couldn't create the mutex.");
+		printNewline();
+		return;
+	}
+	else{
+		printn("Could create the mutex.");
+		printNewline();
+	}	
 
-	if(m->lock == 1)
+	sysMutexLock(m);
+	sysMutexIsLocked(m,&lock);
+	if( lock == true) {
 		printColor("Locked successfully", COLOR_INFO);
-	else
+		printNewline();
+	}
+	else {
 		printColor("Lock failed", COLOR_ERROR);
+		printNewline();
+		return;
+	}
 
-	mutexUnlock(m);
-	if(m->lock == 0)
-		printColor("Unlocked successfully", COLOR_INFO);
-	else 
+	sysMutexUnlock(m);
+	sysMutexIsLocked(m,&lock);
+	if( lock == false) {
+		printColor("Unlocked successfully", YELLOW);
+		printNewline();
+		printNewline();
+	}
+	else{ 
 		printColor("Unlock failed", COLOR_ERROR);
+		printNewline();
+		return;
+	}
 
-	mutexDestroy(m);
-	printn("Mutex destroyed");*/
+	sysMutexDestroy(m);
+	printn("Mutex destroyed");
+	//rPid(pid());
+
 }

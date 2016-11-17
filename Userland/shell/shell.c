@@ -36,7 +36,8 @@ commandExec
 		{true, "pid", "Prints the process pid.", "Usage: pid", &pidCommand},
 		{true, "kill", "Kills the selected process.", "Usage: kill <pid>", &killCommand},
 		{true, "ps", "Prints all the processes information.", "Usage: ps", &psCommand},
-		{true, "philosophers", "Starts Dining Philosophers problem.", "Usage: philosophers", &philosophers}
+		{true, "mTest", "Deployees mutext test.", "Usage: mTest", &mutextest},
+
 
 	};
 
@@ -177,9 +178,9 @@ static void clearBuffer(commandData* cmd) {
 static int executeCommand(commandData cmd) {
 	for(int index = 0; index < MAX_COMMANDS; index++) {
 		if(commandTable[index].created == true && strcmp(cmd.name, commandTable[index].name) == 0) {
-			//newProcess(cmd.name, commandTable[index].func, NULL, cmd.args);
-			//if(strcmp(cmd->name, "fractal") != 0)
-			//	sys_waitpid(pid);
+			/*uint64_t pid = newProcess(cmd.name, commandTable[index].func, NULL, cmd.args);
+			if(strcmp(cmd.name, "fractal") != 0)
+				wPid(pid);*/
 
 			commandTable[index].func(cmd.args);
 			return 1;

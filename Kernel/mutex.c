@@ -35,6 +35,10 @@ void destroyLock(mutex *l) {
     k_free(l);
 }
 
+bool isLock(mutex *l){
+    return l->lock;
+}
+
 void lock(mutex *l) {
     if(_lock(&l->lock) == 1) {
         process *p = getCurrentProcess();

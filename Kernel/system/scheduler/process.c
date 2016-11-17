@@ -132,6 +132,33 @@ void removeWaitProcess(process *child) {
 		father->state = WAITING;
 }
 
+void waitPid(uint64_t pid){
+	if (pid < 1)
+		return;
+
+	process *p = getProcessFromId(pid);
+
+	if(p == NULL)
+		return;
+
+	addWaitProcess(p);
+}
+
+void releasePid(uint64_t pid){
+	if (pid < 1)
+		return;
+
+	process *p = getProcessFromId(pid);
+
+	if(p == NULL)
+		return;
+
+	removeWaitProcess(p);
+
+	removeProcess(p);
+
+}
+
 process *getFirstWaitProcess(process *father) {
 	if(father == NULL)
 		return NULL;
