@@ -67,6 +67,9 @@ void sysCallHandler(uint64_t arg1, uint64_t arg2, uint64_t arg3, uint64_t arg4, 
 		case MDESTROY:
 			destroyLock((mutex*) arg3);
 			break;
+		case BLOCKSELF:
+			blockProcess( getCurrentProcess()->id );
+			break;
 		default:
 			write(STDERR, "Error: Invalid system call.", 28);
 			break;
