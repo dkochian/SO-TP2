@@ -1,5 +1,4 @@
 #include "../include/mutex.h"
-#include "include/mutex_test.h"
 #include "../drivers/include/video.h"
 #include "../system/scheduler/include/process.h"
 #include "../system/scheduler/include/scheduler.h"

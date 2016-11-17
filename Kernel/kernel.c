@@ -14,6 +14,7 @@
 #include "tests/include/mutex_test.h"
 #include "tests/include/waitpid_test.h"
 #include "tests/include/scheduler_test.h"
+#include "tests/include/freeprocess_test.h"
 
 extern uint8_t text;
 extern uint8_t rodata;
@@ -161,7 +162,8 @@ int main() {
 	//Tests
 	//startSchedulerTest();
 	//startLockTest();
-	startWaitpidTest();
+	//startWaitpidTest();
+	startFreeProcessTest();
 
 	//((EntryPoint)sampleCodeModuleAddress)();
 

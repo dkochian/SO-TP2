@@ -1,6 +1,4 @@
 #include "../include/clock.h"
-#include "../include/mutex.h"
-#include "include/waitpid_test.h"
 #include "../drivers/include/video.h"
 #include "../system/scheduler/include/process.h"
 #include "../system/scheduler/include/scheduler.h"
@@ -8,22 +6,22 @@
 static int processA(int argc, char **argv);
 
 void startWaitpidTest() {
-	uint64_t pE;
+	uint64_t pA;
 
 	print("Creating \"Waitpid process A\"", -1);
 	printNewline();
-	pE = newProcess("Waitpid process A", processA, 0, NULL);
-	if(pE == INVALID_PROCESS_ID) {
+	pA = newProcess("Waitpid process A", processA, 0, NULL);
+	if(pA == INVALID_PROCESS_ID) {
 		print("Couldn't create \"Waitpid process A\"", -1);
 		printNewline();
 		return;
 	}
 
 	print("I'll wait for \"Waitpid process A\" (id: ", -1);
-	printDec(pE, -1);
+	printDec(pA, -1);
 	print(")", -1);
 	printNewline();
-	waitPid(pE);
+	waitPid(pA);
 	print("Hey I can run again!", -1);
 	printNewline();
 }

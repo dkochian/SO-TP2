@@ -1,5 +1,4 @@
 #include "../include/clock.h"
-#include "include/scheduler_test.h"
 #include "../drivers/include/video.h"
 #include "../system/scheduler/include/process.h"
 #include "../system/scheduler/include/scheduler.h"
