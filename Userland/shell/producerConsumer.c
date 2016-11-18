@@ -5,7 +5,6 @@
 #include <string.h>
 #include <syscall.h>
 #include "include/producerConsumer.h"
-#include "../libc/include/mutex.h"
 #include "../libc/include/semaphore.h"
 
 
@@ -17,8 +16,6 @@ static int consumer(int argc, char **argv);
 static void control();
 
 extern int bufferSize;
-
-static mutex_u_t printMutex;
 
 static sem_u_t itemMutex;
 static sem_u_t emptyCount;
@@ -32,8 +29,6 @@ int producerConsumer(int argc, char ** argv) {
 	int i = 0;
 
 	//Semaphore creation
-
-	printMutex = initLock();
 
 	//Mutexes buffer access
 	itemMutex = sem_open("itemMutex", 700);
@@ -92,12 +87,10 @@ static int producer(int argc, char **argv) {
 		sleep(prodSleepTime);
 //		printn("DESPUES SLEEP");
 
-//		lock(printMutex);
 		item = rand()%100;
 		print("Produce ");
 		printNum(item);
 		printNewline();
-//		unlock(printMutex);
 
 
 		//Decrement the count of empty slots in the buffer (semaphore goes down)
@@ -131,11 +124,9 @@ static int consumer(int argc, char **argv) {
 
 		//Increment the count of empty slots in the buffer (semaphore goes up)
 		sem_post(emptyCount);
-//		lock(printMutex);
 		print("Consume ");
 		printNum(item);
 		printNewline();
-//		unlock(printMutex);
 	}
 
 	return 0;
