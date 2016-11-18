@@ -304,20 +304,39 @@ void creditsCommand(char* str) {
 	}
 
 	printn("------------Credits------------");
-	printnColor("\tOfficial Coder:", COLOR_INFO);
-	printn("Jonas Kochian");
-	printnColor("\tButterfly coder:", COLOR_INFO);
-	printn("Juan Pablo Fernandes Rojo");
-	printnColor("\tSales Manager:", COLOR_INFO);
-	printn("Martin Capparelli");
-	printn("Julian Sevilla");
+	printnColor("\tOfficial Coders:", COLOR_INFO);
+
+	printn("Juan Fraser\t53100");
+	printn("Mariano Garrigó Montagna\t54393");
+	printn("Juan Pablo Fernandes Rojo\t53164");
+	printn("Jonas Kochian\t54110");
+
 	printnColor("\tBarebones:",COLOR_INFO);
-	printn("Rodrigo Rearden (RowDaBoat)");
-	printn("Augusto Nizzo Mc Intosh");
+	printn("Rodrigo Rearden");
+	printn("Ariel Godio");
 	printnColor("\tFractal:", COLOR_INFO);
 	printn("Gaston Julia");
 	printn("-------------------------------");
 	//rPid(pid());
+}
+void ipcCommand(char* str){
+	if(strlen(str)) {
+		helpCommand("ipcCommand");
+		//rPid(pid());
+		return;
+	}
+
+	printn("------------IPC implemented------------");
+	printnColor("\t. Global Mutexes ", LIGHT_BLUE);
+	printnColor("\t. Global variables condition", YELLOW);
+	printnColor("\t. Semaphores", LIGHT_BLUE);
+	//printnColor("\t. Pipes", YELLOW);
+
+	printn("-------------------------------");
+	//rPid(pid());
+
+
+
 }
 
 void colorCommand(char* str) {
@@ -393,7 +412,12 @@ static int readNumber(){
   //rPid(pid());
   return number;
 }
-void mutextest() {
+void mutextest(char* str) {
+	if(strlen(str)) {
+		helpCommand("mTest");
+		//rPid(pid());
+		return;
+	}
 	void * m;
 	bool lock;
 

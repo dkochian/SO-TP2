@@ -14,7 +14,7 @@ int _start(int argc, char ** argv) {
 	//Clean BSS
 	memset(&bss, 0, &endOfBinary - &bss);
 
-	newProcess("Shell", main, 0, NULL);
+	newProcess("Shell&", main, 0, NULL);
 
 	while(true) {}
 	

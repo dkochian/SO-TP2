@@ -4,8 +4,9 @@
 #include "../include/mutex.h"
 #include "include/scheduler.h"
 
-#include "../../drivers/include/video.h"
 #include "../../include/lib.h"
+#include "../../include/string.h"
+#include "../../drivers/include/video.h"
 
 extern void _timerTickHandler();
 
@@ -38,6 +39,8 @@ bool buildProcessManager() {
 uint64_t newProcess(char* name, func f, int argc, char **argv) {
 	process *p;
 	uint64_t rsp;
+	bool foreground = false;
+	int index;
 
 	p = (process *) k_malloc(sizeof(process));
 	if(p == NULL)
@@ -67,13 +70,21 @@ uint64_t newProcess(char* name, func f, int argc, char **argv) {
 		return INVALID_PROCESS_ID;
 	}
 
+	index = k_strlen(name);
+	if (name[index - 1] == '&'){
+		foreground = true;
+		name[index - 1] = '\0';
+	}
+		
 	p->name = name;
 	p->s_frame = rsp;
 	p->state = WAITING;
 	p->foreground = false;
 
-	if(p->id == 1)//it's hardcoded for testing only
+	if(foreground)
 		setForeground(p->id);
+
+
 
 	rsp += STACK_SIZE - 1 - sizeof(stack_frame);
 	p->rsp = (uint64_t) buildStacKFrame((void *)rsp, f, argc, argv);
