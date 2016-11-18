@@ -26,16 +26,14 @@ void semClose(sem_t * sem) {
 }
 
 void semWait(sem_t * sem) {
-	while(true) {
-		lock(sem->s_mutex);
-		if(sem->value > 0) {
-			sem->value--;
-			unlock(sem->s_mutex);
-			return;
-		} else {
-			unlock(sem->s_mutex);
-			_yield();
-		}
+	lock(sem->s_mutex);
+	if (sem->value > 0) {
+		sem->value--;
+		unlock(sem->s_mutex);
+		return;
+	} else {
+		unlock(sem->s_mutex);
+		_yield();
 	}
 }
 
