@@ -166,6 +166,7 @@ static void addWaitProcess(process *child) {
 }
 
 static void removeWaitProcess(process *child) {
+
 	if(child == NULL)
 		return;
 
@@ -173,6 +174,11 @@ static void removeWaitProcess(process *child) {
 
 	if(father == NULL)
 		return;
+
+	if (child->foreground == true){
+		child->foreground = false;
+		father->foreground = true;
+	}
 
 	remove(father->wait_list, child);
 
