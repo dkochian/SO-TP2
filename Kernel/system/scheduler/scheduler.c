@@ -95,7 +95,7 @@ void unBlockProcess(uint64_t pid) {
 
 	lock(s_mutex);
 	setNext(waiting_list, p);
-	printList(waiting_list);
+	//printList(waiting_list);
 	unlock(s_mutex);
 }
 

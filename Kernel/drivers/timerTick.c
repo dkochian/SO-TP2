@@ -15,7 +15,7 @@ uint64_t timerTickHandler(uint64_t s_frame) {
 }
 
 uint64_t yieldererer(uint64_t s_frame) {
-	print("SUPRISE MOTHERFUCKER IT'S YIELD TIME", -1);
+	print("%%kill the infidel%%", -1);
 	tickCount = 0;
 	return contextSwitch(s_frame);
 }

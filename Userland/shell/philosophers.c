@@ -232,15 +232,11 @@ void philosophers() {
 	clearCommand(NULL);
 	printn("Loading Philosophers...");
 	init();
-	psCommand(NULL);
+												psCommand(NULL);
 	for(int i=0; i<total; i++) {
 		launchPhilosopher(i, (i+1)%total );
 	}
-	psCommand(NULL);
-	
-	// WHY OH WHY IS THIS NECESARY???
-	//while(true) {}
-	
+												psCommand(NULL);
 
 	bool exitFlag = false;
 	char c;
