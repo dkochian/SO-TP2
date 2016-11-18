@@ -12,7 +12,7 @@ EXTERN timerTickHandler
 EXTERN keyboardHandler
 EXTERN sysCallHandler
 EXTERN contextSwitch
-EXTERN resetTickCounter
+EXTERN yieldererer
 EXTERN printA
 EXTERN printB
 EXTERN printC
@@ -132,14 +132,13 @@ skip:
     iretq
 
 ;------------------------------------------------------------
-; Process yield, emul _timerTickHandler but without cli, sti, & out
+; Process yield, emul _timerTickHandler but without iret or cli/sti
 ;------------------------------------------------------------
 _yield:
     pushaq
-    call resetTickCounter
 
     mov rdi, rsp
-    call contextSwitch
+    call yieldererer
     cmp rax, 0
     je skip2
     mov rsp, rax

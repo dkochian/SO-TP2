@@ -163,9 +163,9 @@ int main() {
 	//startSchedulerTest();
 	//startLockTest();
 	//startWaitpidTest();
-	startFreeProcessTest();
+	//startFreeProcessTest();
 
-	//((EntryPoint)sampleCodeModuleAddress)();
+	((EntryPoint)sampleCodeModuleAddress)();
 
 	return 0;
 }

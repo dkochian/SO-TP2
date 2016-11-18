@@ -174,8 +174,7 @@ static void launchPhilosopher(int pos, int left) {
 	itoa(left, arg2);
 	argv[0] = arg1;
 	argv[1] = arg2;
-	printNum(pos);
-	newProcess("pChild", philosopher, argc, argv);
+	newProcess("Phi-Child", philosopher, argc, argv);
 }
 
 static void action(int pos, edit_t value) {
@@ -230,6 +229,7 @@ static void exitNicely() {
 **  Main  **
 ***********/
 void philosophers() {
+	clearCommand(NULL);
 	printn("Loading Philosophers...");
 	init();
 	psCommand(NULL);
@@ -237,7 +237,11 @@ void philosophers() {
 		launchPhilosopher(i, (i+1)%total );
 	}
 	psCommand(NULL);
+	
+	// WHY OH WHY IS THIS NECESARY???
 	//while(true) {}
+	
+
 	bool exitFlag = false;
 	char c;
 	while(!exitFlag) {

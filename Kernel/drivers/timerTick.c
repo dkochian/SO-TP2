@@ -9,13 +9,13 @@ uint64_t timerTickHandler(uint64_t s_frame) {
 
 	if(tickCount >= TICK_TO_SWICH_PROCESS) {
 		tickCount = 0;
-
 		return contextSwitch(s_frame);
 	}
 	return 0;
 }
 
-void resetTickCounter() {
-	//print("asdf", -1);
+uint64_t yieldererer(uint64_t s_frame) {
+	print("SUPRISE MOTHERFUCKER IT'S YIELD TIME", -1);
 	tickCount = 0;
+	return contextSwitch(s_frame);
 }

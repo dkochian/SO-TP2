@@ -18,13 +18,18 @@ static process *current_process;
 
 static mutex *s_mutex;
 
+int puppetMaster(int argc, char** argv) {
+	while(true) {}
+	return 0;
+}
+
 bool buildScheduler() {
 	waiting_list = buildList(&equal);
 
 	if(waiting_list == NULL)
 		return false;
 
-	newProcess("Master of the Puppets", NULL, 0, NULL);
+	newProcess("Puppet Master", puppetMaster, 0, NULL);
 
 	s_mutex = initLock();
 	if (s_mutex == NULL) 
@@ -56,7 +61,7 @@ bool removeProcess(process *p) { //should have locks but can't maybe caller (fre
 		return res;
 
 	if(p->id == 0){//You can't kill dummy
-		print("Master of the Puppets is undestructable....", RED);
+		print("Master of the Puppets is indestructible....", RED);
 		printNewline();
 		return false;
 	} 
@@ -136,13 +141,14 @@ uint64_t contextSwitch(uint64_t stack) {
 	if(current_process->state != BLOCKED)
 		current_process->state = WAITING;
 
-	/*print("old: ", -1);
+	/*print("-|", -1);
 	print(current_process->name, -1);
-	print(" || new: ", -1);*/
+	print(" -> ", -1);*/
 	current_process = schedule();
 
 	/*print(current_process->name, -1);
-	printNewline();*/
+	print("|-", -1);*/
+	//printNewline();
 	if(current_process == NULL)
 		return 0;
 
@@ -190,13 +196,14 @@ psContext *processesStatus() {
 
 	char buffer[10] = {0};
 	int aux = getSize(waiting_list);
+
 	int i;
 
 	psContext * res = k_malloc(sizeof(psContext));
 	res->numbProcess = aux;
 	res->processes = k_malloc(sizeof(char)* aux);
 	res->separateChar = '&';
-
+/*
 	res->processes[0] = k_malloc(sizeof(char) * 60);
 	k_itoa(current_process->id, buffer);
 	k_strcat(res->processes[0], buffer);
@@ -208,13 +215,13 @@ psContext *processesStatus() {
 	k_strcat(res->processes[0], "&");
 	k_itoa(current_process->foreground, buffer);
 	k_strcat(res->processes[0], buffer);
-
+*/
 	list wProcessList = waiting_list;
 	resetCursor(wProcessList);
 
 	process * p = get(wProcessList);
 
-	for(i = 1; i < aux ; i++ ){
+	for(i = 0; i < aux ; i++ ){
 
 		res->processes[i] = k_malloc(sizeof(char ) * 100);
 		k_itoa(p->id, buffer);
@@ -225,9 +232,9 @@ psContext *processesStatus() {
 		k_itoa(p->state, buffer);
 		k_strcat(res->processes[i], buffer);
 		k_strcat(res->processes[i], "&");
-		k_itoa(current_process->foreground, buffer);
+		k_itoa(p->foreground, buffer);
 		k_strcat(res->processes[i], buffer);
-		get(wProcessList);
+		p= get(wProcessList);
 	}
 	return res;
 }
