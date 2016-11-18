@@ -1,7 +1,6 @@
-#include "include/processList.h"
+#include "include/simpleProcessList.h"
 #include "../system/include/mmu.h"
 #include "../include/common.h"
-#include "../../include/mutex.h"
 
 #include "../../drivers/include/video.h"
 
@@ -10,8 +9,7 @@ typedef struct node {
 	struct node *next;
 } node;
 
-struct list {
-	mutex* m;
+struct sList {
 	node *head;
 	node *tail;
 	node *cursor;
@@ -19,30 +17,22 @@ struct list {
 	bool (*cmp) (element_t , element_t);
 };
 
-list buildList(bool (*f) (element_t , element_t)) {
-	list l = (list) k_malloc(sizeof(struct list));
+sList buildListS(bool (*f) (element_t , element_t)) {
+	sList l = (sList) k_malloc(sizeof(struct sList));
 
 	if(l == NULL)
 		return NULL;
 
-	l->m = initLock();
-	if(l->m == NULL) {
-		k_free(l);
-		return NULL;
-	}
-	lock(l->m);
 	l->cmp = f;
 	l->head = NULL;
 	l->tail = NULL;
 	l->cursor = NULL;
 	l->size = 0;
-	unlock(l->m);
+
 	return l;
 }
 
-void destroyList(list l) {
-	mutex* tempLock = l->m;
-	lock(tempLock);
+void destroyListS(sList l) {
 	node *current = l->head;
 	node *tmp = NULL;
 
@@ -53,11 +43,9 @@ void destroyList(list l) {
 	}
 
 	k_free(l);
-	unlock(tempLock); 
-	destroyLock(tempLock);
 }
 
-bool add(list l, element_t item) {
+bool addS(sList l, element_t item) {
 	node *n = (node *) k_malloc(sizeof(node));
 
 	if(n == NULL)
@@ -65,7 +53,7 @@ bool add(list l, element_t item) {
 
 	n->item = item;
 	n->next = NULL;
-	lock(l->m);
+
 	if(l->head == NULL) {
 		l->head = n;
 		l->tail = n;
@@ -76,15 +64,15 @@ bool add(list l, element_t item) {
 	}
 
 	l->size++;
-	unlock(l->m);
+
 	return true;
 }
 
-bool remove(list l, element_t item) {
+bool removeS(sList l, element_t item) {
 	bool found = false;
 	node *current;
 	node *prev;
-	lock(l->m);
+
 	current = l->head;
 	prev = NULL;
 	while(current != NULL) {
@@ -107,49 +95,42 @@ bool remove(list l, element_t item) {
 		prev = current;
 		current = current->next;
 	}
-	unlock(l->m);
+
 	return found;
 }
 
-bool exists(list l, element_t item) {
+bool existsS(sList l, element_t item) {
 	node *current;
-	lock(l->m);
+
 	current = l->head;
 	while(current != NULL) {
-		if(l->cmp(current->item, item) == true) {
-			unlock(l->m);
+		if(l->cmp(current->item, item) == true)
 			return true;
-		}
 
 		current = current->next;
 	}
-	unlock(l->m);
+
 	return false;
 }
 
-bool isEmpty(list l) {
+bool isEmptyS(sList l) {
 	return (l->size == 0);
 }
 
-element_t getFirst(list l) {
-	lock(l->m);
+element_t getFirstS(sList l) {
 	node *tmp = l->head;
 	element_t item = tmp->item;
 	l->head = l->head->next;
 
-	k_free(tmp);
+	//k_free(tmp);
 	l->size --;
-	unlock(l->m);
+
 	return item;
 }
 
-element_t peekFirst(list l) {
-	lock(l->m);
-	if(l->head == l->tail) {
-		element_t out = l->head->item;
-		unlock(l->m);
-		return out;
-	}
+element_t peekFirstS(sList l) {
+	if(l->head == l->tail)
+		return l->head->item;
 
 	node *tmp = l->head;
 	element_t item = tmp->item;
@@ -159,14 +140,14 @@ element_t peekFirst(list l) {
 	l->tail = tmp;
 	
 	tmp->next = NULL;
-	unlock(l->m);
+
 	return item;
 }
 
-bool setNext(list l, element_t item) {
+bool setNextS(sList l, element_t item) {
 	node *current;
 	node *prev;
-	lock(l->m);
+
 	current = l->head;
 	prev = NULL;
 
@@ -182,49 +163,37 @@ bool setNext(list l, element_t item) {
 		current = current->next;
 	}
 
-	if(current == NULL) {
-		unlock(l->m);
+	if(current == NULL)
 		return false;
-	}
 
 	current->next = l->head->next;
 	l->head->next = current;
-	unlock(l->m);
+
 	return true;
 }
 
-element_t get(list l) {
-	lock(l->m);
+element_t getS(sList l) {
 	if(l->cursor == NULL)
 		l->cursor = l->head;
 	else
 		l->cursor = l->cursor->next;
 
-	if(l->cursor == NULL) {
-		unlock(l->m);
+	if(l->cursor == NULL)
 		return NULL;
-	}		
-	element_t out = l->cursor->item;
-	unlock(l->m);
-	return out;
+
+	return l->cursor->item;
 }
 
-void resetCursor(list l) {
-	lock(l->m);
+void resetCursorS(sList l) {
 	l->cursor = NULL;
-	unlock(l->m);
 }
 
-int getSize(list l) {
-	lock(l->m);
-	int out = l->size;
-	unlock(l->m);
-	return out;
+int getSizeS(sList l) {
+	return l->size;
 }
 
-void printList(list l) {
+void printListS(sList l) {
 	int index = 1;
-	lock(l->m);
 	node *current = l->head;
 
 	while(current != NULL) {
@@ -238,11 +207,10 @@ void printList(list l) {
 
 		current = current->next;
 	}
-	unlock(l->m);
 }
 
-void printSize(list l) {
-	print("list size: ", -1);
-	printDec(getSize(l), -1);
+void printSizeS(sList l) {
+	print("sList size: ", -1);
+	printDec(l->size, -1);
 	printNewline();
 }

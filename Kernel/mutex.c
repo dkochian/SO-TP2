@@ -13,7 +13,7 @@ mutex *initLock() {
     if(l == NULL)
         return NULL;
 
-    l->q_list = buildList(&equal);
+    l->q_list = buildListS(&equal);
     
     if(l->q_list == NULL) {
         k_free(l);
@@ -31,7 +31,7 @@ mutex *initLock() {
 }
 
 void destroyLock(mutex *l) {
-    destroyList(l->q_list);
+    destroyListS(l->q_list);
     k_free(l);
 }
 
@@ -42,8 +42,8 @@ bool isLock(mutex *l){
 void lock(mutex *l) {
     if(_lock(&l->lock) == 1) {
         process *p = getCurrentProcess();
-        if(exists(l->q_list, p) == false) {
-            add(l->q_list, p);
+        if(existsS(l->q_list, p) == false) {
+            addS(l->q_list, p);
             blockProcess(p->id);
         }
 
@@ -52,8 +52,8 @@ void lock(mutex *l) {
 }
 
 void unlock(mutex* l) {
-    if(isEmpty(l->q_list) == false) {
-        process* p = getFirst(l->q_list);
+    if(isEmptyS(l->q_list) == false) {
+        process* p = getFirstS(l->q_list);
         unBlockProcess(p->id);
         return;
     }

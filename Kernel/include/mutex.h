@@ -4,11 +4,11 @@
     #include "../../Common/common.h"
     #include "../system/scheduler/include/process.h"
     #include "../system/scheduler/include/scheduler.h"
-    #include "../system/scheduler/include/processList.h"
+    #include "../system/scheduler/include/simpleProcessList.h"
     
     typedef struct mutex {
         int lock;
-        list q_list;
+        sList q_list;
     } mutex;
 
     mutex *initLock();
