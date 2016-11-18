@@ -87,19 +87,19 @@ void* sysMutexInit() {
 	return (void *) res;
 }
 
-void sysMutexLock(void* m) {
+void sysMutexLock(void *m) {
 	_syscall(MLOCK, NULL, (uintptr_t) m, NULL, NULL, NULL);
 }
 
-void sysMutexUnlock(void* m) {
+void sysMutexUnlock(void *m) {
 	_syscall(MUNLOCK, NULL, (uintptr_t) m, NULL, NULL, NULL);
 }
 
-void sysMutexDestroy(void* m) {
+void sysMutexDestroy(void *m) {
 	_syscall(MDESTROY, NULL, (uintptr_t) m, NULL, NULL, NULL);
 }
 
-void sysMutexIsLocked(void *m, bool*res) {
+void sysMutexIsLocked(void *m, bool *res) {
 	_syscall(MISLOCK, (uintptr_t) res, (uintptr_t) m, NULL, NULL, NULL);
 }
 
@@ -115,3 +115,22 @@ void drawSquare(uint16_t x, uint16_t y, uint16_t l, char colorCode) {
 	_syscall(DRAWSQUARE, x, y, l, colorCode, NULL);
 
 }
+
+void *sysSemOpen(char * name, int value) {
+	uintptr_t res = NULL;
+	_syscall(SEMOPEN, (uintptr_t) &res, (uintptr_t) name, value, NULL, NULL);
+	return (void *) res;
+}
+
+void sysSemClose(void *sem) {
+	_syscall(SEMCLOSE, (uintptr_t) sem, NULL, NULL, NULL, NULL);
+}
+
+void sysSemWait(void *sem) {
+	_syscall(SEMWAIT, (uintptr_t) sem, NULL, NULL, NULL, NULL);
+}
+
+void sysSemPost(void *sem) {
+	_syscall(SEMPOST, (uintptr_t) sem, NULL, NULL, NULL, NULL);
+}
+

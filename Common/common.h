@@ -44,6 +44,10 @@
 	#define BLOCKSELF			23
 	#define WAITPID				24
 	#define DRAWSQUARE			25
+	#define SEMOPEN				26
+	#define SEMCLOSE			27
+	#define SEMWAIT				28
+	#define SEMPOST				29
 
 
 	//Keyboard

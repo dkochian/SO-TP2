@@ -9,6 +9,7 @@ mutex_u_t initLock() {
 void destroyLock(mutex_u_t lock) {
 	sysMutexDestroy(lock);
 }
+
 void lock(mutex_u_t lock) {
 	sysMutexLock(lock);
 }

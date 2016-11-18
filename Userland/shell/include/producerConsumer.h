@@ -1,6 +1,8 @@
-#ifndef PRODUCERCONSUMER_H
-#define PRODUCERCONSUMER_H
+#ifndef _INC_PRODUCERCONSUMER_
+	#define _INC_PRODUCERCONSUMER_
+	
+	#include "../../../Common/common.h"
 
-int producerConsumer(int argc, char ** argv);
+	int producerConsumer(int argc, char ** argv);
 
 #endif

@@ -1,12 +1,12 @@
 //AUTHOR: RODRIGO REARDEN - SO
 
-#include "../../Common/common.h"
-#include <syscall.h>
 #include <stdio.h>
-#include <string.h>
-#include <semaphore.h>
-#include "include/producerConsumer.h"
 #include <random.h>
+#include <string.h>
+#include <syscall.h>
+#include "include/producerConsumer.h"
+#include "../libc/include/semaphore.h"
+
 
 extern void insertItem(char c);
 extern char removeItem();
@@ -20,9 +20,9 @@ extern int bufferSize;
 //pthread_t producerThread;
 //pthread_t consumerThread;
 
-static sem_t * itemMutex;
-static sem_t * emptyCount;
-static sem_t * fullCount;
+static sem_u_t itemMutex;
+static sem_u_t emptyCount;
+static sem_u_t fullCount;
 
 static int prodSleepTime = 1;
 static int consSleepTime = 1;
@@ -44,31 +44,37 @@ int producerConsumer(int argc, char ** argv) {
 	//Mutexes buffer access
 //	itemMutex = sem_open("itemMutex", O_CREAT, O_EXCL, 700);
 
-	itemMutex = sem_open("itemMutex", 700);
+	itemMutex = semOpen("itemMutex", 700);
 
 	if (itemMutex == NULL) {
 		printn("Failed to create itemMutex");
+		return 0;
 	}
 
 	//Counts full buffer slots
-	fullCount = sem_open("fullCount", 700);
+	fullCount = semOpen("fullCount", 700);
 
 	if (fullCount == NULL) {
 		printn("Failed to create fullCount");
+		semClose(itemMutex);
+		return 0;
 	}
 
 	//Counts empty buffer slots
-	emptyCount = sem_open("emptyCount", 700);
+	emptyCount = semOpen("emptyCount", 700);
 
 	if (emptyCount == NULL){
 		printn("Failed to create emptyCount");
+		semClose(itemMutex);
+		semClose(fullCount);
+		return 0;
 	}
 
 	//Semaphore initialization
-	sem_post(itemMutex);
+	semPost(itemMutex);
 
 	for(i = 0; i < bufferSize; i++)
-		sem_post(emptyCount);
+		semPost(emptyCount);
 
 //	printn("Press enter to start");
 //	//TODO: MODIFICAR PARA QUE USE GETCHAR NUESTRO
@@ -86,9 +92,9 @@ int producerConsumer(int argc, char ** argv) {
 //	pthread_attr_destroy(&attr);
 //	pthread_exit(NULL);
 
-	sem_close(itemMutex);
-	sem_close(emptyCount);
-	sem_close(fullCount);
+	semClose(itemMutex);
+	semClose(emptyCount);
+	semClose(fullCount);
 
 //	sem_unlink("itemMutex");
 //	sem_unlink("emptyCount");
@@ -116,14 +122,14 @@ static int producer(int argc, char **argv) {
 
 		//Decrement the count of empty slots in the buffer (semaphore goes down)
 		//Locks when the remaining empty slots are zero
-		sem_wait(emptyCount);
-		sem_wait(itemMutex);
+		semWait(emptyCount);
+		semWait(itemMutex);
 
 		insertItem(item);
-		sem_post(itemMutex);
+		semPost(itemMutex);
 
 		//Increment the count of full slots in the buffer (semaphore goes up)
-		sem_post(fullCount);
+		semPost(fullCount);
 	}
 
 	return 0;
@@ -137,14 +143,14 @@ static int consumer(int argc, char **argv) {
 
 		//Decrement the count of full slots in the buffer (semaphore goes down)
 		//Locks when there is no more information in the buffer
-		sem_wait(fullCount);
-		sem_wait(itemMutex);
+		semWait(fullCount);
+		semWait(itemMutex);
 
 		item = removeItem();
-		sem_post(itemMutex);
+		semPost(itemMutex);
 
 		//Increment the count of empty slots in the buffer (semaphore goes up)
-		sem_post(emptyCount);
+		semPost(emptyCount);
 
 		print("Consume ");
 		printNum(item);

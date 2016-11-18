@@ -39,4 +39,9 @@
 	void blockMyself();
 	void drawSquare(uint16_t x, uint16_t y, uint16_t l, char color);
 
+	void *sysSemOpen(char * name, int value);
+	void sysSemClose(void *sem);
+	void sysSemWait(void *sem);
+	void sysSemPost(void *sem);
+
 #endif

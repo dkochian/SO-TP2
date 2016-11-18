@@ -67,10 +67,10 @@ bool removeProcess(process *p) { //should have locks but can't maybe caller (fre
 	} 
 		
 	res = remove(waiting_list, p);
-	/*if(!k_strcmp(p->name, "Shell")) {
+	if(!k_strcmp(p->name, "Shell")) {
 		clear();
 		print("See you on the other side....", RED);
-	}*/
+	}
 	killProcess(p);
 
 	return res;
@@ -196,14 +196,13 @@ psContext *processesStatus() {
 
 	char buffer[10] = {0};
 	int aux = getSize(waiting_list);
-
 	int i;
 
 	psContext * res = k_malloc(sizeof(psContext));
 	res->numbProcess = aux;
 	res->processes = k_malloc(sizeof(char)* aux);
 	res->separateChar = '&';
-/*
+
 	res->processes[0] = k_malloc(sizeof(char) * 60);
 	k_itoa(current_process->id, buffer);
 	k_strcat(res->processes[0], buffer);
@@ -215,13 +214,13 @@ psContext *processesStatus() {
 	k_strcat(res->processes[0], "&");
 	k_itoa(current_process->foreground, buffer);
 	k_strcat(res->processes[0], buffer);
-*/
+
 	list wProcessList = waiting_list;
 	resetCursor(wProcessList);
 
 	process * p = get(wProcessList);
 
-	for(i = 0; i < aux ; i++ ){
+	for(i = 1; i < aux ; i++ ){
 
 		res->processes[i] = k_malloc(sizeof(char ) * 100);
 		k_itoa(p->id, buffer);
@@ -232,9 +231,9 @@ psContext *processesStatus() {
 		k_itoa(p->state, buffer);
 		k_strcat(res->processes[i], buffer);
 		k_strcat(res->processes[i], "&");
-		k_itoa(p->foreground, buffer);
+		k_itoa(current_process->foreground, buffer);
 		k_strcat(res->processes[i], buffer);
-		p= get(wProcessList);
+		p = get(wProcessList);
 	}
 	return res;
 }
