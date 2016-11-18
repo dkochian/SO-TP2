@@ -79,6 +79,17 @@ static void updateState(int pos, bool hand, char color) {
 	
 }
 
+void pseudoSleep(int a) {
+	int lel =0;
+	for(int i=0; i<a; i++) {
+		for(int j=0; j<1000; j++) {
+			for(int k=0; k<1000; k++)
+				lel++;
+		}
+	}
+}
+
+
 /******************
 **  Philosopher  **
 ******************/
@@ -97,7 +108,7 @@ static int philosopher(int argc, char** argv) {
 		// THINKING
 			//printNum(pos);
 			//printn(" is thinking...");
-		//sleep(1);
+		pseudoSleep(10);
 			updateSquare(pos, MAGENTA);
 			//printNum(pos);
 			//printn(" is hungry.");
@@ -114,7 +125,7 @@ static int philosopher(int argc, char** argv) {
 		// EAT
 			//printNum(pos);
 			//printn(" is eating...");
-		//sleep(1);		
+		pseudoSleep(1);		
 
 		unlock(& (forks[right]) );
 			updateState(pos, RIGHT, LIGHT_GREEN);
@@ -237,6 +248,10 @@ void philosophers() {
 		launchPhilosopher(i, (i+1)%total );
 	}
 												psCommand(NULL);
+	
+
+	while(true) {}
+
 
 	bool exitFlag = false;
 	char c;
