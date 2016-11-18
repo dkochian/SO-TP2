@@ -7,6 +7,7 @@ GLOBAL _sti
 GLOBAL _lock
 GLOBAL _unlock
 GLOBAL _yield
+GLOBAL _yieldHandler
 
 EXTERN timerTickHandler
 EXTERN keyboardHandler
@@ -91,7 +92,7 @@ _sti:
 ;------------------------------------------------------------
 _cli:
     cli
-    ret;
+    ret
 
 _write_port:
     push rbp
@@ -113,13 +114,13 @@ _timerTickHandler:
     ;cli
     pushaq
 
+    mov al,20h
+    out 20h,al
+
     ;call printB
     mov rdi, rsp
     call timerTickHandler
     mov rbx, rax            ;backup rax and use rbx instead
-
-    mov al,20h
-    out 20h,al
 
     cmp rbx, 0
     je skip
@@ -131,20 +132,34 @@ skip:
     ;sti
     iretq
 
-;------------------------------------------------------------
-; Process yield, emul _timerTickHandler but without iret or cli/sti
-;------------------------------------------------------------
-_yield:
+_yieldHandler:
+    ;cli
     pushaq
 
     mov rdi, rsp
     call yieldererer
+
     cmp rax, 0
-    je skip2
+    je skip3
     mov rsp, rax
 
-skip2:
+skip3:
     popaq
+
+    ;sti
+    iretq
+
+;------------------------------------------------------------
+; Process yield, emul _timerTickHandler but without iret or cli/sti
+;------------------------------------------------------------
+_yield:
+    push rbp
+    mov rbp, rsp
+
+    int 81h
+
+    mov rsp, rbp
+    pop rbp
     ret
 
 ;------------------------------------------------------------

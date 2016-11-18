@@ -61,7 +61,7 @@ static int processA(int argc, char **argv) {
 		printDec(var, -1);
 		printNewline();
 		unlock(m);
-		if(counter == 3){
+		if(counter == 15){
 			counter = 0;
 			clear();
 		}
@@ -84,7 +84,7 @@ static int processB(int argc, char **argv) {
 		printDec(var, -1);
 		printNewline();
 		unlock(m);
-		if(counter == 2) {
+		if(counter == 16) {
 			counter = 0;
 			clear();
 		}

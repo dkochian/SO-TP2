@@ -78,7 +78,8 @@ uint64_t pid() {
 }
 
 void yield() {
-	_syscall(YIELD, NULL, NULL, NULL, NULL, NULL);
+	_int81();
+	//_syscall(YIELD, NULL, NULL, NULL, NULL, NULL);
 }
 
 void* sysMutexInit() {

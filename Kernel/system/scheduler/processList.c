@@ -144,10 +144,10 @@ element_t getFirst(list l) {
 }
 
 element_t peekFirst(list l) {
-	lock(l->m);
+	//lock(l->m);
 	if(l->head == l->tail) {
 		element_t out = l->head->item;
-		unlock(l->m);
+		//unlock(l->m);
 		return out;
 	}
 
@@ -159,7 +159,7 @@ element_t peekFirst(list l) {
 	l->tail = tmp;
 	
 	tmp->next = NULL;
-	unlock(l->m);
+	//unlock(l->m);
 	return item;
 }
 

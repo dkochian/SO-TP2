@@ -125,7 +125,7 @@ static int philosopher(int argc, char** argv) {
 		// EAT
 			//printNum(pos);
 			//printn(" is eating...");
-		pseudoSleep(1);		
+		pseudoSleep(2);		
 
 		unlock(& (forks[right]) );
 			updateState(pos, RIGHT, LIGHT_GREEN);

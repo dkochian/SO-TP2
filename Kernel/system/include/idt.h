@@ -32,5 +32,6 @@
 	extern void _keyboardHandler();
 	extern void _sysCallHandler();
 	extern void _write_port(int16_t, int16_t);
+	extern void _yieldHandler();
 
 #endif
