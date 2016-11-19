@@ -1,11 +1,12 @@
 #include "../include/mmu.h"
-#include "../include/atom.h"
 #include "include/process.h"
-#include "../include/mutex.h"
 #include "include/scheduler.h"
+#include "../../include/atom.h"
+#include "../ipc/include/mutex.h"
 
-#include "../../include/lib.h"
-#include "../../include/string.h"
+
+#include "../../utils/include/lib.h"
+#include "../../utils/include/string.h"
 #include "../../drivers/include/video.h"
 
 extern void _timerTickHandler();
@@ -18,7 +19,7 @@ static int startProcess(func f, int argc, char **argv);
 static void *buildStacKFrame(void *rsp, func f, int argc, char **argv);
 
 static process **process_table;
-static mutex *p_mutex;
+static mutex p_mutex;
 
 bool buildProcessManager() {
 	process_table = (process **) k_malloc(sizeof(process*)*MAX_PROCESSES);
@@ -61,7 +62,7 @@ uint64_t newProcess(char* name, func f, int argc, char **argv) {
 		return INVALID_PROCESS_ID;
 	}
 
-	p->wait_list = buildList(&equal);
+	p->wait_list = listBuild(&equal);
 	if(p->wait_list == NULL) {
 		freeProcessId(p->id);
 		k_free((void *) rsp);
@@ -110,7 +111,7 @@ void freeProcess(int pid) {
 	removeWaitProcess(p);
 	freeProcessId(pid);	//Free the process id
 
-	destroyList(p->wait_list);
+	listDestroy(p->wait_list);
 	k_free((void *) p->s_frame);
 	k_free(p);
 }
@@ -128,7 +129,7 @@ process *getFirstWaitProcess(process *father) {
 	if(father == NULL)
 		return NULL;
 
-	return getFirst(father->wait_list);
+	return listGetFirst(father->wait_list);
 }
 
 bool equal(process *p1, process *p2) {
@@ -157,7 +158,7 @@ static void addWaitProcess(process *child) {
 	if(father == NULL)
 		return;
 
-	add(father->wait_list, child);
+	listAdd(father->wait_list, child);
 
 	if(father->state != BLOCKED) {
 		father->state = BLOCKED;
@@ -180,9 +181,9 @@ static void removeWaitProcess(process *child) {
 		father->foreground = true;
 	}
 
-	remove(father->wait_list, child);
+	listRemove(father->wait_list, child);
 
-	if(isEmpty(father->wait_list) == true)
+	if(listIsEmpty(father->wait_list) == true)
 		father->state = WAITING;
 }
 

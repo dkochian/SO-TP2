@@ -1,11 +1,11 @@
-#include "../include/atom.h"
 #include "include/process.h"
 #include "include/scheduler.h"
+#include "../../include/atom.h"
 
 #include "../../drivers/include/video.h"
-#include "../include/clock.h"
-#include "../include/mutex.h"
-#include "../include/string.h"
+#include "../../utils/include/clock.h"
+#include "../ipc/include/mutex.h"
+#include "../../utils/include/string.h"
 #include "../include/mmu.h"
 
 extern void _timerTickHandler();
@@ -16,7 +16,7 @@ static void killProcess(process *p);
 static list waiting_list;
 static process *current_process;
 
-static mutex *s_mutex;
+static mutex s_mutex;
 
 int puppetMaster(int argc, char** argv) {
 	while(true) {}
@@ -24,16 +24,16 @@ int puppetMaster(int argc, char** argv) {
 }
 
 bool buildScheduler() {
-	waiting_list = buildList(&equal);
+	waiting_list = listBuild(&equal);
 
 	if(waiting_list == NULL)
 		return false;
 
-	newProcess("Puppet Master", puppetMaster, 0, NULL);
-
 	s_mutex = initLock();
 	if (s_mutex == NULL) 
 		return false;
+
+	newProcess("Master of the Puppets", puppetMaster, 0, NULL);
 	
 	return true;
 }
@@ -45,10 +45,10 @@ bool addProcess(process *p) {
 		return res;
 
 	lock(s_mutex);
-	if(isEmpty(waiting_list) == true)
+	if(listIsEmpty(waiting_list) == true)
 		current_process = p;
 
-	res = add(waiting_list, p);
+	res = listAdd(waiting_list, p);
 	unlock(s_mutex);
 
 	return res;
@@ -66,7 +66,7 @@ bool removeProcess(process *p) { //should have locks but can't maybe caller (fre
 		return false;
 	} 
 		
-	res = remove(waiting_list, p);
+	res = listRemove(waiting_list, p);
 	if(!k_strcmp(p->name, "Shell")) {
 		clear();
 		print("See you on the other side....", RED);
@@ -94,8 +94,9 @@ void unBlockProcess(uint64_t pid) {
 	p->state = WAITING;
 
 	lock(s_mutex);
-	setNext(waiting_list, p);
-	//printList(waiting_list);
+	print("hi", -1);
+	printNewline();
+	listSetNext(waiting_list, p);
 	unlock(s_mutex);
 }
 
@@ -108,11 +109,11 @@ void setForeground(uint64_t pid) {
 	process *current;
 
 	do {
-		current = get(waiting_list);
+		current = listGet(waiting_list);
 		current->foreground = false;
 	} while(current != NULL);
 
-	resetCursor(waiting_list);
+	listResetCursor(waiting_list);
 
 	p->foreground = true;	
 }
@@ -121,10 +122,10 @@ process *getForeground() {
 	process *current;
 
 	do {
-		current = get(waiting_list);
+		current = listGet(waiting_list);
 	} while(current != NULL && current->foreground == false);
 
-	resetCursor(waiting_list);
+	listResetCursor(waiting_list);
 
 	return current;
 }
@@ -134,7 +135,7 @@ process *getCurrentProcess() {
 }
 
 uint64_t contextSwitch(uint64_t stack) {
-	if(current_process == NULL)
+	if(current_process == NULL || current_process->state == LOCKED)
 		return 0;
 
 	current_process->rsp = stack;
@@ -178,13 +179,13 @@ static process *schedule() {
 	if(waiting_list == NULL)
 		return NULL;
 
-	if(isEmpty(waiting_list) == true)
+	if(listIsEmpty(waiting_list) == true)
 		return NULL;
 
 	process *p;
 
 	do {
-		p = peekFirst(waiting_list);
+		p = listPeekFirst(waiting_list);
 		if(p == NULL)
 			break;
 	} while(p->state == BLOCKED);
@@ -195,7 +196,7 @@ static process *schedule() {
 psContext *processesStatus() {
 
 	char buffer[10] = {0};
-	int aux = getSize(waiting_list);
+	int aux = listGetSize(waiting_list);
 	int i;
 
 	psContext * res = k_malloc(sizeof(psContext));
@@ -216,9 +217,9 @@ psContext *processesStatus() {
 	k_strcat(res->processes[0], buffer);
 
 	list wProcessList = waiting_list;
-	resetCursor(wProcessList);
+	listResetCursor(wProcessList);
 
-	process * p = get(wProcessList);
+	process * p = listGet(wProcessList);
 
 	for(i = 1; i < aux ; i++ ){
 
@@ -233,7 +234,7 @@ psContext *processesStatus() {
 		k_strcat(res->processes[i], "&");
 		k_itoa(current_process->foreground, buffer);
 		k_strcat(res->processes[i], buffer);
-		p = get(wProcessList);
+		p = listGet(wProcessList);
 	}
 	return res;
 }

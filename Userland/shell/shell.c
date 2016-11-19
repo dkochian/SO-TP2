@@ -37,7 +37,7 @@ commandExec
 		{true, "pid", "Prints the process pid.", "Usage: pid", &pidCommand},
 		{true, "kill", "Kills the selected process.", "Usage: kill <pid>", &killCommand},
 		{true, "ps", "Prints all the processes information.", "Usage: ps", &psCommand},
-		{true, "mTest", "Deployees mutext test.", "Usage: mTest", &mutextest},
+		{true, "test", "Deployees mutext test.", "Usage: mTest", &mutextest},
 		{true, "philosophers", "Starts Dining Philosophers problem.", "Usage: philosophers", &philosophers},
 		{true, "ipc", "Shows all the IPC implemented.", "Usage: ipc", &ipcCommand},
 		//{true, "prodcon", "Starts ProducerConsumer program.", "Usage: producerconsumer", &producerConsumer}

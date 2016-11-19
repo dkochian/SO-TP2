@@ -133,4 +133,3 @@ void sysSemWait(void *sem) {
 void sysSemPost(void *sem) {
 	_syscall(SEMPOST, (uintptr_t) sem, NULL, NULL, NULL, NULL);
 }
-

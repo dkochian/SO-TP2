@@ -1,7 +1,7 @@
 #include <common.h>
-#include <lib.h>
 #include <moduleLoader.h>
 
+#include "utils/include/lib.h"
 #include "system/include/idt.h"
 #include "system/include/mmu.h"
 #include "drivers/include/video.h"
@@ -156,15 +156,14 @@ int main() {
 	print("OK", GREEN);
 	print(" ]", -1);
 	printNewline();
-	
-	clear();
 
 	//Tests
 	//startSchedulerTest();
-	//startLockTest();
+	//startLockTest(true);
 	//startWaitpidTest();
 	//startFreeProcessTest();
 
+	clear();
 	((EntryPoint)sampleCodeModuleAddress)();
 
 	return 0;

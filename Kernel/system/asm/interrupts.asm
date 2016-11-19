@@ -12,7 +12,7 @@ EXTERN timerTickHandler
 EXTERN keyboardHandler
 EXTERN sysCallHandler
 EXTERN contextSwitch
-EXTERN yieldererer
+EXTERN yieldHandler
 EXTERN printA
 EXTERN printB
 EXTERN printC
@@ -138,7 +138,7 @@ _yield:
     pushaq
 
     mov rdi, rsp
-    call yieldererer
+    call yieldHandler
     cmp rax, 0
     je skip2
     mov rsp, rax

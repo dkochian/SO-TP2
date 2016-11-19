@@ -1,5 +1,5 @@
-#include "../include/mutex.h"
 #include "../drivers/include/video.h"
+#include "../system/ipc/include/mutex.h"
 #include "../system/scheduler/include/process.h"
 #include "../system/scheduler/include/scheduler.h"
 
@@ -7,9 +7,10 @@ static int processA(int argc, char **argv);
 static int processB(int argc, char **argv);
 
 static int var;
-static mutex *m;
+static mutex m;
+static bool locked;
 
-void startLockTest() {
+void startLockTest(bool lock) {
 	uint64_t pA;
 	uint64_t pB;
 
@@ -44,6 +45,8 @@ void startLockTest() {
 		return;
 	}
 
+	locked = lock;
+
 	print("Mutex process B id: ", -1);
 	printDec(pB, -1);
 	printNewline();
@@ -56,6 +59,12 @@ static int processA(int argc, char **argv) {
 	
 	while(true) {
 		lock(m);
+
+		if(locked == true) {
+			lock(m);
+			print("You shouldn't see this message", -1);
+		}
+		
 		var = 1;
 		print("Mutex processA: ", -1);
 		printDec(var, -1);

@@ -4,8 +4,9 @@
 #include <random.h>
 #include <string.h>
 #include <syscall.h>
+#include <semaphore.h>
+
 #include "include/producerConsumer.h"
-#include "../libc/include/semaphore.h"
 
 
 extern void insertItem(char c);

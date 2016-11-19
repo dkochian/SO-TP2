@@ -6,6 +6,6 @@
 	#include <stdint.h>
 
 	uint64_t timerTickHandler(uint64_t s_frame);
-	uint64_t yieldererer(uint64_t s_frame);
+	uint64_t yieldHandler(uint64_t s_frame);
 
 #endif

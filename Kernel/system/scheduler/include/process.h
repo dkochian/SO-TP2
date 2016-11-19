@@ -2,7 +2,7 @@
 
 	#define _INC_PROCESS_
 
-	#include "processList.h"
+	#include "../../../utils/include/processList.h"
 
 	#define MAX_PROCESSES	16
 
@@ -15,7 +15,8 @@
 	typedef enum process_state {
 		RUNNING,
 		BLOCKED,
-		WAITING
+		WAITING,
+		LOCKED
 	} process_state;
 
 	typedef struct stack_frame {

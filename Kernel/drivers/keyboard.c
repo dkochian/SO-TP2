@@ -1,6 +1,6 @@
 #include "include/video.h"
 #include "include/keyboard.h"
-#include "../include/mutex.h"
+#include "../system/ipc/include/mutex.h"
 #include "../system/scheduler/include/scheduler.h"
 
 static void addKeyBuffer(int key);
@@ -38,7 +38,7 @@ static unsigned char kb_map[3][85] = {
 static char lineBuffer[KB_SIZE];
 static int lineIndex;
 static kbStatus	kb;
-//static mutex *kb_mutex;
+//static mutex kb_mutex;
 
 bool keyboardInit() {
 	/*kb_mutex = initLock();

@@ -1,7 +1,7 @@
 #include "include/video.h"
 #include "include/font.h"
 
-#include "../include/clock.h"
+#include "../utils/include/clock.h"
 
 #define ROW(cursor_offset) ((cursor_offset)/WIDTH)
 #define COL(cursor_offset) ((cursor_offset)%WIDTH)

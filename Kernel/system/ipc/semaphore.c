@@ -1,5 +1,5 @@
 #include "include/semaphore.h"
-#include "include/mmu.h"
+#include "../include/mmu.h"
 
 
 sem_t * semOpen(char * name, int value) {

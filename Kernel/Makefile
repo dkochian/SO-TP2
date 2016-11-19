@@ -2,7 +2,7 @@ include Makefile.inc
 
 KERNEL=kernel.bin
 SYSTEM=
-SOURCES= $(wildcard system/scheduler/*.c) $(wildcard *.c) $(wildcard system/*.c) $(wildcard drivers/*.c) $(wildcard tests/*.c)
+SOURCES= $(wildcard utils/*.c) $(wildcard system/ipc/*.c) $(wildcard system/scheduler/*.c) $(wildcard *.c) $(wildcard system/*.c) $(wildcard drivers/*.c) $(wildcard tests/*.c)
 SOURCES_ASM=$(wildcard asm/*.asm) $(wildcard system/asm/*.asm)
 OBJECTS=$(SOURCES:.c=.o)
 OBJECTS_ASM=$(SOURCES_ASM:.asm=.o)
@@ -27,6 +27,6 @@ $(LOADEROBJECT):
 	@$(ASM) $(ASMFLAGS) $(LOADERSRC) -o $(LOADEROBJECT)
 
 clean:
-	@rm -rf asm/*.o *.o *.bin system/*.o system/scheduler/*.o drivers/*.o system/asm/*.o
+	@rm -rf asm/*.o *.o *.bin system/*.o system/scheduler/*.o system/ipc/*.o system/asm/*.o drivers/*.o utils/*.o
 
 .PHONY: all clean

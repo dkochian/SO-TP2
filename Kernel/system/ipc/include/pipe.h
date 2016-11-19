@@ -2,9 +2,9 @@
 #ifndef __INC_PIPE__
 	#define __INC_PIPE__
 
+	#include "mutex.h"
 	#include "../../Common/common.h"
-	#include "../include/mutex.h"
-	#include "../scheduler/include/processList.h"
+	#include "../../../utils/include/processList.h"
 
 /*
 	#define FS_PIPE 0x10
@@ -15,7 +15,7 @@
 		size_t read_ptr;
 		size_t size;
 		size_t refcount;
-		mutex *pi_mutex;
+		mutex pi_mutex;
 		list wait_queue;
 	} pipe_device_t;
 

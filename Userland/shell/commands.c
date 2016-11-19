@@ -422,43 +422,30 @@ void mutextest(char* str) {
 	bool lock;
 
 	m = sysMutexInit();
-	if (m == NULL) {
-		printn("Couldn't create the mutex.");
-		printNewline();
+	if(m == NULL) {
+		printn("Couldn't create the mutex");
 		return;
 	}
-	else{
-		printn("Could create the mutex.");
-		printNewline();
-	}	
+	printn("Muted Created");
 
 	sysMutexLock(m);
-	sysMutexIsLocked(m,&lock);
-	if( lock == true) {
-		printColor("Locked successfully", COLOR_INFO);
-		printNewline();
-	}
-	else {
-		printColor("Lock failed", COLOR_ERROR);
-		printNewline();
+	sysMutexIsLocked(m, &lock);
+	if(lock == false) {
+		printn("Lock failed");
+		sysMutexDestroy(m);
 		return;
 	}
+	printn("Locked successfully");
 
 	sysMutexUnlock(m);
-	sysMutexIsLocked(m,&lock);
-	if( lock == false) {
-		printColor("Unlocked successfully", YELLOW);
-		printNewline();
-		printNewline();
-	}
-	else{ 
-		printColor("Unlock failed", COLOR_ERROR);
-		printNewline();
+	sysMutexIsLocked(m, &lock);
+	if(lock == false) {
+		printn("Unlock failed");
+		sysMutexDestroy(m);
 		return;
 	}
+	printn("Unlocked successfully");
 
 	sysMutexDestroy(m);
 	printn("Mutex destroyed");
-	//rPid(pid());
-
 }

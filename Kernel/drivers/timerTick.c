@@ -14,8 +14,7 @@ uint64_t timerTickHandler(uint64_t s_frame) {
 	return 0;
 }
 
-uint64_t yieldererer(uint64_t s_frame) {
-	print("%%kill the infidel%%", -1);
+uint64_t yieldHandler(uint64_t s_frame) {
 	tickCount = 0;
 	return contextSwitch(s_frame);
 }

@@ -1,13 +1,13 @@
 #include "include/mmu.h"
 #include "include/syscalls.h"
 #include "../include/common.h"
+#include "ipc/include/mutex.h"
+#include "ipc/include/semaphore.h"
+#include "../utils/include/clock.h"
 #include "../drivers/include/video.h"
-#include "../drivers/include/keyboard.h"
-#include "../include/clock.h"
-#include "../include/mutex.h"
-#include "scheduler/include/scheduler.h"
 #include "scheduler/include/process.h"
-#include "include/semaphore.h"
+#include "../drivers/include/keyboard.h"
+#include "scheduler/include/scheduler.h"
 
 static void write(int out, char* str, int size);
 static void read(int in, char* buffer, char aux);
@@ -60,16 +60,16 @@ void sysCallHandler(uint64_t arg1, uint64_t arg2, uint64_t arg3, uint64_t arg4, 
 			*((uintptr_t *) arg3) = (uint64_t) initLock();
 			break;
 		case MLOCK:
-			lock((mutex*) arg3);
+			lock((mutex) arg3);
 			break;
 		case MUNLOCK:
-			unlock((mutex*) arg3);
+			unlock((mutex) arg3);
 			break;
 		case MDESTROY:
-			destroyLock((mutex*) arg3);
+			destroyLock((mutex) arg3);
 			break;
 		case MISLOCK:
-			*((uintptr_t *) arg2) =  isLock((mutex*) arg3);
+			*((uintptr_t *) arg2) =  isLock((mutex) arg3);
 			break;
 		case BLOCKSELF:
 			blockProcess(getCurrentProcess()->id);

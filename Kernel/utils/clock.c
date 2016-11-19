@@ -1,5 +1,5 @@
-#include <clock.h>
-#include <common.h>
+#include "include/clock.h"
+#include "../include/common.h"
 
 void getTime(uint64_t time) {
 	timeStruct* aux = (timeStruct*) time;

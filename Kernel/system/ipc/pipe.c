@@ -1,7 +1,7 @@
 #include "include/pipe.h"
 
-#include "include/mmu.h"
-#include "scheduler/include/scheduler.h"
+#include "../include/mmu.h"
+#include "../scheduler/include/scheduler.h"
 
 #define DEBUG_PIPES 0
 /*
@@ -243,7 +243,7 @@ void close_pipe(fs_node_t * node) {
 fs_node_t * make_pipe(size_t size) {
 	fs_node_t * fnode = k_malloc(sizeof(fs_node_t));
 	pipe_device_t * pipe = k_malloc(sizeof(pipe_device_t));
-	mutex *pi_mutexCreate = initLock();
+	mutex pi_mutexCreate = initLock();
 	if (pi_mutexCreate == NULL) 
 		return false;
 
@@ -266,7 +266,7 @@ fs_node_t * make_pipe(size_t size) {
 	pipe->refcount  = 0;
 	pipe->pi_mutex  = &pi_mutexCreate;
 
-	pipe->wait_queue = buildList(&equal);
+	pipe->wait_queue = listBuild(&equal);
 
 	return fnode;
 }*/

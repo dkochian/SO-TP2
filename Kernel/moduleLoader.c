@@ -1,5 +1,5 @@
 #include <stdint.h>
-#include <lib.h>
+#include "utils/include/lib.h"
 #include <moduleLoader.h>
 #include "drivers/include/video.h"
 
