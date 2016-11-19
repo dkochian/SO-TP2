@@ -203,7 +203,7 @@ psContext *processesStatus() {
 	res->numbProcess = aux;
 	res->processes = k_malloc(sizeof(char)* aux);
 	res->separateChar = '&';
-
+/*
 	res->processes[0] = k_malloc(sizeof(char) * 60);
 	k_itoa(current_process->id, buffer);
 	k_strcat(res->processes[0], buffer);
@@ -215,13 +215,13 @@ psContext *processesStatus() {
 	k_strcat(res->processes[0], "&");
 	k_itoa(current_process->foreground, buffer);
 	k_strcat(res->processes[0], buffer);
-
+*/
 	list wProcessList = waiting_list;
 	listResetCursor(wProcessList);
 
 	process * p = listGet(wProcessList);
 
-	for(i = 1; i < aux ; i++ ){
+	for(i = 0; i < aux ; i++ ){
 
 		res->processes[i] = k_malloc(sizeof(char ) * 100);
 		k_itoa(p->id, buffer);
@@ -232,7 +232,7 @@ psContext *processesStatus() {
 		k_itoa(p->state, buffer);
 		k_strcat(res->processes[i], buffer);
 		k_strcat(res->processes[i], "&");
-		k_itoa(current_process->foreground, buffer);
+		k_itoa(p->foreground, buffer);
 		k_strcat(res->processes[i], buffer);
 		p = listGet(wProcessList);
 	}
