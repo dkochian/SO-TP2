@@ -279,4 +279,6 @@ int philosophers(int argc, char **argv) {
 			exitFlag = true;
 		}
 	}
+
+	return 0;
 }
