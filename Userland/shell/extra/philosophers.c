@@ -9,7 +9,28 @@
 #include "../include/common.h"
 
 
-// WHY U TROLL ME SO, PHILOSOPHER?!?!
+
+
+ColorRGB baseColors[16] = {
+		{0,		0,		0},
+		{0,		0,		255},
+		{0,		128,	0},
+		{0,		255,	255},
+		{255,	0,		0},
+		{255,	0,		255},
+		{165,	42,		42},
+		{211,	211,	211},
+		{128,	128,	128},
+		{0,		128,	255},
+		{144,	238,	144},
+		{224,	255,	255},
+		{255,	77,		77},
+		{237,	83,		147},
+		{255,	255,	0},
+		{255,	255,	255}
+	};
+
+
 
 //	http://pseudomuto.com/development/2014/03/01/dining-philosophers-in-c/
 
@@ -52,14 +73,28 @@ static void releaseSem(mutex_u_t lock_v, volatile int* value) {
 	unlock(lock_v);
 }
 
+/**************
+**  Display  **
+**************/
+
 #define LEFT false
 #define RIGHT true
+
+
+void doA(int x, int y, int l, char color) {
+	ColorRGB c = baseColors[(uint16_t)color];
+	for(int i=0; i<l; i++) {
+		for(int j=0; j<l; j++) {
+			putPixel(x+i, y+j , &c);
+		}
+	}
+}
 
 static void updateSquare(int pos, char color) {
 	int x = 64+ 128*(pos);
 	int y = 64;
 	int l = 64;
-	drawSquare((uint16_t)x, (uint16_t)y, (uint16_t)l, color);
+	doA(x, y, l, color);
 }
 
 static void updateState(int pos, bool hand, char color) {
@@ -67,29 +102,27 @@ static void updateState(int pos, bool hand, char color) {
 		int x = 64+ 128*(pos);
 		int y = 64;
 		int l = 32;
-		drawSquare((uint16_t)x, (uint16_t)y, (uint16_t)l, color);
+		doA(x, y, l, color);
 		y = 96;
-		drawSquare((uint16_t)x, (uint16_t)y, (uint16_t)l, color);
+		doA(x, y, l, color);
 	} else {
 		int x = 96+ 128*(pos);
 		int y = 64;
 		int l = 32;
-		drawSquare((uint16_t)x, (uint16_t)y, (uint16_t)l, color);
+		doA(x, y, l, color);
 		y = 96;
-		drawSquare((uint16_t)x, (uint16_t)y, (uint16_t)l, color);
+		doA(x, y, l, color);
 	}
 }
 
-void pseudoSleep(int a) {
-	int lel =0;
-	for(int i=0; i<a; i++) {
-		for(int j=0; j<1000; j++) {
-			for(int k=0; k<1000; k++)
-				lel++;
-		}
-	}
+static void mysleep(long int num) {
+	int i = num * 10000000;
+	while(i-- > 0);
 }
 
+static void sleep2() {
+	mysleep(2);
+}
 
 /******************
 **  Philosopher  **
@@ -97,48 +130,65 @@ void pseudoSleep(int a) {
 static int philosopher(int argc, char** argv) {
 	int pos = strintPos(argv[0]);
 	int left = strintPos(argv[1]);
-
+	free(argv[0]);
+	free(argv[1]);
+	free(argv);
 	//print("Generated Philosopher N°: ");
 	//printNum(pos);
 	//printNewline();
-
 	int right = pos;
 	bool alive = true;
 	while(alive) {
-			updateSquare(pos, BLUE);
 		// THINKING
-			//printNum(pos);
-			//printn(" is thinking...");
-		pseudoSleep(10);
-			updateSquare(pos, MAGENTA);
-			//printNum(pos);
-			//printn(" is hungry.");
+		updateSquare(pos, BLUE);
+		sleep2();
+		
+		// HUNGRY
+		updateSquare(pos, MAGENTA);
+		sleep2();
+
 		grabSem(&semLock, &sem);
-			updateSquare(pos, RED);
+		
+		// CAN GRAB
+		updateSquare(pos, RED);
+		sleep2();
+
 		lock(& (forks[right]) );
-			updateState(pos, RIGHT, YELLOW);
-			//printNum(pos);
-			//printn(" grabbed right fork.");
+
+		// GRABBED RIGHT
+		updateState(pos, RIGHT, GREEN);
+		sleep2();
+
 		lock(& (forks[left]) );
-			updateSquare(pos, GREEN);
-			//printNum(pos);
-			//printn(" grabbed left fork.");
-		// EAT
-			//printNum(pos);
-			//printn(" is eating...");
-		pseudoSleep(1);		
+		
+		// GRABBED LEFT - EATING
+		updateState(pos, LEFT, GREEN);
+		sleep2();
 
 		unlock(& (forks[right]) );
-			updateState(pos, RIGHT, LIGHT_GREEN);
+
+		// DROPPED RIGHT
+		updateState(pos, RIGHT, LIGHT_GREEN);
+		sleep2();
+
 		unlock(& (forks[left]) );
-			updateState(pos, LEFT, LIGHT_GREEN);
-			//printNum(pos);
-			//printn(" dropped both forks.");
+		
+		// DROPPED LEFT
+		updateState(pos, LEFT, LIGHT_GREEN);
+		sleep2();
+
 		releaseSem(&semLock, &sem);
-			updateSquare(pos, LIGHT_BLUE);
+		
+		// OUT EAT
+		updateSquare(pos, LIGHT_BLUE);
+		sleep2();
 
 		lock(&editLock);
-			updateSquare(pos, WHITE);
+		
+		// CHECK MESSAGE
+		updateSquare(pos, WHITE);
+		sleep2();
+
 		switch( edit[pos] ) {
 			case INC: {
 				left++;
@@ -159,6 +209,8 @@ static int philosopher(int argc, char** argv) {
 		edit[pos] = NO_ACTION;
 		unlock(&editLock);
 	}
+
+	updateSquare(pos, BLACK);
 	return 0;
 }
 
@@ -244,14 +296,13 @@ int philosophers(int argc, char **argv) {
 	clear();
 	printn("Loading Philosophers...");
 	init();
-												psCommand(0, (char **) "");
 	for(int i=0; i<total; i++) {
 		launchPhilosopher(i, (i+1)%total );
 	}
-												psCommand(0, (char **) "");
+												//psCommand(0, (char **) "");
 	
 
-	//while(true) {}
+	while(true) {}
 
 
 	bool exitFlag = false;
@@ -261,16 +312,20 @@ int philosophers(int argc, char **argv) {
 		if(c=='w' || c=='W') {
 			
 			if(addPhilosopher()) {
+				print("yay");
 				// success
 			} else {
+				print("nay");
 				// cant add. max is MAX_PHILOSOPHERS
 			} 
 
 		} else if(c=='s' || c=='S') {
 
 			if(removePhilosopher()) {
+				print("yay");
 				// sucess
 			} else {
+				print("nay");
 				// can't remove. min is MIN_PHILOSOPHERS
 			}
 
