@@ -81,26 +81,26 @@ void yield() {
 	_syscall(YIELD, NULL, NULL, NULL, NULL, NULL);
 }
 
-void* sysMutexInit() {
-	uintptr_t res = NULL;
-	_syscall(MINIT, NULL, (uintptr_t) &res, NULL, NULL, NULL);
-	return (void *) res;
+mutex sysMutexInit() {
+	mutex res = NULL;
+	_syscall(MINIT, (uintptr_t) &res, NULL, NULL, NULL, NULL);
+	return res;
 }
 
-void sysMutexLock(void *m) {
-	_syscall(MLOCK, NULL, (uintptr_t) m, NULL, NULL, NULL);
+void sysMutexLock(mutex m) {
+	_syscall(MLOCK, (uintptr_t) m, NULL, NULL, NULL, NULL);
 }
 
-void sysMutexUnlock(void *m) {
-	_syscall(MUNLOCK, NULL, (uintptr_t) m, NULL, NULL, NULL);
+void sysMutexUnlock(mutex m) {
+	_syscall(MUNLOCK, (uintptr_t) m, NULL, NULL, NULL, NULL);
 }
 
-void sysMutexDestroy(void *m) {
-	_syscall(MDESTROY, NULL, (uintptr_t) m, NULL, NULL, NULL);
+void sysMutexDestroy(mutex m) {
+	_syscall(MDESTROY, (uintptr_t) m, NULL, NULL, NULL, NULL);
 }
 
-void sysMutexIsLocked(void *m, bool *res) {
-	_syscall(MISLOCK, (uintptr_t) res, (uintptr_t) m, NULL, NULL, NULL);
+void sysMutexIsLocked(mutex m, bool *res) {
+	_syscall(MISLOCK, (uintptr_t) m, (uintptr_t) res, NULL, NULL, NULL);
 }
 
 void blockMyself() {

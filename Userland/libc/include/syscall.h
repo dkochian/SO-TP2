@@ -30,11 +30,12 @@
 	void rPid(uint64_t pid);
 
 	void yield();
-	void* sysMutexInit();
-	void sysMutexLock(void* m);
-	void sysMutexUnlock(void* m);
-	void sysMutexDestroy(void* m);
-	void sysMutexIsLocked(void *m, bool *res);
+	
+	mutex sysMutexInit();
+	void sysMutexLock(mutex m);
+	void sysMutexUnlock(mutex m);
+	void sysMutexDestroy(mutex m);
+	void sysMutexIsLocked(mutex m, bool *res);
 
 	void blockMyself();
 	void drawSquare(uint16_t x, uint16_t y, uint16_t l, char color);

@@ -28,11 +28,6 @@ mutex initLock() {
 
     l->lock = false;
 
-    if(l->m_queue == NULL) {
-        k_free(l);
-        return NULL;
-    }
-
     return l;
 }
 
@@ -65,7 +60,7 @@ void unlock(mutex l) {
         if(l->blocked[p->id] == true)
             p->state = BLOCKED;
         else
-            p->state = WAITING;
+            p->state = RUNNING;
 
         if(queueIsEmpty(l->m_queue) == false) {
             p = queuePop(l->m_queue);
@@ -77,6 +72,6 @@ void unlock(mutex l) {
     _unlock(&l->lock);
 }
 
-bool isLock(mutex l) {
+bool isLocked(mutex l) {
     return l->lock;
 }

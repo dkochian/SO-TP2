@@ -117,4 +117,6 @@
 
 	typedef int (*func) (int, char **);
 
+	typedef struct mutex *mutex;
+
 #endif

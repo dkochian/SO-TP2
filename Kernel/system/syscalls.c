@@ -15,10 +15,10 @@ static void read(int in, char* buffer, char aux);
 void sysCallHandler(uint64_t arg1, uint64_t arg2, uint64_t arg3, uint64_t arg4, uint64_t arg5, uint64_t arg6) {
 	switch(arg1) {
 		case SYSWRITE:
-			write(arg2, (char*) arg3, (int) arg4);
+			write(arg2, (char *) arg3, (int) arg4);
 			break;
 		case SYSREAD:
-			read(arg2, (char*) arg3, (char) arg4);
+			read(arg2, (char *) arg3, (char) arg4);
 			break;
 		case CLEAR:
 			clear();
@@ -57,19 +57,19 @@ void sysCallHandler(uint64_t arg1, uint64_t arg2, uint64_t arg3, uint64_t arg4, 
 			_yield();
 			break;
 		case MINIT:
-			*((uintptr_t *) arg3) = (uint64_t) initLock();
+			*((mutex *) arg2) = initLock();
 			break;
 		case MLOCK:
-			lock((mutex) arg3);
+			lock((mutex) arg2);
 			break;
 		case MUNLOCK:
-			unlock((mutex) arg3);
+			unlock((mutex) arg2);
 			break;
-		case MDESTROY:
-			destroyLock((mutex) arg3);
+		case MDESTROY: 
+			destroyLock((mutex) arg2);
 			break;
 		case MISLOCK:
-			*((uintptr_t *) arg2) =  isLock((mutex) arg3);
+			*((bool *) arg3) = isLocked((mutex) arg2);
 			break;
 		case BLOCKSELF:
 			blockProcess(getCurrentProcess()->id);

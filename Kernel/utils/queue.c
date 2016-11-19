@@ -33,13 +33,15 @@ queue queueBuild(bool (*f) (element_t , element_t)) {
 }
 
 void queueDestroy(queue q) {
-	node *current = q->head;
-	node *aux = NULL;
+    if(q->size != 0) {
+		node *current = q->head;
+		node *aux = NULL;
 
-	while(current != NULL) {
-		aux = current;
-		current = current->next;
-		k_free(aux);
+		while(current != NULL) {
+			aux = current;
+			current = current->next;
+			k_free(aux);
+		}
 	}
 
 	k_free(q);

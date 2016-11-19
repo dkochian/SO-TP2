@@ -110,7 +110,6 @@ static int insertToBuffer(char c) {
 
 		return 0;
 	}
-	//print("h");
 	return 1;
 }
 
@@ -148,6 +147,7 @@ static int parseBuffer(commandData* cmd) {
 
 	return 1;
 }
+
 static int bufferHasAlpha() {
 	int
 		index = 0;
@@ -161,7 +161,6 @@ static int bufferHasAlpha() {
 	return 0;
 }
 	
-
 static void clearBuffer(commandData* cmd) {
 	int i = 0;
 	int flag = false;
@@ -185,6 +184,7 @@ static int executeCommand(commandData cmd) {
 				wPid(pid);*/
 
 			commandTable[index].func(cmd.args);
+			printn("I executed just fine.");
 			return 1;
 		}
 	}
