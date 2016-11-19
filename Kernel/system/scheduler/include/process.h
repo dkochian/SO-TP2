@@ -2,7 +2,7 @@
 
 	#define _INC_PROCESS_
 
-	#include "../../../utils/include/processList.h"
+	#include "../../../utils/include/list.h"
 
 	#define MAX_PROCESSES	16
 

@@ -5,9 +5,9 @@
 
 	typedef void* sem_u_t;
 
-	sem_u_t semOpen(char * name, int value);
-	void semClose(sem_u_t sem);
-	void semWait(sem_u_t sem);
-	void semPost(sem_u_t sem);
+	sem_u_t sem_open(char * name, int value);
+	void sem_close(sem_u_t sem);
+	void sem_wait(sem_u_t sem);
+	void sem_post(sem_u_t sem);
 
 #endif
