@@ -24,7 +24,7 @@ void cvWait(cond_t cv, mutex cv_mutex) {
 	lock(cv_mutex);
 }
 
-process *cvSignal(cond_t cv) {
+uint64_t cvSignal(cond_t cv) {
 	process *rProcess;
 	if (!listIsEmpty(cv->cv_list)) {
 		rProcess = listGetFirst(cv->cv_list);
@@ -32,7 +32,7 @@ process *cvSignal(cond_t cv) {
 		unBlockProcess(rProcess->id);
 	}
 
-	return rProcess;
+	return rProcess->id;
 }
 
 void cvBroadcast(cond_t cv) {

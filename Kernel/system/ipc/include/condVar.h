@@ -12,7 +12,7 @@
 
 	cond_t cvInitialize();
 	void cvWait(cond_t cv, mutex cv_mutex);
-	process *cvSignal(cond_t cv);
+	uint64_t cvSignal(cond_t cv);
 	void cvBroadcast(cond_t cv);
 	void cvDestroy(cond_t cv);
 

@@ -102,10 +102,10 @@ void sysCallHandler(uint64_t arg1, uint64_t arg2, uint64_t arg3, uint64_t arg4, 
 			*((uintptr_t *) arg3) = cvSignal((cond_t *)arg2);
 			break;
 		case CVBROAD:
-			cvBroadcast((cond_t *)arg2);
+			cvBroadcast((cond_t )arg2);
 			break;	
 		case CVDESTROY:
-			cvDestroy((cond_t *)arg2);
+			cvDestroy((cond_t )arg2);
 			break;*/
 		default:
 			write(STDERR, "Error: Invalid system call.", 28);
