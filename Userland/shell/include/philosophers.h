@@ -3,7 +3,7 @@
 
 	#define MAX_PHILOSOPHERS (16)
 	#define MIN_PHILOSOPHERS (2)
-	#define INIT_PHILOSOPHERS (5)
+	#define INIT_PHILOSOPHERS (10)
 
 	void philosophers();
 

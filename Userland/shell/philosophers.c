@@ -108,7 +108,7 @@ static int philosopher(int argc, char** argv) {
 		// THINKING
 			//printNum(pos);
 			//printn(" is thinking...");
-		pseudoSleep(10);
+		pseudoSleep(20);
 			updateSquare(pos, MAGENTA);
 			//printNum(pos);
 			//printn(" is hungry.");
@@ -125,7 +125,7 @@ static int philosopher(int argc, char** argv) {
 		// EAT
 			//printNum(pos);
 			//printn(" is eating...");
-		pseudoSleep(2);		
+		pseudoSleep(15);		
 
 		unlock(& (forks[right]) );
 			updateState(pos, RIGHT, LIGHT_GREEN);
@@ -243,14 +243,14 @@ void philosophers() {
 	clearCommand(NULL);
 	printn("Loading Philosophers...");
 	init();
-												psCommand(NULL);
+	//											psCommand(NULL);
 	for(int i=0; i<total; i++) {
 		launchPhilosopher(i, (i+1)%total );
 	}
-												psCommand(NULL);
+	//											psCommand(NULL);
 	
 
-	while(true) {}
+	//while(true) {}
 
 
 	bool exitFlag = false;

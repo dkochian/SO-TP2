@@ -111,16 +111,18 @@ _write_port:
 ; Timer tick idt handler -> processed in C
 ;------------------------------------------------------------
 _timerTickHandler:
-    ;cli
+    cli
     pushaq
 
-    mov al,20h
-    out 20h,al
+    
 
     ;call printB
     mov rdi, rsp
     call timerTickHandler
     mov rbx, rax            ;backup rax and use rbx instead
+
+    mov al,20h
+    out 20h,al
 
     cmp rbx, 0
     je skip
@@ -129,25 +131,9 @@ _timerTickHandler:
 skip:
     popaq
 
-    ;sti
+    sti
     iretq
 
-_yieldHandler:
-    ;cli
-    pushaq
-
-    mov rdi, rsp
-    call yieldererer
-
-    cmp rax, 0
-    je skip3
-    mov rsp, rax
-
-skip3:
-    popaq
-
-    ;sti
-    iretq
 
 ;------------------------------------------------------------
 ; Process yield, emul _timerTickHandler but without iret or cli/sti
@@ -208,4 +194,38 @@ _unlock:
     mov rax,0
     xchg rax, [rdi]
 
+    ret
+
+
+
+
+
+_yieldHandler:
+    cli
+    ;push iretq hook
+
+    mov rax,rsp
+    push QWORD 0
+    push QWORD 0
+    push rax
+    pushfq
+    push QWORD 0x008
+    push .ret
+
+    ;uint64_t rip
+    ;uint64_t cs
+    ;uint64_t eflags
+    ;uint64_t rsp
+    ;uint64_t ss
+    ;uint64_t base
+
+    pushaq
+    mov rdi,rsp
+    call yieldererer
+    mov rsp,rax
+    popaq
+    sti
+    iretq
+
+.ret:
     ret
