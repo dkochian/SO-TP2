@@ -2,18 +2,18 @@
 #include "include/semaphore.h"
 
 
-sem_u_t semOpen(char * name, int value) {
+sem_u_t sem_open(char * name, int value) {
 	return (sem_u_t) sysSemOpen(name,value);
 }
 
-void semClose(sem_u_t sem) {
+void sem_close(sem_u_t sem) {
 	sysSemClose(sem);
 }
 
-void semWait(sem_u_t sem) {
+void sem_wait(sem_u_t sem) {
 	sysSemWait(sem);
 }
 
-void semPost(sem_u_t sem) {
+void sem_post(sem_u_t sem) {
 	sysSemPost(sem);
 }

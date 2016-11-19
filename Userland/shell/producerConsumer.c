@@ -18,90 +18,62 @@ static void control();
 
 extern int bufferSize;
 
-//pthread_t producerThread;
-//pthread_t consumerThread;
-
 static sem_u_t itemMutex;
 static sem_u_t emptyCount;
 static sem_u_t fullCount;
 
-static int prodSleepTime = 1;
-static int consSleepTime = 1;
+static int prodSleepTime = 0;
+static int consSleepTime = 0;
 
-int producerConsumer(int argc, char ** argv) {
+void producerConsumer() {
+
 	int i = 0;
-
-
-//	pthread_attr_t attr;
-//	pthread_attr_init(&attr);
-//	pthread_attr_setdetachstate(&attr, PTHREAD_CREATE_JOINABLE);
 
 	//Semaphore creation
 
-//	sem_unlink("itemMutex");
-//	sem_unlink("fullCount");
-//	sem_unlink("emptyCount");
-
 	//Mutexes buffer access
-//	itemMutex = sem_open("itemMutex", O_CREAT, O_EXCL, 700);
-
-	itemMutex = semOpen("itemMutex", 700);
+	itemMutex = sem_open("itemMutex", 700);
 
 	if (itemMutex == NULL) {
 		printn("Failed to create itemMutex");
-		return 0;
 	}
 
 	//Counts full buffer slots
-	fullCount = semOpen("fullCount", 700);
+	fullCount = sem_open("fullCount", 700);
 
 	if (fullCount == NULL) {
 		printn("Failed to create fullCount");
-		semClose(itemMutex);
-		return 0;
 	}
 
 	//Counts empty buffer slots
-	emptyCount = semOpen("emptyCount", 700);
+	emptyCount = sem_open("emptyCount", 700);
 
 	if (emptyCount == NULL){
 		printn("Failed to create emptyCount");
-		semClose(itemMutex);
-		semClose(fullCount);
-		return 0;
 	}
 
 	//Semaphore initialization
-	semPost(itemMutex);
+	sem_post(itemMutex);
 
 	for(i = 0; i < bufferSize; i++)
-		semPost(emptyCount);
+		sem_post(emptyCount);
 
-//	printn("Press enter to start");
-//	//TODO: MODIFICAR PARA QUE USE GETCHAR NUESTRO
-//	getchar(1);
+	printn("Press enter to start");
+	while(getchar(true) != '\n');
 
-	//Create threads
-//	pthread_create(&producerThread, &attr, producer, NULL);
-//	pthread_create(&consumerThread, &attr, consumer, NULL);
-	newProcess("producer", producer, 0, 0);
-	newProcess("consumer", consumer, 0, 0);
+	//Create processes
+	uint64_t prod = newProcess("producer", producer, 0, 0);
+	uint64_t cons = newProcess("consumer", consumer, 0, 0);
 
-	//Control thread speed
+	//Control speed
 	control();
 
-//	pthread_attr_destroy(&attr);
-//	pthread_exit(NULL);
+	kill(prod);
+	kill(cons);
 
-	semClose(itemMutex);
-	semClose(emptyCount);
-	semClose(fullCount);
-
-//	sem_unlink("itemMutex");
-//	sem_unlink("emptyCount");
-//	sem_unlink("fullCount");
-
-	return 1;
+	sem_close(itemMutex);
+	sem_close(emptyCount);
+	sem_close(fullCount);
 }
 
 //static int a = 10;
@@ -110,11 +82,10 @@ static int producer(int argc, char **argv) {
 	int item;
 
 	while (1) {
+//		printn("ANTES SLEEP");
 		sleep(prodSleepTime);
+//		printn("DESPUES SLEEP");
 
-		//char stackChar = 'a';
-
-//		char item = rand();
 		item = rand()%100;
 		print("Produce ");
 		printNum(item);
@@ -123,14 +94,14 @@ static int producer(int argc, char **argv) {
 
 		//Decrement the count of empty slots in the buffer (semaphore goes down)
 		//Locks when the remaining empty slots are zero
-		semWait(emptyCount);
-		semWait(itemMutex);
+		sem_wait(emptyCount);
+		sem_wait(itemMutex);
 
 		insertItem(item);
-		semPost(itemMutex);
+		sem_post(itemMutex);
 
 		//Increment the count of full slots in the buffer (semaphore goes up)
-		semPost(fullCount);
+		sem_post(fullCount);
 	}
 
 	return 0;
@@ -144,15 +115,14 @@ static int consumer(int argc, char **argv) {
 
 		//Decrement the count of full slots in the buffer (semaphore goes down)
 		//Locks when there is no more information in the buffer
-		semWait(fullCount);
-		semWait(itemMutex);
+		sem_wait(fullCount);
+		sem_wait(itemMutex);
 
 		item = removeItem();
-		semPost(itemMutex);
+		sem_post(itemMutex);
 
 		//Increment the count of empty slots in the buffer (semaphore goes up)
-		semPost(emptyCount);
-
+		sem_post(emptyCount);
 		print("Consume ");
 		printNum(item);
 		printNewline();
@@ -165,28 +135,32 @@ static void control() {
 	int end = 0;
 
 	while(!end) {
-//		int c = getchar(1);
-		int c = 0;
+		int c = getchar(true);
+
 		switch(c) {
 			case 'a':
+				printn("Decreasing producer speed..");
 				prodSleepTime++;
-			break;
+				break;
 
 			case 'z':
+				printn("Increasing producer speed..");
 				prodSleepTime = --prodSleepTime < 0? 0 : prodSleepTime;
-			break;
+				break;
 
 			case 's':
+				printn("Decreasing consumer speed..");
 				consSleepTime++;
-			break;
+				break;
 
 			case 'x':
+				printn("Increasing consumer speed..");
 				consSleepTime = --consSleepTime < 0? 0 : consSleepTime;
-			break;
+				break;
 
 			case 'q':
 				end = 1;
-			break;
+				break;
 		}
 	}
 }

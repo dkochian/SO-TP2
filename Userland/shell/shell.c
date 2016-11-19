@@ -39,8 +39,8 @@ commandExec
 		{true, "ps", "Prints all the processes information.", "Usage: ps", &psCommand},
 		{true, "test", "Deployees mutext test.", "Usage: mTest", &mutextest},
 		{true, "philosophers", "Starts Dining Philosophers problem.", "Usage: philosophers", &philosophers},
+		{true, "prodcon", "Starts ProducerConsumer program.", "Usage: producerconsumer", &producerConsumer},
 		{true, "ipc", "Shows all the IPC implemented.", "Usage: ipc", &ipcCommand},
-		//{true, "prodcon", "Starts ProducerConsumer program.", "Usage: producerconsumer", &producerConsumer}
 	};
 
 int main(int argc, char ** argv) {
