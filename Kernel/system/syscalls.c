@@ -2,6 +2,7 @@
 #include "include/syscalls.h"
 #include "../include/common.h"
 #include "ipc/include/mutex.h"
+#include "ipc/include/condVar.h"
 #include "ipc/include/semaphore.h"
 #include "../utils/include/clock.h"
 #include "../drivers/include/video.h"
@@ -92,11 +93,11 @@ void sysCallHandler(uint64_t arg1, uint64_t arg2, uint64_t arg3, uint64_t arg4, 
 		case SEMPOST:
 			semPost((sem_t) arg2);
 			break;
-		/*case CVINIT:
-			*((uintptr_t *) arg2) = cvInitialize();
+		case CVINIT:
+			*((cond_t *) arg2) = cvInitialize();
 			break;
 		case CVWAIT:
-			cvWait((cond_t)arg2,(sem_t) arg3);
+			cvWait((cond_t)arg2,(mutex) arg3);
 			break;
 		case CVSIG:
 			*((uintptr_t *) arg3) = cvSignal((cond_t)arg2);
@@ -106,7 +107,7 @@ void sysCallHandler(uint64_t arg1, uint64_t arg2, uint64_t arg3, uint64_t arg4, 
 			break;	
 		case CVDESTROY:
 			cvDestroy((cond_t)arg2);
-			break;*/
+			break;
 		default:
 			write(STDERR, "Error: Invalid system call.", 28);
 			break;
