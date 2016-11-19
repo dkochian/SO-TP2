@@ -32,21 +32,21 @@ int producerConsumer(int argc, char **argv) {
 	//Semaphore creation
 
 	//Mutexes buffer access
-	itemMutex = sem_open("itemMutex", 700);
+	itemMutex = sem_open("itemMutex", 0);
 
 	if (itemMutex == NULL) {
 		printn("Failed to create itemMutex");
 	}
 
 	//Counts full buffer slots
-	fullCount = sem_open("fullCount", 700);
+	fullCount = sem_open("fullCount", 0);
 
 	if (fullCount == NULL) {
 		printn("Failed to create fullCount");
 	}
 
 	//Counts empty buffer slots
-	emptyCount = sem_open("emptyCount", 700);
+	emptyCount = sem_open("emptyCount", 0);
 
 	if (emptyCount == NULL){
 		printn("Failed to create emptyCount");

@@ -19,5 +19,6 @@
 	int colorBgCommand(int argc, char **argv);
 	int mutextest(int argc, char **argv);
 	int ipcCommand(int argc, char **argv);
+	int cvTestCommand(int argc, char **argv);
 
 #endif

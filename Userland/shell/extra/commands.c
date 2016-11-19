@@ -4,6 +4,7 @@
 #include <string.h>
 #include <syscall.h>
 
+#include "../include/cvtest.h"
 #include "include/fractal.h"
 #include "include/commands.h"
 #include "../include/common.h"
@@ -444,6 +445,15 @@ int mutextest(int argc, char **argv) {
 	sysMutexDestroy(m);
 	printn("Mutex destroyed");
 
+	return 0;
+}
+int cvTestCommand(int argc, char **argv) {
+	if(argc != 0) {
+		helpCommand(1, (char **) "testCV");
+		return 1;
+	}
+
+	cvTestDep(0,NULL);
 	return 0;
 }
 

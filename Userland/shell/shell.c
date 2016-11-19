@@ -42,6 +42,7 @@ commandExec
 		{true, "philosophers", "Starts Dining Philosophers problem.", "Usage: philosophers", &philosophers},
 		{true, "prodcon", "Starts ProducerConsumer program.", "Usage: producerconsumer", &producerConsumer},
 		{true, "ipc", "Shows all the IPC implemented.", "Usage: ipc", &ipcCommand},
+		{true, "testCV", "Deployees condition variable test.", "Usage: testCV", &cvTestCommand},
 	};
 
 int main(int argc, char ** argv) {
