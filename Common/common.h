@@ -48,6 +48,11 @@
 	#define SEMCLOSE			27
 	#define SEMWAIT				28
 	#define SEMPOST				29
+	#define CVINIT				30
+	#define CVWAIT				31
+	#define CVSIG				32
+	#define CVBROAD				33
+	#define CVDESTROY			34
 
 
 	//Keyboard
