@@ -171,7 +171,7 @@ int dateCommand(int argc, char **argv) {
 
 	dateStruct
 		date;
-	printn("adentro dateCommand");
+
 	getDate(&date);
 
 	print("Hoy es ");
