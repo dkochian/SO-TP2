@@ -28,9 +28,11 @@
 	*/
 
 	void buildIDT();
-	extern void _timerTickHandler();
-	extern void _keyboardHandler();
+		
+	extern void _yieldHandler();
 	extern void _sysCallHandler();
+	extern void _keyboardHandler();
+	extern void _timerTickHandler();
 	extern void _write_port(int16_t, int16_t);
 
 #endif

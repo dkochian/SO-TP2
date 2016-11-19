@@ -1,6 +1,7 @@
 GLOBAL _timerTickHandler
 GLOBAL _keyboardHandler
 GLOBAL _sysCallHandler
+GLOBAL _yieldHandler
 GLOBAL _write_port
 GLOBAL _cli
 GLOBAL _sti
@@ -13,7 +14,6 @@ EXTERN keyboardHandler
 EXTERN sysCallHandler
 EXTERN contextSwitch
 EXTERN yieldHandler
-EXTERN printA
 
 SECTION .text
 
@@ -129,12 +129,12 @@ skip:
     iretq
 
 ;------------------------------------------------------------
-; Process yield, emul _timerTickHandler but without iret or cli/sti
+; yieldHandler
 ;------------------------------------------------------------
-_yield:
+_yieldHandler:
     pushaq
 
-    ;call printA
+    cli
     mov rdi, rsp
     call yieldHandler
     cmp rax, 0
@@ -142,7 +142,15 @@ _yield:
     mov rsp, rax
 
 skip2:
+    sti
     popaq
+    iretq
+
+;------------------------------------------------------------
+; Process yield, emul _timerTickHandler but without iret or cli/sti
+;------------------------------------------------------------
+_yield:
+    int 85h
     ret
 
 ;------------------------------------------------------------

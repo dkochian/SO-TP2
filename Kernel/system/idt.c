@@ -19,6 +19,7 @@ void buildIDT() {
 	insertEntry(0x20, &_timerTickHandler);
 	insertEntry(0x21, &_keyboardHandler);
 	insertEntry(0x80, &_sysCallHandler);
+	insertEntry(0x85, &_yieldHandler);
 
 	_write_port(0x21, 0xFC);
 

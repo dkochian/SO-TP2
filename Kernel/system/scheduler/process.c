@@ -116,15 +116,12 @@ void freeProcess(int pid) {
 }
 
 void waitPid(uint64_t pid){
-	print("0", -1);
 	process *p = getProcessFromId(pid);
 
 	if(p == NULL)
 		return;
 
-	//print("1", -1);
 	addWaitProcess(p);
-	//print("2", -1);
 }
 
 process *getFirstWaitProcess(process *father) {

@@ -44,10 +44,6 @@ ColorRGB
 		{255,	255,	255}
 	};
 
-void printA() {
-	print("AaA", -1);
-}
-
 void print(const char* str, char color) {
 	for(int i = 0; str[i] != '\0' && isValidOffset(ROW(offset), COL(offset)); i++) {
 		printChar(str[i], ROW(offset), COL(offset), color);
