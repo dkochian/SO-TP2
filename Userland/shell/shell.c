@@ -178,7 +178,6 @@ static bool executeCommand(commandData cmd) {
 			uint64_t pid = newProcess(cmd.name, commandTable[index].func, cmd.argc, cmd.argv);
 			wPid(pid);
 
-			//commandTable[index].func(cmd.args);
 			return true;
 		}
 	}

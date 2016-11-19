@@ -10,6 +10,8 @@
 #include "../drivers/include/keyboard.h"
 #include "scheduler/include/scheduler.h"
 
+#include "../utils/include/string.h"
+
 static void write(int out, char* str, int size);
 static void read(int in, char* buffer, char aux);
 
@@ -42,9 +44,9 @@ void sysCallHandler(uint64_t arg1, uint64_t arg2, uint64_t arg3, uint64_t arg4, 
 		case FREE:
 			k_free((void *) arg2);
 			break;
-		case NEWPROCESS:
-			*((uintptr_t *) arg6) = newProcess((char *) arg2, (func) arg3, (int)arg4, (char**)arg5);
-			break;
+		case NEWPROCESS: {
+			*((uint64_t *) arg6) = newProcess((char *) arg2, (func) arg3, (int) arg4, (char **) arg5);
+		}break;
 		case KILLPROCESS:
 			removeProcess(getProcessFromId((uint64_t)arg2));
 			break;

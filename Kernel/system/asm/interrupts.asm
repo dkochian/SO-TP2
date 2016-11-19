@@ -14,8 +14,6 @@ EXTERN sysCallHandler
 EXTERN contextSwitch
 EXTERN yieldHandler
 EXTERN printA
-EXTERN printB
-EXTERN printC
 
 SECTION .text
 
@@ -110,10 +108,9 @@ _write_port:
 ; Timer tick idt handler -> processed in C
 ;------------------------------------------------------------
 _timerTickHandler:
-    ;cli
+    cli
     pushaq
 
-    ;call printB
     mov rdi, rsp
     call timerTickHandler
     mov rbx, rax            ;backup rax and use rbx instead
@@ -128,7 +125,7 @@ _timerTickHandler:
 skip:
     popaq
 
-    ;sti
+    sti
     iretq
 
 ;------------------------------------------------------------
@@ -137,6 +134,7 @@ skip:
 _yield:
     pushaq
 
+    ;call printA
     mov rdi, rsp
     call yieldHandler
     cmp rax, 0
@@ -151,11 +149,10 @@ skip2:
 ; keyboard idt handler -> processed in C
 ;------------------------------------------------------------
 _keyboardHandler:
-    ;cli
+    cli
     push rdi
     push rax
 
-    ;call printC
     xor rax, rax
     in al, 60h
     and rax,0xFF
@@ -169,16 +166,16 @@ _keyboardHandler:
     pop rax
     pop rdi
 
-    ;sti
+    sti
     iretq
 
 ;------------------------------------------------------------
 ; syscalls idt handler -> processed in C
 ;------------------------------------------------------------
 _sysCallHandler:
-    ;cli
+    cli
     call sysCallHandler
-    ;sti
+    sti
     iretq
 
 ;------------------------------------------------------------

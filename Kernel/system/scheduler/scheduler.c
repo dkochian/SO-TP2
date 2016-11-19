@@ -18,11 +18,6 @@ static process *current_process;
 
 static mutex s_mutex;
 
-int puppetMaster(int argc, char** argv) {
-	while(true) {}
-	return 0;
-}
-
 bool buildScheduler() {
 	waiting_list = listBuild(&equal);
 
@@ -33,7 +28,7 @@ bool buildScheduler() {
 	if(s_mutex == NULL) 
 		return false;
 
-	newProcess("Master of the Puppets", puppetMaster, 0, NULL);
+	newProcess("Master of the Puppets", NULL, 0, NULL);
 	
 	return true;
 }
@@ -54,7 +49,7 @@ bool addProcess(process *p) {
 	return res;
 }
 
-bool removeProcess(process *p) { //should have locks but can't maybe caller (freeProcess also can't be locked)
+bool removeProcess(process *p) {
 	bool res = false;
 
 	if(p == NULL)
@@ -194,8 +189,6 @@ static process *schedule() {
 
 	do {
 		p = listPeekFirst(waiting_list);
-		if(p == NULL)
-			break;
 	} while(p->state == BLOCKED);
 
 	return p;

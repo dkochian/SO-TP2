@@ -4,7 +4,6 @@
 #include "../../include/atom.h"
 #include "../ipc/include/mutex.h"
 
-
 #include "../../utils/include/lib.h"
 #include "../../utils/include/string.h"
 #include "../../drivers/include/video.h"
@@ -41,7 +40,7 @@ uint64_t newProcess(char* name, func f, int argc, char **argv) {
 	process *p;
 	uint64_t rsp;
 	bool foreground = false;
-	int index;
+	int index = 0;
 
 	p = (process *) k_malloc(sizeof(process));
 	if(p == NULL)
@@ -71,10 +70,12 @@ uint64_t newProcess(char* name, func f, int argc, char **argv) {
 		return INVALID_PROCESS_ID;
 	}
 
-	index = k_strlen(name);
-	if (name[index - 1] == '&'){
+	if(name[0] == '&'){
 		foreground = true;
-		name[index - 1] = '\0';
+		while(name[index] != '\0') {
+			name[index] = name[index + 1];
+			index++;
+		}
 	}
 		
 	p->name = name;
@@ -115,12 +116,15 @@ void freeProcess(int pid) {
 }
 
 void waitPid(uint64_t pid){
+	print("0", -1);
 	process *p = getProcessFromId(pid);
 
 	if(p == NULL)
 		return;
 
+	//print("1", -1);
 	addWaitProcess(p);
+	//print("2", -1);
 }
 
 process *getFirstWaitProcess(process *father) {
@@ -168,6 +172,7 @@ static void addWaitProcess(process *child) {
 
 	father->state = BLOCKED;
 
+	//print("6", -1);
 	_yield();
 }
 

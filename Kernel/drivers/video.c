@@ -45,19 +45,7 @@ ColorRGB
 	};
 
 void printA() {
-	print("printing A", -1);
-	printNewline();
-	sleep(2);
-}
-
-void printB() {
-	print("printing B", -1);
-	printNewline();
-}
-
-void printC() {
-	print("printing C", -1);
-	printNewline();
+	print("AaA", -1);
 }
 
 void print(const char* str, char color) {
