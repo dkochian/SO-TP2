@@ -112,6 +112,7 @@
 
     typedef struct psContext{
      	uint64_t numbProcess;
+     	uint64_t memoryUsed;
      	char **processes;
      	char separateChar;
    }psContext;

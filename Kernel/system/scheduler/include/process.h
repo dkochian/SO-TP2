@@ -54,6 +54,7 @@
 		uint64_t father;
 		uint64_t s_frame;
 		uint64_t rsp;
+		int mallocsUsed;
 		bool foreground;
 
 		list wait_list;

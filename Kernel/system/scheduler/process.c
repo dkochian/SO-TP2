@@ -94,6 +94,7 @@ uint64_t newProcess(char* name, func f, int argc, char **argv) {
 		father = 0;
 
 	p->father = father->id;
+	p->mallocsUsed = 0;
 
 	addProcess(p);	//Add the process to the scheduler
 
@@ -169,7 +170,6 @@ static void addWaitProcess(process *child) {
 
 	father->state = BLOCKED;
 
-	//print("6", -1);
 	_yield();
 }
 

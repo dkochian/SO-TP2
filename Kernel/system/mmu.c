@@ -1,5 +1,7 @@
 #include "../../Common/common.h"
 #include "include/mmu.h"
+#include "scheduler/include/process.h"
+#include "../drivers/include/video.h"
 
 
 static void *memory_stack[PAGE_TABLE_ENTRIES];
@@ -14,7 +16,8 @@ void k_initialize() {
 void * k_malloc(size_t size) {
 	if(current == -1)
 		return NULL;
-
+	process * p = getCurrentProcess();
+	p->mallocsUsed++;
 	return memory_stack[current--];
 }
 

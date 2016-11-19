@@ -196,12 +196,12 @@ static process *schedule() {
 
 psContext *processesStatus() {
 	char buffer[10] = {0};
-	int aux = listGetSize(waiting_list);
-	int i;
+	int listSize = listGetSize(waiting_list);
+	int i, aux;
 
 	psContext * res = k_malloc(sizeof(psContext));
-	res->numbProcess = aux;
-	res->processes = k_malloc(sizeof(char)* aux);
+	res->numbProcess = listSize;
+	res->processes = k_malloc(sizeof(char)* listSize);
 	res->separateChar = '&';
 /*
 	res->processes[0] = k_malloc(sizeof(char) * 60);
@@ -221,7 +221,7 @@ psContext *processesStatus() {
 
 	process * p = listGet(wProcessList);
 
-	for(i = 0; i < aux ; i++ ){
+	for(i = 0; i < listSize ; i++ ){
 
 		res->processes[i] = k_malloc(sizeof(char ) * 100);
 		k_itoa(p->id, buffer);
@@ -233,6 +233,10 @@ psContext *processesStatus() {
 		k_strcat(res->processes[i], buffer);
 		k_strcat(res->processes[i], "&");
 		k_itoa(p->foreground, buffer);
+		k_strcat(res->processes[i], buffer);
+		k_strcat(res->processes[i], "&");
+		aux = p->mallocsUsed * 4;
+		k_itoa(aux, buffer);
 		k_strcat(res->processes[i], buffer);
 		p = listGet(wProcessList);
 	}

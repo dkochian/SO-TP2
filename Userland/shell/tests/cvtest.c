@@ -70,6 +70,7 @@ int cvTestDep(int argc, char ** argv){
     }
 
     cond = cvInitialize();
+    
     if(cond == NULL) {
         printn("Couldn't create the condition variable");
         printColor( "Test failed" , RED);

@@ -64,11 +64,12 @@ int psCommand(int argc, char **argv) {
 	printNewline();
 
 	int max = allProcess->numbProcess;
-	int i;
+	int i, index;
 	int term = 0;
+	char c;
 	for( i = 0; i < max; i++){
-		int index = 0;
-		char c = allProcess->processes[i][index];
+		index = 0;
+		c = allProcess->processes[i][index];
 		
 		printColor("PID : ", LIGHT_MAGENTA);
 		while( c != '\0'){
@@ -90,19 +91,22 @@ int psCommand(int argc, char **argv) {
 
 				printColor("    FOREGROUND :", LIGHT_MAGENTA);
 				term++;
-			} else if (term == 3) {
-				term = 0;
+			}else if (term == 3) {
 				c = allProcess->processes[i][index++];
 				if (c == '1')	
 					printColor(" TRUE", YELLOW);
 				else
 					printColor(" FALSE", BROWN);
+				term++;
+			}else if (term == 4) {
+				term = 0;
+				printColor("     USING MEMORY : ", LIGHT_MAGENTA);
 			}else
 				putchar(c);
+
 		}
-		printColor("     USING MEMORY : ", LIGHT_MAGENTA);
-		print("4KB");
-		printNewline();
+		printn("KB");
+		
 	}
 	free(allProcess->processes);
 	free(allProcess);
