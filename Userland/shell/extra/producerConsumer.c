@@ -25,7 +25,16 @@ static sem_u_t fullCount;
 static int prodSleepTime = 0;
 static int consSleepTime = 0;
 
-int producerConsumer(int argc, char **argv) {
+
+//TEST
+void mysleep(long int num);
+
+void mysleep(long int num) {
+	int i = num * 10000000;
+	while(i-- > 0);
+}
+
+void producerConsumer() {
 
 	int i = 0;
 
@@ -74,8 +83,6 @@ int producerConsumer(int argc, char **argv) {
 	sem_close(itemMutex);
 	sem_close(emptyCount);
 	sem_close(fullCount);
-
-	return 0;
 }
 
 //static int a = 10;
@@ -84,9 +91,8 @@ static int producer(int argc, char **argv) {
 	int item;
 
 	while (1) {
-//		printn("ANTES SLEEP");
-		sleep(prodSleepTime);
-//		printn("DESPUES SLEEP");
+
+		mysleep(prodSleepTime);
 
 		item = rand()%100;
 		print("Produce ");
@@ -113,7 +119,8 @@ static int consumer(int argc, char **argv) {
 	int item;
 
 	while (1) {
-		sleep(consSleepTime);
+
+		mysleep(consSleepTime);
 
 		//Decrement the count of full slots in the buffer (semaphore goes down)
 		//Locks when there is no more information in the buffer
@@ -125,6 +132,7 @@ static int consumer(int argc, char **argv) {
 
 		//Increment the count of empty slots in the buffer (semaphore goes up)
 		sem_post(emptyCount);
+
 		print("Consume ");
 		printNum(item);
 		printNewline();
@@ -141,22 +149,22 @@ static void control() {
 
 		switch(c) {
 			case 'a':
-				printn("Decreasing producer speed..");
+				printn(" Decreasing producer speed..");
 				prodSleepTime++;
 				break;
 
 			case 'z':
-				printn("Increasing producer speed..");
+				printn(" Increasing producer speed..");
 				prodSleepTime = --prodSleepTime < 0? 0 : prodSleepTime;
 				break;
 
 			case 's':
-				printn("Decreasing consumer speed..");
+				printn(" Decreasing consumer speed..");
 				consSleepTime++;
 				break;
 
 			case 'x':
-				printn("Increasing consumer speed..");
+				printn(" Increasing consumer speed..");
 				consSleepTime = --consSleepTime < 0? 0 : consSleepTime;
 				break;
 
