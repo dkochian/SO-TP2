@@ -56,29 +56,28 @@ static void releaseSem(mutex_u_t lock_v, volatile int* value) {
 #define RIGHT true
 
 static void updateSquare(int pos, char color) {
-	int x = 16+ 32*(pos);
-	int y = 16;
-	int l = 16;
+	int x = 64+ 128*(pos);
+	int y = 64;
+	int l = 64;
 	drawSquare((uint16_t)x, (uint16_t)y, (uint16_t)l, color);
 }
 
 static void updateState(int pos, bool hand, char color) {
 	if(hand==LEFT) {
-		int x = 16+ 32*(pos);
-		int y = 16;
-		int l = 8;
+		int x = 64+ 128*(pos);
+		int y = 64;
+		int l = 32;
 		drawSquare((uint16_t)x, (uint16_t)y, (uint16_t)l, color);
-		y = 24;
+		y = 96;
 		drawSquare((uint16_t)x, (uint16_t)y, (uint16_t)l, color);
 	} else {
-		int x = 24+ 32*(pos);
-		int y = 16;
-		int l = 8;
+		int x = 96+ 128*(pos);
+		int y = 64;
+		int l = 32;
 		drawSquare((uint16_t)x, (uint16_t)y, (uint16_t)l, color);
-		y = 24;
+		y = 96;
 		drawSquare((uint16_t)x, (uint16_t)y, (uint16_t)l, color);
 	}
-	
 }
 
 void pseudoSleep(int a) {
@@ -242,7 +241,7 @@ static void exitNicely() {
 **  Main  **
 ***********/
 int philosophers(int argc, char **argv) {
-	clearCommand(0, (char **) "");
+	clear();
 	printn("Loading Philosophers...");
 	init();
 												psCommand(0, (char **) "");
@@ -252,7 +251,7 @@ int philosophers(int argc, char **argv) {
 												psCommand(0, (char **) "");
 	
 
-	while(true) {}
+	//while(true) {}
 
 
 	bool exitFlag = false;

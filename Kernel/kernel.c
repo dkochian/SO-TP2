@@ -151,7 +151,7 @@ int main() {
 	if(!status)
 		return 0;
 	
-	//_accelPIT();
+	_accelPIT();
 	print("PIT turbo						[ ", -1);
 	print("OK", GREEN);
 	print(" ]", -1);
@@ -159,7 +159,7 @@ int main() {
 
 	//Tests
 	//startSchedulerTest();
-	//startLockTest(true);
+	//startLockTest(false);
 	//startWaitpidTest();
 	//startFreeProcessTest();
 
