@@ -45,4 +45,11 @@
 	void sysSemWait(void *sem);
 	void sysSemPost(void *sem);
 
+	void *syscvInit();
+	void syscvWait(void *cv, mutex m);
+	uint64_t syscvSignal(void * cv);
+	void syscvBroadcast(void * cv);
+	void syscvDestroy(void * cv);
+
+
 #endif

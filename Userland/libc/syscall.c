@@ -133,3 +133,27 @@ void sysSemWait(void *sem) {
 void sysSemPost(void *sem) {
 	_syscall(SEMPOST, (uintptr_t) sem, NULL, NULL, NULL, NULL);
 }
+
+void *syscvInit(){
+	uintptr_t res = NULL;
+	_syscall(CVINIT, (uintptr_t) &res, NULL, NULL, NULL, NULL);
+	return (void *) res;
+}
+
+void syscvWait(void * cv, mutex m){
+	_syscall(CVWAIT,(uintptr_t) cv, (uintptr_t) m, NULL, NULL, NULL);
+}
+
+uint64_t syscvSignal(void * cv){
+	uint64_t res;
+	_syscall(CVSIG,(uintptr_t) cv, (uintptr_t) &res, NULL, NULL, NULL);
+	return res;
+}
+
+void syscvBroadcast(void * cv) {
+	_syscall(CVBROAD, (uintptr_t) cv, NULL, NULL, NULL, NULL);
+}
+
+void syscvDestroy(void * cv) {
+	_syscall(CVDESTROY, (uintptr_t) cv, NULL, NULL, NULL, NULL);
+}
