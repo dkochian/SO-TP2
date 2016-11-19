@@ -14,7 +14,7 @@ static int readNumber();
 
 int echoCommand(int argc, char **argv) {
 	if(argc == 0) {
-		helpCommand(1, (char **) "echo");
+		helpCommand(1, (char **)"echo");
 		return 1;
 	}
 
@@ -23,14 +23,16 @@ int echoCommand(int argc, char **argv) {
 }
 
 int helpCommand(int argc, char **argv) {
-	commandExec* struc = getAllCommands();
+	const
+		commandExec*  struc = getAllCommands();
+
 	if(argc == 0) {
 		printn(struc[1].help);
 		return 1;
 	}
 
 	for(int index = 0; index < MAX_COMMANDS; index++) {
-		if(struc[index].created == true && strcmp(argv[0], struc[index].name) == 0) {
+		if(struc[index].created == true && strcmp(argv, struc[index].name) == 0) {
 			printn(struc[index].help);
 			return 0;
 		}

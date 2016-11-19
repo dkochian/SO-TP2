@@ -139,17 +139,17 @@ static bool parseBuffer(commandData *cmd) {
 			return false;
 	}
 
-	if(buffer[index] != '\n') {
+	if(buffer[index - 1 ] != '\n') {
 		index++;
 
 		strcpy(cmd->argv[0], &buffer[index]);
 
 		index = strlen(cmd->argv[0]);
 
-		if(index == 0)
+		if(index > 0)
 			cmd->argc = 1;
 
-		if(cmd->argv[0][index - 1] == '\n')
+		if(cmd->argc != 0  && cmd->argv[0][index - 1] == '\n')
 			cmd->argv[0][index - 1] = '\0';
 	}
 
