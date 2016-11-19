@@ -47,11 +47,11 @@ void lock(mutex *l) {
             blockProcess(p->id);
         }
         //print("in", -1);
-        printNewline();
-        printListS(l->q_list);
-        printNewline();
+        //printNewline();
+        //printListS(l->q_list);
+        //printNewline();
         _yield();
-        print("out", -1);
+        //print("out", -1);
     }
 }
 

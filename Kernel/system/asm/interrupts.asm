@@ -111,7 +111,7 @@ _write_port:
 ; Timer tick idt handler -> processed in C
 ;------------------------------------------------------------
 _timerTickHandler:
-    cli
+    ;cli
     pushaq
 
     
@@ -131,7 +131,7 @@ _timerTickHandler:
 skip:
     popaq
 
-    sti
+    ;sti
     iretq
 
 
@@ -201,7 +201,7 @@ _unlock:
 
 
 _yieldHandler:
-    cli
+    ;cli
     ;push iretq hook
 
     mov rax,rsp
@@ -224,7 +224,7 @@ _yieldHandler:
     call yieldererer
     mov rsp,rax
     popaq
-    sti
+    ;sti
     iretq
 
 .ret:

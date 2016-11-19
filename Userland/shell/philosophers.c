@@ -3,6 +3,7 @@
 #include <string.h>
 #include <integer.h>
 #include <mutex.h>
+#include <semaphore.h>
 #include "include/philosophers.h"
 #include "../../Common/common.h"
 #include "include/commands.h"
@@ -21,8 +22,9 @@ typedef enum {
 volatile static int total;
 mutex_u_t forks[MAX_PHILOSOPHERS];
 
-mutex_u_t semLock;
-volatile int sem;
+//mutex_u_t semLock;
+//volatile int sem;
+static sem_u_t sem;
 
 mutex_u_t editLock;
 volatile edit_t edit[MAX_PHILOSOPHERS];
@@ -30,7 +32,7 @@ volatile edit_t edit[MAX_PHILOSOPHERS];
 /***************
 **  Semaphore **
 ***************/
-static void grabSem(mutex_u_t lock_v, volatile int* value) {
+/*static void grabSem(mutex_u_t lock_v, volatile int* value) {
 	while(true) {
 		lock(lock_v);
 		if( (*value)>0 ) {
@@ -48,32 +50,32 @@ static void releaseSem(mutex_u_t lock_v, volatile int* value) {
 	lock(lock_v);
 	(*value)++;
 	unlock(lock_v);
-}
+}*/
 
 #define LEFT false
 #define RIGHT true
 
 static void updateSquare(int pos, char color) {
-	int x = 16+ 32*(pos);
-	int y = 16;
-	int l = 16;
+	int x = 64+ 128*(pos);
+	int y = 64;
+	int l = 64;
 	drawSquare((uint16_t)x, (uint16_t)y, (uint16_t)l, color);
 }
 
 static void updateState(int pos, bool hand, char color) {
 	if(hand==LEFT) {
-		int x = 16+ 32*(pos);
-		int y = 16;
-		int l = 8;
+		int x = 64+ 128*(pos);
+		int y = 64;
+		int l = 32;
 		drawSquare((uint16_t)x, (uint16_t)y, (uint16_t)l, color);
-		y = 24;
+		y = 96;
 		drawSquare((uint16_t)x, (uint16_t)y, (uint16_t)l, color);
 	} else {
-		int x = 24+ 32*(pos);
-		int y = 16;
-		int l = 8;
+		int x = 96+ 128*(pos);
+		int y = 64;
+		int l = 32;
 		drawSquare((uint16_t)x, (uint16_t)y, (uint16_t)l, color);
-		y = 24;
+		y = 96;
 		drawSquare((uint16_t)x, (uint16_t)y, (uint16_t)l, color);
 	}
 	
@@ -108,11 +110,12 @@ static int philosopher(int argc, char** argv) {
 		// THINKING
 			//printNum(pos);
 			//printn(" is thinking...");
-		pseudoSleep(20);
+		//pseudoSleep(10);
 			updateSquare(pos, MAGENTA);
 			//printNum(pos);
 			//printn(" is hungry.");
-		grabSem(&semLock, &sem);
+		sem_wait(sem);
+		//grabSem(&semLock, &sem);
 			updateSquare(pos, RED);
 		lock(& (forks[right]) );
 			updateState(pos, RIGHT, YELLOW);
@@ -125,7 +128,7 @@ static int philosopher(int argc, char** argv) {
 		// EAT
 			//printNum(pos);
 			//printn(" is eating...");
-		pseudoSleep(15);		
+		//pseudoSleep(1);		
 
 		unlock(& (forks[right]) );
 			updateState(pos, RIGHT, LIGHT_GREEN);
@@ -133,7 +136,8 @@ static int philosopher(int argc, char** argv) {
 			updateState(pos, LEFT, LIGHT_GREEN);
 			//printNum(pos);
 			//printn(" dropped both forks.");
-		releaseSem(&semLock, &sem);
+		sem_post(sem);
+		//releaseSem(&semLock, &sem);
 			updateSquare(pos, LIGHT_BLUE);
 
 		lock(&editLock);
@@ -166,8 +170,8 @@ static int philosopher(int argc, char** argv) {
 **************/
 static void init() {
 	total = INIT_PHILOSOPHERS;
-	sem = total-1;
-	semLock = initLock();
+	//sem = total-1;
+	sem = sem_open(NULL, total-1);
 	editLock = initLock();
 	for(int i=0; i<MAX_PHILOSOPHERS; i++) {
 		forks[i] = initLock();
@@ -211,9 +215,10 @@ static bool addPhilosopher() {
 		return false;
 	launchPhilosopher(total, total-1);
 	action(0, INC);
-	grabSem(semLock, &sem);
+	sem_post(sem);
+	/*grabSem(semLock, &sem);
 	sem++;
-	releaseSem(semLock, &sem);
+	releaseSem(semLock, &sem);*/
 	total++;
 	return true;
 }
@@ -221,9 +226,10 @@ static bool addPhilosopher() {
 static bool removePhilosopher() {
 	if(total<=MIN_PHILOSOPHERS)
 		return false;
-	grabSem(semLock, &sem);
+	sem_wait(sem);
+	/*grabSem(semLock, &sem);
 	sem--;
-	releaseSem(semLock, &sem);
+	releaseSem(semLock, &sem);*/
 	action(0, DEC);
 	action(total-1, KILL);
 	total--;
@@ -250,7 +256,7 @@ void philosophers() {
 	//											psCommand(NULL);
 	
 
-	//while(true) {}
+	while(true) {}
 
 
 	bool exitFlag = false;
