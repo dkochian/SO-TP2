@@ -12,10 +12,9 @@
 
 static int insertToBuffer(char c);
 static void resetBuffer();
-static int parseBuffer(commandData *cmd);
+static bool parseBuffer(commandData *cmd);
 static void clearBuffer(commandData *cmd);
-static int bufferHasAlpha();
-static int executeCommand(commandData cmd);
+static bool executeCommand(commandData cmd);
 static void printHeader();
 
 char
@@ -65,21 +64,23 @@ int main(int argc, char ** argv) {
 			int
 				result = parseBuffer(&cmd);//if result==0 empty line, result==1 try to execute command, result == -1 command's name is too long
 			resetBuffer();
-			if(result == -1) {
-				printColor("Error", COLOR_ERROR);
-				printn(": The command's name is too long (AKA: It doesn't exists.)");
-				printn("Info: Use \"commands\" to see all avaliable commands.");
-			}
-			else if(result == 1) {
-				if(!executeCommand(cmd)) {
+
+			if(strlen(cmd.name) != 0) {
+				if(result == false) {
 					printColor("Error", COLOR_ERROR);
-					printn(": The command doesn't exists.");
-					printColor("Info", COLOR_INFO);
-					printn(": Use \"commands\" to see all avaliable commands.");
+					printn(": The command's name is too long (AKA: It doesn't exists.)");
+					printn("Info: Use \"commands\" to see all avaliable commands.");
+				}
+				else {
+					if(executeCommand(cmd) == false) {
+						printColor("Error", COLOR_ERROR);
+						printn(": The command doesn't exists.");
+						printColor("Info", COLOR_INFO);
+						printn(": Use \"commands\" to see all avaliable commands.");
+					}
 				}
 			}
-			else
-				print("");//It's it's an empty buffer, it halt unless we do something here, like print nothing.
+
 			printHeader();
 		}
 	}
@@ -102,17 +103,14 @@ static int insertToBuffer(char c) {
 
 		return 0;
 	}
-	else if(c == '\n')
-		buffer[bIndex++] = '\0';
-	else {
-		if(bIndex == MAX_BUFFER - 1)
-			return -1;
+	if(bIndex == MAX_BUFFER - 1)
+		return -1;
 
-		buffer[bIndex++] = c;
+	buffer[bIndex++] = c;
+	if(c == '\n')
+		return 1;
 
-		return 0;
-	}
-	return 1;
+	return 0;
 }
 
 static void resetBuffer() {
@@ -122,15 +120,14 @@ static void resetBuffer() {
 	bIndex = 0;
 }
 
-static int parseBuffer(commandData *cmd) {
+static bool parseBuffer(commandData *cmd) {
 	clearBuffer(cmd);
+
 	int
 		index = 0; 
-	if(!bufferHasAlpha())
-		return 0;
 
-	while(buffer[index] != '\0') {
-		if(buffer[index] == ' ' || buffer[index] == '\n') {
+	while(buffer[index] != '\n') {
+		if(buffer[index] == ' ') {
 			cmd->name[index] = '\0';
 			break;
 		}
@@ -138,37 +135,30 @@ static int parseBuffer(commandData *cmd) {
 		cmd->name[index] = buffer[index];
 		index++;
 		if(index == MAX_BUFFER-1)
-			return -1;
+			return false;
 	}
 
-	strcpy(cmd->argv[0], &buffer[++index]);
-
-	index = strlen(cmd->argv[0]);
-	if(index != 0)
-		cmd->argc = 1;
-
-	if(cmd->argv[0][index - 1] == '\n')
-		cmd->argv[0][index - 1] = '\0';
-
-	return 1;
-}
-
-static int bufferHasAlpha() {
-	int
-		index = 0;
-
-	while(buffer[index] != '\0') {		
-		if(buffer[index] != ' ' && buffer[index] != '\n')
-			return 1;
-
+	if(buffer[index] != '\n') {
 		index++;
+
+		strcpy(cmd->argv[0], &buffer[index]);
+
+		index = strlen(cmd->argv[0]);
+
+		if(index == 0)
+			cmd->argc = 1;
+
+		if(cmd->argv[0][index - 1] == '\n')
+			cmd->argv[0][index - 1] = '\0';
 	}
-	return 0;
+
+	return true;
 }
 	
 static void clearBuffer(commandData *cmd) {
 	int i = 0;
 	int flag = false;
+
 	while(true) {
 		flag = (i < MAX_BUFFER) & (i < MAX_ARG_BUFFER);
 		if(i < MAX_BUFFER)
@@ -182,17 +172,17 @@ static void clearBuffer(commandData *cmd) {
 	cmd->argc = 0;
 }
 
-static int executeCommand(commandData cmd) {
+static bool executeCommand(commandData cmd) {
 	for(int index = 0; index < MAX_COMMANDS; index++) {
 		if(commandTable[index].created == true && strcmp(cmd.name, commandTable[index].name) == 0) {
 			uint64_t pid = newProcess(cmd.name, commandTable[index].func, cmd.argc, cmd.argv);
 			wPid(pid);
 
 			//commandTable[index].func(cmd.args);
-			return 1;
+			return true;
 		}
 	}
-	return 0;
+	return false;
 }
 
 static void printHeader() {
