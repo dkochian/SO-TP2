@@ -4,43 +4,55 @@
 #include <string.h>
 #include <syscall.h>
 #include <fractals.h>
+
+#include "include/commands.h"
 #include "../../Common/common.h"
 
-static void * const sampleDataModuleAddress = (void*)0x500000;
+static void *const sampleDataModuleAddress = (void *) 0x500000;
 static int readNumber();
 
-void echoCommand(char* str) {
-	printn(str);
-	//rPid(pid());
+int echoCommand(int argc, char **argv) {
+	if(argc == 0) {
+		helpCommand(1, (char **) "echo");
+		return 1;
+	}
+
+	printn(argv[0]);
+	return 0;
 }
 
-void helpCommand(char* str) {
+int helpCommand(int argc, char **argv) {
 	commandExec* struc = getAllCommands();
-	if(str[0] == '\0') {
+	if(argc == 0) {
 		printn(struc[1].help);
-		return;
+		return 1;
 	}
+
 	for(int index = 0; index < MAX_COMMANDS; index++) {
-		if(struc[index].created == true && strcmp(str, struc[index].name) == 0) {
+		if(struc[index].created == true && strcmp(argv[0], struc[index].name) == 0) {
 			printn(struc[index].help);
-			return;
+			return 0;
 		}
 	}
+
 	printColor("Error", COLOR_ERROR);
 	printn(": The command do not exist.");
+	return 1;
 }
 
-void pidCommand(char *str) {
-	if(strlen(str)) {
-		helpCommand("pid");
-		return;
+int pidCommand(int argc, char **argv) {
+	if(argc != 0) {
+		helpCommand(1, (char **) "pid");
+		return 1;
 	}
-	printColor("El pid actual es : ", LIGHT_BLUE);
+
+	print("El id del proceso actual es: ");
 	printNum(pid());
 	printNewline();
+	return 0;
 }
 
-void psCommand(char *str){
+int psCommand(int argc, char **argv) {
 	psContext * allProcess = ps();
 	char separate = allProcess->separateChar;
 	
@@ -91,29 +103,40 @@ void psCommand(char *str){
 	}
 	free(allProcess->processes);
 	free(allProcess);
+
+	return 0;
 }
 
-void killCommand(char* str) {
-	int pidNumber = strint(str);
-	if(pidNumber == -1 || strlen(str) == 0) {
-		helpCommand("kill");
-		return;
+int killCommand(int argc, char **argv) {
+	if(argc == 0) {
+		helpCommand(1, (char **) "kill");
+		return 1;
 	}
+
+	int pidNumber = strint(argv[0]);
+	if(pidNumber < 0) {
+		helpCommand(1, (char **) "kill");
+		return 1;
+	}
+
 	kill((uint64_t) pidNumber);
+	return 0;
 }
 
-void clearCommand(char* str) {
-	if(strlen(str)) {
-		helpCommand("clear");
-		return;
+int clearCommand(int argc, char **argv) {
+	if(argc != 0) {
+		helpCommand(1, (char **) "clear");
+		return 1;
 	}
+
 	clear();
+	return 0;
 }
 
-void commandsCommand(char* str) {
-	if(strlen(str)) {
-		helpCommand("commands");
-		return;
+int commandsCommand(int argc, char **argv) {
+	if(argc != 0) {
+		helpCommand(1, (char **) "commands");
+		return 1;
 	}
 
 	const
@@ -130,13 +153,15 @@ void commandsCommand(char* str) {
 		}
 	}	
 	printn("---------- End Commands ---------");
+	return 0;
 }
 
-void dateCommand(char* str) {
-	if(strlen(str)) {
-		helpCommand("date");
-		return;
+int dateCommand(int argc, char **argv) {
+	if(argc != 0) {
+		helpCommand(1, (char **) "date");
+		return 1;
 	}
+
 	dateStruct
 		date;
 	printn("adentro dateCommand");
@@ -210,12 +235,13 @@ void dateCommand(char* str) {
 	print(" de 20");
 	printNum(date.year);
 	printNewline();
+	return 0;
 }
 
-void timeCommand(char* str) {
-	if(strlen(str)) {
-		helpCommand("time");
-		return;
+int timeCommand(int argc, char **argv) {
+	if(argc != 0) {
+		helpCommand(1, (char **) "time");
+		return 1;
 	}
 
 	timeStruct
@@ -240,32 +266,36 @@ void timeCommand(char* str) {
 		printNum(0);
 	printNum(timeSystem.secs);
 	printNewline();
+	return 0;
 }
 
-void sleepCommand(char* str) {
-	if(!strlen(str)) {
-		helpCommand("sleep");
-		return;
+int sleepCommand(int argc, char **argv) {
+	if(argc == 0) {
+		helpCommand(1, (char **) "sleep");
+		return 1;
 	}
+
 	int
-		seconds = strint(str);
+		seconds = strint(argv[0]);
 
 	if(seconds == -1) {
 		printColor("Error", COLOR_ERROR);
 		printn(": Invalid number of seconds.");
-		return;		
+		return 1;
 	}
 
 	sleep(seconds);
+
+	return 0;
 }
 
-void fractalCommand(char* str) {
-	clearCommand(str);
-	if(strlen(str)) {
-		helpCommand("fractal");
-
-		return;
+int fractalCommand(int argc, char **argv) {
+	if(argc != 0) {
+		helpCommand(1, (char **) "fractal");
+		return 1;
 	}
+
+	clearCommand(0, (char **) "");
 	fractal(readNumber());
 	toast("PRESS Q KEY TO RETURN TO THE CONSOLE...", WHITE);
 	while(true) {
@@ -275,13 +305,14 @@ void fractalCommand(char* str) {
 		if(c == 'q' || c == 'Q')
 			break;
 	}
-	clearCommand(str);
+	clearCommand(0, (char **) "");
+	return 1;
 }
 
-void creditsCommand(char* str) {
-	if(strlen(str)) {
-		helpCommand("credits");
-		return;
+int creditsCommand(int argc, char **argv) {
+	if(argc != 0) {
+		helpCommand(1, (char **) "credits");
+		return 1;
 	}
 
 	printn("------------Credits------------");
@@ -298,12 +329,14 @@ void creditsCommand(char* str) {
 	printnColor("\tFractal:", COLOR_INFO);
 	printn("Gaston Julia");
 	printn("-------------------------------");
+
+	return 0;
 }
 
-void ipcCommand(char* str){
-	if(strlen(str)) {
-		helpCommand("ipcCommand");
-		return;
+int ipcCommand(int argc, char **argv){
+	if(argc != 0) {
+		helpCommand(1, (char **) "ipc");
+		return 1;
 	}
 
 	printn("------------IPC implemented------------");
@@ -312,47 +345,52 @@ void ipcCommand(char* str){
 	printnColor("\t. Semaphores", LIGHT_BLUE);
 
 	printn("-------------------------------");
+	return 0;
 }
 
-void colorCommand(char* str) {
-	if(!strlen(str)) {
-		helpCommand("color");
-		return;
+int colorCommand(int argc, char **argv) {
+	if(argc == 0) {
+		helpCommand(1, (char **) "color");
+		return 1;
 	}
 
-	int color = strint(str);
+	int color = strint(argv[0]);
 
 	if(color < 0 || color > 15) {
 		printColor("Error", COLOR_ERROR);
 		printn(": Invalid color. Type help color for more information");
-		return;
+		return 1;
 	}
 	
 	setColor(color);
+
+	return 0;
 }
 
-void colorBgCommand(char* str) {
-	if(!strlen(str)) {
-		helpCommand("background");
-		return;
+int colorBgCommand(int argc, char **argv) {
+	if(argc == 0) {
+		helpCommand(1, (char **) "background");
+		return 1;
 	}
 
-	int color = strint(str);
+	int color = strint(argv[0]);
 
 	if(color < 0 || color > 15) {
 		printColor("Error", COLOR_ERROR);
 		printn(": Invalid color. Type help color for more information");
-		return;
+		return 1;
 	}
 	
 	setBgColor(color);
-	clearCommand("");
+	clearCommand(0, (char **) "");
+
+	return 0;
 }
 
-void disclaimerCommand(char* str) {
-	if(strlen(str)) {
-		helpCommand("disclaimer");
-		return;
+int disclaimerCommand(int argc, char **argv) {
+	if(argc != 0) {
+		helpCommand(1, (char **) "disclaimer");
+		return 1;
 	}
 
 	printnColor("|-----------------------------------------------------|", 0x07);
@@ -365,32 +403,23 @@ void disclaimerCommand(char* str) {
 	printColor ("BUTTERFLY", COLOR_ERROR);
 	printnColor(".                                           |", 0x07);
 	printnColor("|-----------------------------------------------------|", 0x07);
+
+	return 0;
 }
 
-static int readNumber(){
-  char* stringNumber = sampleDataModuleAddress;
-  int number = 0;
-  int index = 0;
-  while (stringNumber[index] != '\0'){
-    number *= 10;
-    number += stringNumber[index];
-    index++;
-  }
-  return number;
-}
-
-void mutextest(char* str) {
-	if(strlen(str)) {
-		helpCommand("mTest");
-		return;
+int mutextest(int argc, char **argv) {
+	if(argc != 0) {
+		helpCommand(1, (char **) "test");
+		return 1;
 	}
-	void * m;
+
+	void *m;
 	bool lock;
 
 	m = sysMutexInit();
 	if(m == NULL) {
 		printn("Couldn't create the mutex");
-		return;
+		return 1;
 	}
 	printn("Muted Created");
 
@@ -399,7 +428,7 @@ void mutextest(char* str) {
 	if(lock == false) {
 		printn("Lock failed");
 		sysMutexDestroy(m);
-		return;
+		return 1;
 	}
 	printn("Locked successfully");
 
@@ -408,10 +437,26 @@ void mutextest(char* str) {
 	if(lock == true) {
 		printn("Unlock failed");
 		sysMutexDestroy(m);
-		return;
+		return 1;
 	}
 	printn("Unlocked successfully");
 
 	sysMutexDestroy(m);
 	printn("Mutex destroyed");
+
+	return 0;
+}
+
+static int readNumber() {
+  char *stringNumber = sampleDataModuleAddress;
+  int number = 0;
+  int index = 0;
+
+  while (stringNumber[index] != '\0'){
+    number *= 10;
+    number += stringNumber[index];
+    index++;
+  }
+
+  return number;
 }

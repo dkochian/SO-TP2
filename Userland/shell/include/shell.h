@@ -1,24 +1,27 @@
 #ifndef _INC_SHELL_
 	#define _INC_SHELL_
 
+	#include "../../../Common/common.h"
+
 	#define MAX_COMMANDS	19
 	#define MAX_ARG_BUFFER	MAX_BUFFER - 2
 	#define MAX_COLORS		4
 	
 	typedef struct {
-		short created;
+		bool created;
 		char* name;
 		char* description;
-		char* help;
-		void (*func)(char* arguments);
+		char* help;		
+		int (*func)(int argc, char **argv);
 	} commandExec;
 
 	typedef struct {
+		int argc;
 		char* name;
-		char* args;
+		char **argv;
 	} commandData;
 
-	int main(int argc, char ** argv);
+	int main(int argc, char **argv);
 	commandExec* getAllCommands();
 	
 #endif

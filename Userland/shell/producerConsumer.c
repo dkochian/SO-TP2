@@ -25,7 +25,7 @@ static sem_u_t fullCount;
 static int prodSleepTime = 0;
 static int consSleepTime = 0;
 
-void producerConsumer() {
+int producerConsumer(int argc, char **argv) {
 
 	int i = 0;
 
@@ -74,6 +74,8 @@ void producerConsumer() {
 	sem_close(itemMutex);
 	sem_close(emptyCount);
 	sem_close(fullCount);
+
+	return 0;
 }
 
 //static int a = 10;

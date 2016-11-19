@@ -239,15 +239,15 @@ static void exitNicely() {
 /***********
 **  Main  **
 ***********/
-void philosophers() {
-	clearCommand(NULL);
+int philosophers(int argc, char **argv) {
+	clearCommand(0, (char **) "");
 	printn("Loading Philosophers...");
 	init();
-												psCommand(NULL);
+												psCommand(0, (char **) "");
 	for(int i=0; i<total; i++) {
 		launchPhilosopher(i, (i+1)%total );
 	}
-												psCommand(NULL);
+												psCommand(0, (char **) "");
 	
 
 	while(true) {}

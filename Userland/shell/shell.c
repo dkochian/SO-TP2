@@ -10,8 +10,8 @@
 
 static int insertToBuffer(char c);
 static void resetBuffer();
-static int parseBuffer(commandData* cmd);
-static void clearBuffer(commandData* cmd);
+static int parseBuffer(commandData *cmd);
+static void clearBuffer(commandData *cmd);
 static int bufferHasAlpha();
 static int executeCommand(commandData cmd);
 static void printHeader();
@@ -49,8 +49,8 @@ int main(int argc, char ** argv) {
 	commandData
 		cmd;
 
-	cmd.name = malloc(MAX_BUFFER*sizeof(char));
-	cmd.args = malloc(MAX_ARG_BUFFER*sizeof(char));
+	cmd.name = (char *) malloc(MAX_BUFFER*sizeof(char));
+	cmd.argv = (char **) malloc(MAX_ARG_BUFFER*sizeof(char));
 
 	bIndex = 0;
 
@@ -83,7 +83,7 @@ int main(int argc, char ** argv) {
 	}
 
 	free(cmd.name);
-	free(cmd.args);
+	free(cmd.argv);
 }
 
 commandExec* getAllCommands() {
@@ -120,7 +120,7 @@ static void resetBuffer() {
 	bIndex = 0;
 }
 
-static int parseBuffer(commandData* cmd) {
+static int parseBuffer(commandData *cmd) {
 	clearBuffer(cmd);
 	int
 		index = 0; 
@@ -139,11 +139,14 @@ static int parseBuffer(commandData* cmd) {
 			return -1;
 	}
 
-	strcpy(cmd->args, &buffer[++index]);
+	strcpy(cmd->argv[0], &buffer[++index]);
 
-	index = strlen(cmd->args);
-	if(cmd->args[index - 1] == '\n')
-		cmd->args[index - 1] = '\0';
+	index = strlen(cmd->argv[0]);
+	if(index != 0)
+		cmd->argc = 1;
+
+	if(cmd->argv[0][index - 1] == '\n')
+		cmd->argv[0][index - 1] = '\0';
 
 	return 1;
 }
@@ -161,7 +164,7 @@ static int bufferHasAlpha() {
 	return 0;
 }
 	
-static void clearBuffer(commandData* cmd) {
+static void clearBuffer(commandData *cmd) {
 	int i = 0;
 	int flag = false;
 	while(true) {
@@ -169,22 +172,21 @@ static void clearBuffer(commandData* cmd) {
 		if(i < MAX_BUFFER)
 			cmd->name[i] = '\0';
 		if(i < MAX_ARG_BUFFER)
-			cmd->args[i] = '\0';
+			cmd->argv[0][i] = '\0';
 		if(!flag)
 			break;
 		i++;
 	}
+	cmd->argc = 0;
 }
 
 static int executeCommand(commandData cmd) {
 	for(int index = 0; index < MAX_COMMANDS; index++) {
 		if(commandTable[index].created == true && strcmp(cmd.name, commandTable[index].name) == 0) {
-			/*uint64_t pid = newProcess(cmd.name, commandTable[index].func, NULL, cmd.args);
-			if(strcmp(cmd.name, "fractal") != 0)
-				wPid(pid);*/
+			uint64_t pid = newProcess(cmd.name, commandTable[index].func, cmd.argc, cmd.argv);
+			wPid(pid);
 
-			commandTable[index].func(cmd.args);
-			printn("I executed just fine.");
+			//commandTable[index].func(cmd.args);
 			return 1;
 		}
 	}
