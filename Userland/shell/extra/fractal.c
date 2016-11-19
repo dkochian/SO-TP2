@@ -1,5 +1,5 @@
 #include <syscall.h>
-#include "include/fractals.h"
+#include "include/fractal.h"
 
 static ColorHSV  colorHSV(uint8_t h, uint8_t s, uint8_t v);
 static ColorRGB hsvtorgb(ColorHSV in);

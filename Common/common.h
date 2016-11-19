@@ -110,13 +110,10 @@
      	char **processes;
      	char separateChar;
    }psContext;
-
-	typedef unsigned int size_t;
-
+	
 	typedef char bool;
-
-	typedef int (*func) (int, char **);
-
 	typedef struct mutex *mutex;
+	typedef unsigned int size_t;
+	typedef int (*func) (int, char **);
 
 #endif

@@ -3,7 +3,7 @@
 //espera al otro para hablar
 
 #include <stdio.h>
-#include <unistd.h>
+/*#include <unistd.h>
 #include <sys/wait.h>
 
 void send(int fd);
@@ -152,6 +152,4 @@ void recieve(int fd) {
 	readBuffer[readPtr - readBuffer] = '\0';
 
 	printf("Read: %s\n", readBuffer);
-}
-
-
+}*/

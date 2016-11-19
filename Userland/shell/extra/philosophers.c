@@ -4,8 +4,10 @@
 #include <integer.h>
 #include <mutex.h>
 #include "include/philosophers.h"
-#include "../../Common/common.h"
+
 #include "include/commands.h"
+#include "../include/common.h"
+
 
 // WHY U TROLL ME SO, PHILOSOPHER?!?!
 

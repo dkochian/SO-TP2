@@ -2,11 +2,13 @@
 #include <stdio.h>
 #include <string.h>
 #include <syscall.h>
-#include <commands.h>
-#include "../../Common/common.h"
 
-#include "include/philosophers.h"
-#include "include/producerConsumer.h"
+#include "include/common.h"
+#include "extra/include/commands.h"
+
+
+#include "extra/include/philosophers.h"
+#include "extra/include/producerConsumer.h"
 
 static int insertToBuffer(char c);
 static void resetBuffer();

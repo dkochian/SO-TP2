@@ -3,10 +3,10 @@
 #include <integer.h>
 #include <string.h>
 #include <syscall.h>
-#include <fractals.h>
 
+#include "include/fractal.h"
 #include "include/commands.h"
-#include "../../Common/common.h"
+#include "../include/common.h"
 
 static void *const sampleDataModuleAddress = (void *) 0x500000;
 static int readNumber();

@@ -1,7 +1,8 @@
 include ../Makefile.inc
 
 MODULE=shellModule.bin
-SOURCES=_loader.c shell.c commands.c fractals.c philosophers.c producerConsumer.c buffer.c
+#SOURCES=_loader.c shell.c commands.c fractals.c philosophers.c producerConsumer.c buffer.c
+SOURCES=_loader.c shell.c $(wildcard extra/*.c) $(wildcard tests/*.c)
 OBJECTS=$(SOURCES:.c=.o)
 LIBC=-L../ -lc
 
@@ -18,6 +19,6 @@ video:
 	@cat Video >> video.bin && dd if=/dev/zero bs=1 count=1 >> video.bin
 
 clean:
-	@rm -rf *.o ../*.bin *.bin
+	@rm -rf extra/*.o *.o ../*.bin *.bin
 
 .PHONY: all clean video
