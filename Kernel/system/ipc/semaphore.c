@@ -2,8 +2,8 @@
 #include "../include/mmu.h"
 
 
-sem_t * semOpen(char * name, int value) {
-	sem_t * sem = k_malloc(sizeof(sem_t));
+sem_t semOpen(char * name, int value) {
+	sem_t sem = k_malloc(sizeof(sem_t));
 
 	if (sem == NULL)
 		return NULL;
@@ -20,12 +20,12 @@ sem_t * semOpen(char * name, int value) {
 	return sem;
 }
 
-void semClose(sem_t * sem) {
+void semClose(sem_t sem) {
 	destroyLock(sem->s_mutex);
 	k_free(sem);
 }
 
-void semWait(sem_t * sem) {
+void semWait(sem_t sem) {
 	lock(sem->s_mutex);
 	if (sem->value > 0) {
 		sem->value--;
@@ -37,7 +37,7 @@ void semWait(sem_t * sem) {
 	}
 }
 
-void semPost(sem_t * sem) {
+void semPost(sem_t sem) {
 	lock(sem->s_mutex);
 	sem->value++;
 	unlock(sem->s_mutex);

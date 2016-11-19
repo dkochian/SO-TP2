@@ -84,28 +84,28 @@ void sysCallHandler(uint64_t arg1, uint64_t arg2, uint64_t arg3, uint64_t arg4, 
 			*((uintptr_t *) arg2) = (uint64_t) semOpen((char *) arg3, (int)  arg4);
 			break;
 		case SEMCLOSE:
-			semClose((sem_t*) arg2);
+			semClose((sem_t) arg2);
 			break;
 		case SEMWAIT:
-			semWait((sem_t*) arg2);
+			semWait((sem_t) arg2);
 			break;
 		case SEMPOST:
-			semPost((sem_t*) arg2);
+			semPost((sem_t) arg2);
 			break;
 		/*case CVINIT:
 			*((uintptr_t *) arg2) = cvInitialize();
 			break;
 		case CVWAIT:
-			cvWait((cond_t *)arg2,(sem_t*) arg3);
+			cvWait((cond_t)arg2,(sem_t) arg3);
 			break;
 		case CVSIG:
-			*((uintptr_t *) arg3) = cvSignal((cond_t *)arg2);
+			*((uintptr_t *) arg3) = cvSignal((cond_t)arg2);
 			break;
 		case CVBROAD:
-			cvBroadcast((cond_t )arg2);
+			cvBroadcast((cond_t)arg2);
 			break;	
 		case CVDESTROY:
-			cvDestroy((cond_t )arg2);
+			cvDestroy((cond_t)arg2);
 			break;*/
 		default:
 			write(STDERR, "Error: Invalid system call.", 28);
