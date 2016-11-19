@@ -14,8 +14,8 @@
 
 	typedef enum process_state {
 		RUNNING,
-		BLOCKED,
 		WAITING,
+		BLOCKED,
 		LOCKED
 	} process_state;
 

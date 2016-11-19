@@ -30,7 +30,7 @@ bool buildScheduler() {
 		return false;
 
 	s_mutex = initLock();
-	if (s_mutex == NULL) 
+	if(s_mutex == NULL) 
 		return false;
 
 	newProcess("Master of the Puppets", puppetMaster, 0, NULL);
@@ -45,7 +45,7 @@ bool addProcess(process *p) {
 		return res;
 
 	lock(s_mutex);
-	if(listIsEmpty(waiting_list) == true)
+	if(p->id == 0)
 		current_process = p;
 
 	res = listAdd(waiting_list, p);
@@ -65,12 +65,12 @@ bool removeProcess(process *p) { //should have locks but can't maybe caller (fre
 		printNewline();
 		return false;
 	} 
-		
+	
 	res = listRemove(waiting_list, p);
-	if(!k_strcmp(p->name, "Shell")) {
+	/*if(!k_strcmp(p->name, "Shell")) {
 		clear();
 		print("See you on the other side....", RED);
-	}
+	}*/
 	killProcess(p);
 
 	return res;
@@ -94,8 +94,6 @@ void unBlockProcess(uint64_t pid) {
 	p->state = WAITING;
 
 	lock(s_mutex);
-	print("hi", -1);
-	printNewline();
 	listSetNext(waiting_list, p);
 	unlock(s_mutex);
 }
@@ -142,16 +140,29 @@ uint64_t contextSwitch(uint64_t stack) {
 	if(current_process->state != BLOCKED)
 		current_process->state = WAITING;
 
-	/*print("-|", -1);
-	print(current_process->name, -1);
-	print(" -> ", -1);*/
+	//process *aux = current_process;
+
 	current_process = schedule();
 
-	/*print(current_process->name, -1);
-	print("|-", -1);*/
-	//printNewline();
 	if(current_process == NULL)
 		return 0;
+
+	/*if(current_process->id != aux->id) {
+		print("[old] ", -1);
+		print(aux->name, -1);
+		print("(id: ", -1);
+		printDec(aux->id, -1);
+		print(") status: ", -1);
+		printDec(aux->state, -1);
+		printNewline();
+		print("[new] ", -1);
+		print(current_process->name, -1);
+		print("(id: ", -1);
+		printDec(current_process->id, -1);
+		print(") status: ", -1);
+		printDec(current_process->state, -1);
+		printNewline();
+	}*/
 
 	current_process->state = RUNNING;
 
@@ -176,10 +187,7 @@ static void killProcess(process *p) {			//We should have to run sheduler again i
 }
 
 static process *schedule() {
-	if(waiting_list == NULL)
-		return NULL;
-
-	if(listIsEmpty(waiting_list) == true)
+	if(waiting_list == NULL || listIsEmpty(waiting_list) == true)
 		return NULL;
 
 	process *p;
@@ -194,7 +202,6 @@ static process *schedule() {
 }
 
 psContext *processesStatus() {
-
 	char buffer[10] = {0};
 	int aux = listGetSize(waiting_list);
 	int i;

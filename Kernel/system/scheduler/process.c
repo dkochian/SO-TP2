@@ -85,8 +85,6 @@ uint64_t newProcess(char* name, func f, int argc, char **argv) {
 	if(foreground)
 		setForeground(p->id);
 
-
-
 	rsp += STACK_SIZE - 1 - sizeof(stack_frame);
 	p->rsp = (uint64_t) buildStacKFrame((void *)rsp, f, argc, argv);
 
@@ -128,6 +126,8 @@ void waitPid(uint64_t pid){
 process *getFirstWaitProcess(process *father) {
 	if(father == NULL)
 		return NULL;
+	if(listIsEmpty(father->wait_list) == true)
+		return NULL;
 
 	return listGetFirst(father->wait_list);
 }
@@ -149,10 +149,16 @@ process *getProcessFromId(uint64_t id) {
 	return p;
 }
 
-static void addWaitProcess(process *child) {
-	if(child == NULL)
-		return;
+static int startProcess(func f, int argc, char **argv) {
+	if(f != NULL)
+		f(argc, argv);
 
+	freeProcess(getCurrentProcess()->id);
+	_yield();
+	return 0;
+}
+
+static void addWaitProcess(process *child) {
 	process *father = getProcessFromId(child->father);
 
 	if(father == NULL)
@@ -160,14 +166,12 @@ static void addWaitProcess(process *child) {
 
 	listAdd(father->wait_list, child);
 
-	if(father->state != BLOCKED) {
-		father->state = BLOCKED;
-		_yield();
-	}
+	father->state = BLOCKED;
+
+	_yield();
 }
 
 static void removeWaitProcess(process *child) {
-
 	if(child == NULL)
 		return;
 
@@ -185,15 +189,6 @@ static void removeWaitProcess(process *child) {
 
 	if(listIsEmpty(father->wait_list) == true)
 		father->state = WAITING;
-}
-
-static int startProcess(func f, int argc, char **argv) {
-	if(f != NULL)
-		f(argc, argv);
-
-	freeProcess(getCurrentProcess()->id);
-	_yield();
-	return 0;
 }
 
 static void *buildStacKFrame(void *rsp, func f, int argc, char **argv) {

@@ -2,6 +2,8 @@
 #include "../system/scheduler/include/process.h"
 #include "../system/scheduler/include/scheduler.h"
 
+#include "../utils/include/clock.h"
+
 static int processA(int argc, char **argv);
 
 void startFreeProcessTest() {
@@ -22,6 +24,7 @@ void startFreeProcessTest() {
 	printNewline();
 	waitPid(pA);
 	print("Hey I can run again!", -1);
+	printNewline();
 
 	print("Creating \"FreeProcess process A\" again", -1);
 	printNewline();
@@ -41,8 +44,9 @@ void startFreeProcessTest() {
 }
 
 static int processA(int argc, char **argv) {
-	print("FreeProcess process A OK", -1);
+	print("FreeProcess process A running", -1);
 	printNewline();
+	sleep(3);
 
 	return 0;
 }

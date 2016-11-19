@@ -23,6 +23,6 @@
 	list listBuild(bool (*f) (element_t , element_t));
 	int listGetSize(list l);
 
-	void listPrintList(list l);
+	void listPrint(list l);
 	void listPrintSize(list l);
 #endif

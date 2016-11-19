@@ -222,22 +222,27 @@ int listGetSize(list l) {
 	return out;
 }
 
-void listPrintList(list l) {
+void listPrint(list l) {
 	int index = 1;
 	lock(l->m);
 	node *current = l->head;
 
+	print("---", -1);
+	printNewline();
 	while(current != NULL) {
 		printDec(index++, -1);
 		print(": ", -1);
 		print(current->item->name, -1);
 		print(" (id: ", -1);
 		printDec(current->item->id, -1);
-		print(")", -1);
+		print(") status: ", -1);
+		printDec(current->item->state, -1);
 		printNewline();
 
 		current = current->next;
 	}
+	print("---", -1);
+	printNewline();
 	unlock(l->m);
 }
 

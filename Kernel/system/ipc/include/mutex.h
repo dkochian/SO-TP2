@@ -6,11 +6,6 @@
     #include "../../scheduler/include/scheduler.h"
     #include "../../../utils/include/queue.h"
     
-    struct mutex {
-        int lock;
-        queue m_queue;
-    };
-
     typedef struct mutex *mutex;
 
     mutex initLock();

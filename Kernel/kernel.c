@@ -159,8 +159,8 @@ int main() {
 
 	//Tests
 	//startSchedulerTest();
-	//startLockTest(false);
-	startWaitpidTest();
+	//startLockTest(true);
+	//startWaitpidTest();
 	//startFreeProcessTest();
 
 	clear();
