@@ -38,7 +38,7 @@
 	void sysMutexIsLocked(mutex m, bool *res);
 
 	void blockMyself();
-	void drawSquare(uint16_t x, uint16_t y, uint16_t l, char color);
+	//void drawSquare(uint16_t x, uint16_t y, uint16_t l, char color);
 
 	semaphore semBuild(int value);
 	void semDestroy(semaphore s);

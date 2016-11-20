@@ -117,7 +117,7 @@ int main() {
 	//startVideoTest();
 	//startSchedulerTest();
 	//startLockTest(true);
-	startWaitpidTest();
+	//startWaitpidTest();
 	//startFreeProcessTest();
 	//startSemaphoreTest();
 
