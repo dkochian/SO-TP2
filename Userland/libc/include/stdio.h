@@ -8,7 +8,7 @@
 	void printColor(char* str, char color);
 	void printn(char* str);
 	void printnColor(char* str, char color);
-	void printNewline();
+	void printNewLine();
 	void printNum(int num);
 	void toast(char* str, char color);
 

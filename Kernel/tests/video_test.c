@@ -1,14 +1,14 @@
-#include "../utils/include/clock.h"
+#include "include/video_test.h"
 #include "../drivers/include/video.h"
 #include "../system/scheduler/include/process.h"
 
 static int processA(int argc, char **argv);
 static int processB(int argc, char **argv);
 
-void startSchedulerTest() {
+void startVideoTest() {
 	uint64_t pA;
 	uint64_t pB;
-	
+
 	print("Creating \"Scheduler process A\"\n", -1);
 	pA = newProcess("Scheduler process A", processA, 0, NULL);
 	if(pA == INVALID_PROCESS_ID) {
@@ -42,8 +42,6 @@ static int processA(int argc, char **argv) {
 		print("Scheduler process A: row ", -1);
 		printDec(counter++, -1);
 		printNewLine();
-
-		sleep(1);
 	}
 
 	return 0;
@@ -58,8 +56,6 @@ static int processB(int argc, char **argv) {
 		print("Scheduler process B: row ", -1);
 		printDec(counter++, -1);
 		printNewLine();
-
-		sleep(1);
 	}
 
 	return 0;

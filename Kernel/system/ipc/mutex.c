@@ -3,6 +3,9 @@
 #include "../scheduler/include/scheduler.h"
 
 #include "../../drivers/include/video.h"
+#include "../scheduler/include/process.h"
+extern mutex v_mutex;
+//extern mutex m;
 
 extern int _lock(int *lock);
 extern void _unlock(int *lock);
@@ -10,10 +13,9 @@ extern void _unlock(int *lock);
 struct mutex {
     int lock;
     queue m_queue;
-    bool blocked[MAX_PROCESSES];
 };
 
-mutex initLock() {
+mutex lockBuild() {
     mutex l = (mutex) k_malloc(sizeof(mutex));
 
     if(l == NULL)
@@ -31,56 +33,42 @@ mutex initLock() {
     return l;
 }
 
-void destroyLock(mutex l) {
+void lockDestroy(mutex l) {
     queueDestroy(l->m_queue);
     k_free(l);
 }
 
 void lock(mutex l) {
     process *p = getCurrentProcess();
-    if(p == NULL) { //Used only by master of the puppets
-        _lock(&l->lock);
-        return;
-    }
-    
+    /*if(l == m) {
+        print("[lock] ", 1);
+        print(p->name, 1);
+        printNewLine();
+    }*/
+
     if(_lock(&l->lock) == 1) {
-       if(queueExists(l->m_queue, p) == false) {
-	       queuePush(l->m_queue, p);
-            blockProcess(p->id);
-        }
-        /*
-        if(queueExists(l->m_queue, p) == false) {
-            queuePush(l->m_queue, p);
-            blockProcess(p->id);
-        }*/
+        queuePush(l->m_queue, p);
+        blockProcess(p);
 
         _yield();
     }
-    //l->blocked[p->id] = (p->state == BLOCKED);
-    //p->state = LOCKED;
 }
 
 void unlock(mutex l) {
     process *p = getCurrentProcess();
-    if(p == NULL) {
-    	_unlock(&l->lock);
-    	return;
-    }
-/*
-    if(l->blocked[p->id] == true)
-        p->state = BLOCKED;
-    else
-        p->state = RUNNING;
-*/
+    /*if(l == m) {
+        print("[unlock] ", 3);
+        print(p->name, 3);
+        printNewLine();
+    }*/
+
     if(queueIsEmpty(l->m_queue) == false) {
         p = queuePop(l->m_queue);
-        unBlockProcess(p->id);
+        unBlockProcess(p);
         return;
     }
 
 	_unlock(&l->lock);
-
-    return;
 }
 
 bool isLocked(mutex l) {

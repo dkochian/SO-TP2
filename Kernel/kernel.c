@@ -11,9 +11,11 @@
 #include "system/scheduler/include/scheduler.h"
 
 //Tests (AKA should be removed)
+#include "tests/include/video_test.h"
 #include "tests/include/mutex_test.h"
 #include "tests/include/waitpid_test.h"
 #include "tests/include/scheduler_test.h"
+#include "tests/include/semaphore_test.h"
 #include "tests/include/freeprocess_test.h"
 
 extern uint8_t text;
@@ -30,13 +32,11 @@ static void * const sampleDataModuleAddress = (void*)0x500000;
 
 typedef void* (*EntryPoint)();
 
-char get_key();
-
 void clearBSS(void * bssAddress, uint64_t bssSize) {
 	memset(bssAddress, 0, bssSize);
 }
 
-void * getStackBase()
+void *getStackBase()
 {
 	return (void*)(
 		(uint64_t)&endOfKernel
@@ -44,124 +44,82 @@ void * getStackBase()
 		- sizeof(uint64_t)			//Begin at the top of the stack
 	);
 }
-void * initializeKernelBinary()
-{
-	char
-		buffer[10];
 
+void *initializeKernelBinary()
+{
 	void * moduleAddresses[] = {
 		sampleCodeModuleAddress,
 		sampleDataModuleAddress
 	};
 
-	print("[x64BareBones]", -1);
-	printNewline();
-
-	print("CPU Vendor:", -1);
-	print(cpuVendor(buffer), -1);
-	printNewline();
-
-	print("[Loading modules]", -1);
-	printNewline();
-
 	loadModules(&endOfKernelBinary, moduleAddresses);
-
-	print("[Done]", -1);
-	printNewline();
-	printNewline();
-
-	print("[Initializing kernel's binary]", -1);
-	printNewline();
-
 	clearBSS(&bss, &endOfKernel - &bss);
-
-	print("  text: 0x", -1);
-	printHex((uint64_t)&text, -1);
-	printNewline();
-
-	print("  rodata: 0x", -1);
-	printHex((uint64_t)&rodata, -1);
-	printNewline();
-
-	print("  data: 0x", -1);
-	printHex((uint64_t)&data, -1);
-	printNewline();
-
-	print("  bss: 0x", -1);
-	printHex((uint64_t)&bss, -1);
-	printNewline();
-
-	print("[Done]", -1);
-	printNewline();
-	printNewline();
 
 	return getStackBase();
 }
 
 int main() {
-	bool status = true;
+	bool pmStatus, scStatus, kbStatus;
 
-	clear();
+	mmuBuild();
+	if(videoBuild() == false)
+		return 1;
+	
+	pmStatus = buildProcessManager();
+	scStatus = buildScheduler();
+	buildIDT();
+	kbStatus = keyboardInit();		
 
-	k_initialize();
 	print("Memory Manager	[ ", -1);
 	print("OK", GREEN);
-	print(" ]", -1);
-	printNewline();
+	print(" ]\n", -1);
+
+	print("Video driver			[ ", -1);
+	print("OK", GREEN);
+	print(" ]\n", -1);
 
 	print("Proces Manager	[ ", -1);
-	if(buildProcessManager() == false) {
-		print("ERROR", COLOR_ERROR);
-		status = false;
-	}
-	else
+	if(scStatus == true)
 		print("OK", GREEN);
-	
-	print(" ]", -1);
-	printNewline();
+	else
+		print("ERROR", COLOR_ERROR);
+	print(" ]\n", -1);
 
 	print("Scheduler						[ ", -1);
-	if(buildScheduler() == false) {
-		print("ERROR", COLOR_ERROR);
-		status = false;
-	}
-	else
+	if(scStatus == true)
 		print("OK", GREEN);
-	
-	print(" ]", -1);
-	printNewline();
+	else
+		print("ERROR", COLOR_ERROR);
+	print(" ]\n", -1);
 
-
-	buildIDT();
 	print("IDT												[ ", -1);
 	print("OK", GREEN);
-	print(" ]", -1);
-	printNewline();
+	print(" ]\n", -1);
 
 	print("Keyboard							[ ", -1);
-	if(keyboardInit() == false) {
-		print("ERROR", COLOR_ERROR);
-		status = false;
-	}
-	else
+	if(kbStatus == true)
 		print("OK", GREEN);
-	print(" ]", -1);
-	printNewline();
+	else
+		print("ERROR", COLOR_ERROR);
+	print(" ]\n", -1);
 
-	if(!status)
-		return 0;
+	if(!(pmStatus & scStatus & kbStatus))
+		return 1;
 	
 	_accelPIT();
 	print("PIT turbo						[ ", -1);
 	print("OK", GREEN);
-	print(" ]", -1);
-	printNewline();
+	print(" ]\n", -1);
+
+	videoStartLocking();
 
 	//Tests
+	//startVideoTest();
 	//startSchedulerTest();
-	//startLockTest(false);
-	//startWaitpidTest();
+	//startLockTest(true);
+	startWaitpidTest();
 	//startFreeProcessTest();
+	//startSemaphoreTest();
 
 	clear();
 	((EntryPoint)sampleCodeModuleAddress)();

@@ -60,12 +60,12 @@ void processEntry(char * id) {
 
 int cvTestDep(int argc, char ** argv){
     printColor( "Condition Variable Test Starting" , YELLOW);
-    printNewline();
+    printNewLine();
     m = sysMutexInit();
     if(m == NULL) {
         printn("Couldn't create the mutex");
         printColor( "Test failed" , RED);
-        printNewline();
+        printNewLine();
         return 0;
     }
 
@@ -74,13 +74,13 @@ int cvTestDep(int argc, char ** argv){
     if(cond == NULL) {
         printn("Couldn't create the condition variable");
         printColor( "Test failed" , RED);
-        printNewline();
+        printNewLine();
         destroyLock(m);
         return 0;
     }
 
     printColor( "[thread main] starting" , LIGHT_BLUE);
-    printNewline();
+    printNewLine();
 
     //uint64_t threads[NUMTHREADS];
     char buff[2] = {0};

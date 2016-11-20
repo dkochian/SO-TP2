@@ -24,7 +24,7 @@ bool buildScheduler() {
 	if(waiting_list == NULL)
 		return false;
 
-	s_mutex = initLock();
+	s_mutex = lockBuild();
 	if(s_mutex == NULL) 
 		return false;
 
@@ -57,40 +57,31 @@ bool removeProcess(process *p) {
 
 	if(p->id == 0){//You can't kill dummy
 		print("Master of the Puppets is indestructible....", RED);
-		printNewline();
+		printNewLine();
 		return false;
 	} 
 	
 	res = listRemove(waiting_list, p);
-	/*if(!k_strcmp(p->name, "Shell")) {
-		clear();
-		print("See you on the other side....", RED);
-	}*/
+
 	killProcess(p);
 
 	return res;
 }
 
-void blockProcess(uint64_t pid) {
-	process *p = getProcessFromId(pid);
-
+void blockProcess(process *p) {
 	if(p == NULL)
 		return;
 
 	p->state = BLOCKED;
 }
 
-void unBlockProcess(uint64_t pid) {
-	process *p = getProcessFromId(pid);
-
+void unBlockProcess(process * p) {
 	if(p == NULL)
 		return;
 
 	p->state = WAITING;
 
-	lock(s_mutex);
-	listSetNext(waiting_list, p);
-	unlock(s_mutex);
+	//listSetNext(waiting_list, p);
 }
 
 void setForeground(uint64_t pid) {
@@ -106,8 +97,6 @@ void setForeground(uint64_t pid) {
 		current->foreground = false;
 	} while(current != NULL);
 
-	listResetCursor(waiting_list);
-
 	p->foreground = true;	
 }
 
@@ -116,7 +105,9 @@ process *getForeground() {
 
 	do {
 		current = listGet(waiting_list);
-	} while(current != NULL && current->foreground == false);
+		if(current->foreground == true)
+			break;
+	} while(current != NULL);
 
 	listResetCursor(waiting_list);
 
@@ -149,14 +140,14 @@ uint64_t contextSwitch(uint64_t stack) {
 		printDec(aux->id, -1);
 		print(") status: ", -1);
 		printDec(aux->state, -1);
-		printNewline();
+		printNewLine();
 		print("[new] ", -1);
 		print(current_process->name, -1);
 		print("(id: ", -1);
 		printDec(current_process->id, -1);
 		print(") status: ", -1);
 		printDec(current_process->state, -1);
-		printNewline();
+		printNewLine();
 	}*/
 
 	current_process->state = RUNNING;
@@ -168,7 +159,7 @@ uint64_t getCurrentPid(){
 	return current_process->id;
 }
 
-static void killProcess(process *p) {			//We should have to run sheduler again if the killed process is the one that's running right now
+static void killProcess(process *p) {
 	process *child;
 
 	if(p == NULL)
@@ -182,10 +173,10 @@ static void killProcess(process *p) {			//We should have to run sheduler again i
 }
 
 static process *schedule() {
+	process *p;
+
 	if(waiting_list == NULL || listIsEmpty(waiting_list) == true)
 		return NULL;
-
-	process *p;
 
 	do {
 		p = listPeekFirst(waiting_list);

@@ -1,30 +1,30 @@
 #include "include/video.h"
 #include "include/font.h"
-
-#include "../utils/include/clock.h"
+#include "../include/common.h"
+#include "../system/ipc/include/mutex.h"
 
 #define ROW(cursor_offset) ((cursor_offset)/WIDTH)
 #define COL(cursor_offset) ((cursor_offset)%WIDTH)
 
+static void reDrawMatrix();
+static void iPrintNewLine();
+static char isValidColor(char color);
+static ColorRGB getRGBColor(char color);
 static char isValidOffset(int row, int col);
 static void printChar(char c, int row, int col, char color);
-static void reDrawMatrix();
-static uint32_t uintToBase(uint64_t value, char * buffer, uint32_t base);
 static void printBase(uint64_t value, uint32_t base, char color);
+static void iPrintPixel(uint16_t x, uint64_t y, ColorRGB *color);
 static void printCharPixelLine(char line, int x, int y, char color);
-static ColorRGB getRGBColor(char color);
-static char isValidColor(char color);
+static uint32_t uintToBase(uint64_t value, char * buffer, uint32_t base);
 
-char
+static char
 	defaultColor = COLOR_DEFAULT,
 	defaultBgColor = COLOR_BG_DEFAULT;
-char*
-	video;
-int 
-	offset = 0;
-charStructure
-	charMatrix[HEIGHT][WIDTH];
-ColorRGB 
+static int offset = 0;
+static bool must_lock; 
+mutex v_mutex;
+static charStructure charMatrix[HEIGHT][WIDTH];
+static ColorRGB 
 	baseColors[16] = {
 		{0,		0,		0},
 		{0,		0,		255},
@@ -44,35 +44,89 @@ ColorRGB
 		{255,	255,	255}
 	};
 
+bool videoBuild() {
+	v_mutex = lockBuild();
+
+	if(v_mutex == NULL)
+		return false;
+
+	must_lock = false;
+
+	return true;
+}
+
+void videoDestroy() {
+	lockDestroy(v_mutex);
+}
+
+void videoStartLocking() {
+	must_lock = true;
+}
+
+void videoStopLocking() {
+	must_lock = false;
+}
+
 void print(const char* str, char color) {
+	if(must_lock == true)
+		lock(v_mutex);
+
 	for(int i = 0; str[i] != '\0' && isValidOffset(ROW(offset), COL(offset)); i++) {
-		printChar(str[i], ROW(offset), COL(offset), color);
-		offset++;
+		if(str[i] == '\n')
+			iPrintNewLine();
+		else {
+			printChar(str[i], ROW(offset), COL(offset), color);
+			offset++;
+		}
 	}
+
+	if(must_lock == true)
+		unlock(v_mutex);
 }
 
 void printToast(const char* str, int size) {
+	if(must_lock == true)
+		lock(v_mutex);
+
 	int
 		bOffset = offset;
 	offset = (HEIGHT - 1)*WIDTH + WIDTH/3;
 	print(str, COLOR_NULL);
 	offset = bOffset;
+
+	if(must_lock == true)
+		unlock(v_mutex);
 }
 
 void printDec(uint64_t value, char color) {
+	if(must_lock == true)
+		lock(v_mutex);
+
 	printBase(value, 10, color);
+
+	if(must_lock == true)
+		unlock(v_mutex);
 }
 
 void printHex(uint64_t value, char color) {
+	if(must_lock == true)
+		lock(v_mutex);
+
 	printBase(value, 16, color);
+
+	if(must_lock == true)
+		unlock(v_mutex);
 }
 
 void putChar(char c, char color) {
+	if(must_lock == true)
+		lock(v_mutex);
+
 	if(c == '\b') {
 		offset--;
 		printChar(' ', ROW(offset), COL(offset), color);
 	} else if(c == '\n') {
-		printNewline();
+		printNewLine();
 		if(ROW(offset) == HEIGHT)
 			reDrawMatrix();
 	}
@@ -82,31 +136,67 @@ void putChar(char c, char color) {
 		if(ROW(offset) == HEIGHT)
 			reDrawMatrix();
 	}
+
+	if(must_lock == true)
+		unlock(v_mutex);
 }
 
-void printNewline() {
-	offset += WIDTH - COL(offset);
+void printNewLine() {
+	if(must_lock == true)
+		lock(v_mutex);
+
+
+	iPrintNewLine();
+
+	if(must_lock == true)
+		unlock(v_mutex);
 }
 
 void clear() {
+	if(must_lock == true)
+		lock(v_mutex);
+
 	ColorRGB bgcolor = getRGBColor(defaultBgColor);
 	for(int i = 0; i < 1025; i ++)
 		for(int j=0; j<769; j++)
-			printPixel(i, j, &bgcolor);
+			iPrintPixel(i, j, &bgcolor);
 
 	offset = 0;
+
+	if(must_lock == true)
+		unlock(v_mutex);
 }
 
 void setDefaultColor(char color) {
+	if(must_lock == true)
+		lock(v_mutex);
+
 	defaultColor = color;
+
+	if(must_lock == true)
+		unlock(v_mutex);
 }
 
 void setBgDefaultColor(char color) {
+	if(must_lock == true)
+		lock(v_mutex);
+
 	defaultBgColor = color;
+
+	if(must_lock == true)
+		unlock(v_mutex);
 }
 
 char getDefaultColor() {
-	return defaultColor;
+	if(must_lock == true)
+		lock(v_mutex);
+
+	char aux = defaultColor;
+
+	if(must_lock == true)
+		unlock(v_mutex);
+
+	return aux;
 }
 
 void drawSquare(uint16_t x, uint16_t y, uint16_t l, char colorCode) {
@@ -115,6 +205,7 @@ void drawSquare(uint16_t x, uint16_t y, uint16_t l, char colorCode) {
 	uint64_t vesaBufferInt = *(uint32_t *)0x5080;
 	unsigned char* vesaBuffer = (unsigned char *)vesaBufferInt;
 	unsigned char* address;
+	
 	for(int i=0; i<l; i++) {
 		for(int j=0;j<l;j++) {
 			address = vesaBuffer + 3*(x+i + (y+j)*1024);
@@ -125,7 +216,21 @@ void drawSquare(uint16_t x, uint16_t y, uint16_t l, char colorCode) {
 	}
 }
 
-void printPixel(uint16_t x, uint16_t y, ColorRGB* color) {
+void printPixel(uint16_t x, uint16_t y, ColorRGB *color) {
+	if(must_lock == true)
+		lock(v_mutex);
+
+	iPrintPixel(x, y, color);
+
+	if(must_lock == true)
+		unlock(v_mutex);
+}
+
+static void iPrintNewLine() {
+	offset += WIDTH - COL(offset);
+}
+
+static void iPrintPixel(uint16_t x, uint64_t y, ColorRGB *color) {
 	uint64_t vesaBufferInt = *(uint32_t *)0x5080;
 	unsigned char * vesaBuffer = (unsigned char *)vesaBufferInt;;
 	unsigned char*
@@ -133,7 +238,7 @@ void printPixel(uint16_t x, uint16_t y, ColorRGB* color) {
 
     adress[2] = color->r;
     adress[1] = color->g;
-    adress[0] = color->b;
+    adress[0] = color->b;		
 }
 
 static char isValidOffset(int row, int col) {
@@ -175,7 +280,7 @@ static void printCharPixelLine(char line, int x, int y, char color) {
 		else
 			rColor = getRGBColor(defaultBgColor);
 			
-		printPixel(x+i, y, &rColor);
+		iPrintPixel(x+i, y, &rColor);
 	}
 }
 
@@ -208,8 +313,7 @@ static void printBase(uint64_t value, uint32_t base, char color) {
 	}
 }
 
-static uint32_t uintToBase(uint64_t value, char * buffer, uint32_t base)
-{
+static uint32_t uintToBase(uint64_t value, char * buffer, uint32_t base) {
 	char *p = buffer;
 	char *p1, *p2;
 	uint32_t digits = 0;

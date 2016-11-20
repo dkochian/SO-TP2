@@ -3,7 +3,6 @@
 #include <string.h>
 #include <integer.h>
 #include <mutex.h>
-#include <semaphore.h>
 #include "include/philosophers.h"
 
 #include "include/commands.h"
@@ -153,7 +152,7 @@ static int philosopher(int argc, char** argv) {
 	printNum(left);
 	print("-");
 	printNum(right);
-	printNewline();
+	printNewLine();
 	*/
 	while(alive) {
 		// THINKING
@@ -164,7 +163,7 @@ static int philosopher(int argc, char** argv) {
 		updateSquare(pos, MAGENTA);
 		sleep2();
 
-		//sem_wait(sem);
+		//semWait(sem);
 		grabSem(semLock, &sem);
 		
 		// CAN GRAB
@@ -195,7 +194,7 @@ static int philosopher(int argc, char** argv) {
 		updateState(pos, LEFT, LIGHT_GREEN);
 		sleep2();
 
-		//sem_post(sem);
+		//semPost(sem);
 		releaseSem(semLock, &sem);
 		
 		// OUT EAT
@@ -238,7 +237,7 @@ static int philosopher(int argc, char** argv) {
 **************/
 static int init() {
 	total = INIT_PHILOSOPHERS;
-	/*sem = sem_open(NULL, total-1);
+	/*sem = semBuild(NULL, total-1);
 	if(sem==NULL) {
 		return 1;
 	}*/
@@ -246,13 +245,13 @@ static int init() {
 												semLock = initLock();
 	editLock = initLock();
 	if(editLock ==NULL) {
-		//sem_close(sem);
+		//semDestroy(sem);
 		return 1;
 	}
 	for(int i=0; i<MAX_PHILOSOPHERS; i++) {
 		forks[i] = initLock();
 		if(forks[i] == NULL) {
-			//sem_close(sem);
+			//semDestroy(sem);
 			destroyLock(editLock);
 			for(int j=0; j<i; j++)
 				destroyLock(forks[j]);
@@ -300,7 +299,7 @@ static bool addPhilosopher() {
 	launchPhilosopher(total, total-1);
 	action(0, INC);
 
-	//sem_post(sem);
+	//semPost(sem);
 
 										grabSem(semLock, &sem);
 										sem++;
@@ -313,7 +312,7 @@ static bool removePhilosopher() {
 	if(total<=MIN_PHILOSOPHERS)
 		return false;
 
-	//sem_wait(sem);
+	//semWait(sem);
 										grabSem(semLock, &sem);
 										sem--;
 										releaseSem(semLock, &sem);
@@ -352,14 +351,14 @@ int philosophers(int argc, char **argv) {
 	printColor("Eating  ", GREEN);
 	printColor("Done Eating  ", LIGHT_GREEN);
 	printColor("Disabled  ", LIGHT_BLUE);
-	printNewline();
+	printNewLine();
 
-	printNewline();
-	printNewline();
-	printNewline();
-	printNewline();
-	printNewline();
-	printNewline();
+	printNewLine();
+	printNewLine();
+	printNewLine();
+	printNewLine();
+	printNewLine();
+	printNewLine();
 
 	control();
 
@@ -377,7 +376,7 @@ static void control() {
 		do {
 			c = getchar(true);
 		} while(c==0);
-		printNewline();
+		printNewLine();
 		switch(c) {
 			case 'w':
 			case 'W':

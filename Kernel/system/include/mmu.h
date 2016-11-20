@@ -8,7 +8,7 @@
 	#define DATA_ADDRESS 		0x500000
 	#define PAGE_TABLE_ENTRIES	255
 
-	void k_initialize();
+	void mmuBuild();
 	void *k_malloc(size_t size);
 	void k_free(void* ptr);
 

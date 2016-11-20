@@ -29,7 +29,7 @@ bool buildProcessManager() {
 	for(int i=0; i<MAX_PROCESSES; i++)
 		process_table[i] = NULL;
 
-	p_mutex = initLock();
+	p_mutex = lockBuild();
 	if (p_mutex == NULL) 
 		return false;
 

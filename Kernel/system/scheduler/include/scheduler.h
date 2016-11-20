@@ -6,10 +6,10 @@
 
 	bool buildScheduler();
 	process *getCurrentProcess();
-	bool addProcess(process *pid);
-	void blockProcess(uint64_t pid);
-	bool removeProcess(process *pid);
-	void unBlockProcess(uint64_t pid);
+	bool addProcess(process *p);
+	void blockProcess(process *p);
+	bool removeProcess(process *p);
+	void unBlockProcess(process *p);
 	uint64_t contextSwitch(uint64_t stack);
 	void setForeground(uint64_t pid);
 	process *getForeground();

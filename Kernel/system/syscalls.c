@@ -60,7 +60,7 @@ void sysCallHandler(uint64_t arg1, uint64_t arg2, uint64_t arg3, uint64_t arg4, 
 			_yield();
 			break;
 		case MINIT:
-			*((mutex *) arg2) = initLock();
+			*((mutex *) arg2) = lockBuild();
 			break;
 		case MLOCK:
 			lock((mutex) arg2);
@@ -69,13 +69,13 @@ void sysCallHandler(uint64_t arg1, uint64_t arg2, uint64_t arg3, uint64_t arg4, 
 			unlock((mutex) arg2);
 			break;
 		case MDESTROY: 
-			destroyLock((mutex) arg2);
+			lockDestroy((mutex) arg2);
 			break;
 		case MISLOCK:
 			*((bool *) arg3) = isLocked((mutex) arg2);
 			break;
 		case BLOCKSELF:
-			blockProcess(getCurrentProcess()->id);
+			blockProcess(getCurrentProcess());
 			break;
 		case WAITPID:
 			waitPid((uint64_t) arg2);
@@ -84,16 +84,16 @@ void sysCallHandler(uint64_t arg1, uint64_t arg2, uint64_t arg3, uint64_t arg4, 
 			drawSquare((uint16_t) arg2, (uint16_t) arg3, (uint16_t) arg4, (char) arg5);
 			break;
 		case SEMOPEN:
-			*((uintptr_t *) arg2) = (uint64_t) semOpen((char *) arg3, (int)  arg4);
+			*((semaphore *) arg3) = semBuild((int) arg2);
 			break;
 		case SEMCLOSE:
-			semClose((sem_t) arg2);
+			semDestroy((semaphore) arg2);
 			break;
 		case SEMWAIT:
-			semWait((sem_t) arg2);
+			semWait((semaphore) arg2);
 			break;
 		case SEMPOST:
-			semPost((sem_t) arg2);
+			semPost((semaphore) arg2);
 			break;
 		case CVINIT:
 			*((cond_t *) arg2) = cvInitialize();

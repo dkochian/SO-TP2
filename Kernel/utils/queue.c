@@ -12,7 +12,6 @@ typedef struct node {
 } node;
 
 struct queue {
-	int size;
 	node *head;
 	node *tail;
 	bool (*cmp) (element_t , element_t);
@@ -27,13 +26,12 @@ queue queueBuild(bool (*f) (element_t , element_t)) {
 	q->head = NULL;
 	q->tail = NULL;
 	q->cmp = f;
-	q->size = 0;
 
 	return q;
 }
 
 void queueDestroy(queue q) {
-    if(q->size != 0) {
+    if(q->head != NULL) {
 		node *current = q->head;
 		node *aux = NULL;
 
@@ -56,9 +54,12 @@ bool queuePush(queue q, element_t item) {
 	n->item = item;
 	n->next = NULL;
 
-	q->tail->next = n;
+	if(q->head == NULL)
+		q->head = n;
+	else
+		q->tail->next = n;
+	
 	q->tail = n;
-	q->size++;
 
 	return true;
 }
@@ -67,7 +68,6 @@ element_t queuePop(queue q) {
 	node *aux = q->head;
 	element_t item = aux->item;
 	q->head = q->head->next;
-	q->size--;
 
 	k_free(aux);
 	
@@ -75,7 +75,7 @@ element_t queuePop(queue q) {
 }
 
 bool queueIsEmpty(queue q) {
-	return (q->size == 0);
+	return (q->head == NULL);
 }
 
 bool queueExists(queue q, element_t item) {
@@ -88,4 +88,18 @@ bool queueExists(queue q, element_t item) {
 	}
 
 	return false;
+}
+
+void queuePrint(queue q) {
+	node *current = q->head;
+
+	print("---", -1);
+	printNewLine();
+	while(current != NULL) {
+		print(current->item->name, -1);
+		printNewLine();
+		current = current->next;
+	}
+	print("---", -1);
+	printNewLine();
 }

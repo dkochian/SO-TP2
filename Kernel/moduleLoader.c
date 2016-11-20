@@ -32,7 +32,7 @@ static void loadModule(uint8_t ** module, void * targetModuleAddress)
 	*module += moduleSize;
 
 	print(" [Done]", -1);
-	printNewline();
+	printNewLine();
 }
 
 static uint32_t readUint32(uint8_t ** address)

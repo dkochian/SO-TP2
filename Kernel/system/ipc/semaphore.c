@@ -1,122 +1,78 @@
-#include "include/semaphore.h"
 #include "../include/mmu.h"
+#include "include/semaphore.h"
+#include "../scheduler/include/process.h"
 
 #include "../scheduler/include/scheduler.h"
-
 #include "../../drivers/include/video.h"
 
-//NUEVA IMPLEMENTACION, NO FUNCIONA. PROBAR PRODCON Y VER QUE DESBLOQUEA UN PROCESO DISTINTO AL QUE BLOQUEA. AGREGA MAL A LA QUEUE?
+struct semaphore {
+	int value;
+	mutex s_mutex;
+	queue s_queue;
+};
 
-sem_t semOpen(char * name, int value) {
-	sem_t sem = k_malloc(sizeof(sem_t));
+semaphore semBuild(int value) {
+	semaphore s = k_malloc(sizeof(struct semaphore));
 
-	if (sem == NULL)
+	if(s == NULL)
 		return NULL;
 
-	sem->s_mutex = initLock();
+	s->s_mutex = lockBuild();
 
-	if (sem->s_mutex == NULL) {
-		k_free(sem);
-		return NULL;
-	}
-
-	sem->s_queue = queueBuild(&equal);
-
-	if (sem->s_queue == NULL) {
-		k_free(sem);
+	if(s->s_mutex == NULL) {
+		k_free(s);
 		return NULL;
 	}
 
-	sem->name = name;
-	sem->value = value;
-	return sem;
+	s->s_queue = queueBuild(&equal);
+
+	if(s->s_queue == NULL) {
+		lockDestroy(s->s_mutex);
+		k_free(s);
+		return NULL;
+	}
+
+	s->value = value;
+
+	return s;
 }
 
-void semClose(sem_t sem) {
-	destroyLock(sem->s_mutex);
-	queueDestroy(sem->s_queue);
-	k_free(sem);
+void semDestroy(semaphore s) {
+	lockDestroy(s->s_mutex);
+	queueDestroy(s->s_queue);
+	k_free(s);
 }
 
-void semWait(sem_t sem) {
-
+void semWait(semaphore s) {
+	print("Sem wait", -1);
+	printNewLine();
 	process *p = getCurrentProcess();
 
-	lock(sem->s_mutex);
-	if (sem->value > 0) {
-		sem->value--;
-		unlock(sem->s_mutex);
-	} else {
-		//if(queueExists(sem->s_queue, p) == false) {
-			queuePush(sem->s_queue, p);
-						print("bloqueo:", -1);
-						printDec(p->id, -1);
-						printNewline();
-			blockProcess(p->id);
-		//}
-		unlock(sem->s_mutex);
-		_yield();
-		//semWait(sem);
+	lock(s->s_mutex);
+	if(s->value > 0 && queueIsEmpty(s->s_queue) == true) {
+		s->value--;
+		unlock(s->s_mutex);
+		return;
 	}
-	return;
+	queuePush(s->s_queue, p);
+	blockProcess(p);
+	unlock(s->s_mutex);
+
+	_yield();
+
+	lock(s->s_mutex);
+	s->value--;
+	unlock(s->s_mutex);
 }
 
-void semPost(sem_t sem) {
-	lock(sem->s_mutex);
-	sem->value++;
-	if(queueIsEmpty(sem->s_queue) == false) {
-		process *p = queuePop(sem->s_queue);
-					print("desbloqueo:", -1);
-					printDec(p->id, -1);
-					printNewline();
-		unBlockProcess(p->id);
-	}
-	unlock(sem->s_mutex);
-	return;
-}
-
-
-/*
-sem_t semOpen(char * name, int value) {
-	sem_t sem = k_malloc(sizeof(sem_t));
-
-	if (sem == NULL)
-		return NULL;
-
-	sem->s_mutex = initLock();
-
-	if (sem->s_mutex == NULL) {
-		k_free(sem);
-		return NULL;
-	}
-
-	sem->name = name;
-	sem->value = value;
-	return sem;
-}
-
-void semClose(sem_t sem) {
-	destroyLock(sem->s_mutex);
-	k_free(sem);
-}
-
-void semWait(sem_t sem) {
-	while(true) {
-		lock(sem->s_mutex);
-		if (sem->value > 0) {
-			sem->value--;
-			unlock(sem->s_mutex);
-			return;
-		} else {
-			unlock(sem->s_mutex);
-			_yield();
-		}
+void semPost(semaphore s) {
+	print("Sem post", -1);
+	printNewLine();
+	lock(s->s_mutex);
+	s->value++;
+	unlock(s->s_mutex);
+	if(queueIsEmpty(s->s_queue) == false) {
+		process *p = queuePop(s->s_queue);
+		unBlockProcess(p);
 	}
 }
-
-void semPost(sem_t sem) {
-	lock(sem->s_mutex);
-	sem->value++;
-	unlock(sem->s_mutex);
-}
-*/

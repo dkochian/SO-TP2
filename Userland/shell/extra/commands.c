@@ -32,7 +32,7 @@ int helpCommand(int argc, char **argv) {
 	}
 
 	for(int index = 0; index < MAX_COMMANDS; index++) {
-		if(struc[index].created == true && strcmp(argv, struc[index].name) == 0) {
+		if(struc[index].created == true && strcmp((char *) argv, struc[index].name) == 0) {
 			printn(struc[index].help);
 			return 0;
 		}
@@ -51,7 +51,7 @@ int pidCommand(int argc, char **argv) {
 
 	print("El id del proceso actual es: ");
 	printNum(pid());
-	printNewline();
+	printNewLine();
 	return 0;
 }
 
@@ -61,7 +61,7 @@ int psCommand(int argc, char **argv) {
 	
 	printColor("Number of processes: ", LIGHT_GRAY);
 	printNum(allProcess->numbProcess);
-	printNewline();
+	printNewLine();
 
 	int max = allProcess->numbProcess;
 	int i, index;
@@ -241,7 +241,7 @@ int dateCommand(int argc, char **argv) {
 	}
 	print(" de 20");
 	printNum(date.year);
-	printNewline();
+	printNewLine();
 	return 0;
 }
 
@@ -272,7 +272,7 @@ int timeCommand(int argc, char **argv) {
 	if(timeSystem.secs < 10)
 		printNum(0);
 	printNum(timeSystem.secs);
-	printNewline();
+	printNewLine();
 	return 0;
 }
 

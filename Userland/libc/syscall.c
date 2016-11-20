@@ -1,7 +1,7 @@
 #include <syscall.h>
 
-void syscall(int id, int type, uintptr_t* addr, char size) {
-	_syscall(id, type, (uintptr_t) addr, size, NULL, NULL);
+void syscall(int id, int type, uintptr_t* addr, char size, uint64_t aux1, uint64_t aux2) {
+	_syscall(id, type, (uintptr_t) addr, size, aux1, aux2);
 }
 
 void write(int type, char* str, int size) {
@@ -116,22 +116,22 @@ void drawSquare(uint16_t x, uint16_t y, uint16_t l, char colorCode) {
 
 }
 
-void *sysSemOpen(char * name, int value) {
-	uintptr_t res = NULL;
-	_syscall(SEMOPEN, (uintptr_t) &res, (uintptr_t) name, value, NULL, NULL);
-	return (void *) res;
+semaphore semBuild(int value) {
+	semaphore res = NULL;
+	_syscall(SEMOPEN, value, (uintptr_t) &res, NULL, NULL, NULL);
+	return res;
 }
 
-void sysSemClose(void *sem) {
-	_syscall(SEMCLOSE, (uintptr_t) sem, NULL, NULL, NULL, NULL);
+void semDestroy(semaphore s) {
+	_syscall(SEMCLOSE, (uintptr_t) s, NULL, NULL, NULL, NULL);
 }
 
-void sysSemWait(void *sem) {
-	_syscall(SEMWAIT, (uintptr_t) sem, NULL, NULL, NULL, NULL);
+void semWait(semaphore s) {
+	_syscall(SEMWAIT, (uintptr_t) s, NULL, NULL, NULL, NULL);
 }
 
-void sysSemPost(void *sem) {
-	_syscall(SEMPOST, (uintptr_t) sem, NULL, NULL, NULL, NULL);
+void semPost(semaphore s) {
+	_syscall(SEMPOST, (uintptr_t) s, NULL, NULL, NULL, NULL);
 }
 
 void *syscvInit(){

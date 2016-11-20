@@ -8,34 +8,30 @@ static int processA(int argc, char **argv);
 void startWaitpidTest() {
 	uint64_t pA;
 
-	print("Creating \"Waitpid process A\"", -1);
-	printNewline();
+	print("Creating \"Waitpid process A\"\n", -1);
 	pA = newProcess("Waitpid process A", processA, 0, NULL);
 	if(pA == INVALID_PROCESS_ID) {
-		print("Couldn't create \"Waitpid process A\"", -1);
-		printNewline();
+		print("Couldn't create \"Waitpid process A\"\n", -1);
 		return;
 	}
 
 	print("I'll wait for \"Waitpid process A\" (id: ", -1);
 	printDec(pA, -1);
 	print(")", -1);
-	printNewline();
+	printNewLine();
 	waitPid(pA);
-	print("Hey I can run again!", -1);
-	printNewline();
+	print("Hey I can run again!\n", -1);
 }
 
 static int processA(int argc, char **argv) {
 	int counter = 0;
-	print("Waitpid process A OK", -1);
-	printNewline();
+	print("Waitpid process A OK\n", -1);
 	
 	while(counter < 100) {
 		if(counter % 10 == 0) {
 			print("processE: ", -1);
 			printDec(counter, -1);
-			printNewline();
+			printNewLine();
 			sleep(1);
 		}
 

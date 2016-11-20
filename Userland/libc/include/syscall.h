@@ -5,7 +5,7 @@
 
 	extern void _syscall(int, int, int, int, int, int);
 
-	void syscall(int id, int type, uintptr_t* addr, char size);
+	void syscall(int id, int type, uintptr_t* addr, char size, uint64_t aux1, uint64_t aux2);
 	void write(int type, char* str, int size);
 	void read(int type, char* str, char aux);
 	void setColor(char color);
@@ -40,10 +40,10 @@
 	void blockMyself();
 	void drawSquare(uint16_t x, uint16_t y, uint16_t l, char color);
 
-	void *sysSemOpen(char * name, int value);
-	void sysSemClose(void *sem);
-	void sysSemWait(void *sem);
-	void sysSemPost(void *sem);
+	semaphore semBuild(int value);
+	void semDestroy(semaphore s);
+	void semWait(semaphore s);
+	void semPost(semaphore s);
 
 	void *syscvInit();
 	void syscvWait(void *cv, mutex m);

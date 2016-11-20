@@ -61,25 +61,25 @@ uint32_t read_pipe(fs_node_t *node, uint32_t offset, uint32_t size, uint8_t *buf
 		if (pipe->size > 300) { //Ignore small pipes (ie, keyboard) 
 			print("[debug] Call to read from pipe 0x",-1);
 			printHex(node->inode,-1);
-			printNewline();
+			printNewLine();
 			print("        Unread bytes:    ",-1);
 			printDec(pipe_unread(pipe));
-			printNewline();
+			printNewLine();
 			print("        Total size:      ");
 			printDec(pipe->size);
-			printNewline();
+			printNewLine();
 			print("        Request size:    ");
 			printDec(size);
-			printNewline();
+			printNewLine();
 			print("        Write pointer:   ");
 			printDec(pipe->write_ptr);
-			printNewline();
+			printNewLine();
 			print("        Read  pointer:   ");
 			printDec(pipe->read_ptr);
-			printNewline();
+			printNewLine();
 			print("        Buffer address:  0x");
 			printHex(pipe->buffer,-1);
-			printNewline();
+			printNewLine();
 		}
 	#endif
 
@@ -113,28 +113,28 @@ uint32_t write_pipe(fs_node_t *node, uint32_t offset, uint32_t size, uint8_t *bu
 	if (pipe->size > 300) { // Ignore small pipes (ie, keyboard) 
 		print("[debug] Call to write to pipe 0x",-1);
 		printHex(node->inode,-1);
-		printNewline();
+		printNewLine();
 		print("        Available space: ");
 		printDec(pipe_available(pipe));
-		printNewline();
+		printNewLine();
 		print("        Total size:      ");
 		printDec(pipe->size);
-		printNewline();
+		printNewLine();
 		print("        Request size:    ");
 		printDec(size);
-		printNewline();
+		printNewLine();
 		print("        Write pointer:   ");
 		printDec(pipe->write_ptr);
-		printNewline();
+		printNewLine();
 		print("        Read  pointer:   ");
 		printDec(pipe->read_ptr);
-		printNewline();
+		printNewLine();
 		print("        Buffer address:  0x");
 		printHex(pipe->buffer,-1);
-		printNewline();
+		printNewLine();
 		print(" Write: ");
 		print(buffer,-1);
-		printNewline();
+		printNewLine();
 	}
 #endif
 
@@ -243,7 +243,7 @@ void close_pipe(fs_node_t * node) {
 fs_node_t * make_pipe(size_t size) {
 	fs_node_t * fnode = k_malloc(sizeof(fs_node_t));
 	pipe_device_t * pipe = k_malloc(sizeof(pipe_device_t));
-	mutex pi_mutexCreate = initLock();
+	mutex pi_mutexCreate = lockBuild();
 	if (pi_mutexCreate == NULL) 
 		return false;
 

@@ -22,7 +22,7 @@ void cvWait(cond_t cv, mutex cv_mutex) {
 	unlock(cv_mutex);
 	listAdd(cv->cv_list, cProcess);
 
-	blockProcess(cProcess->id);  
+	blockProcess(cProcess);  
 	_yield();
 	
 	lock(cv_mutex);
@@ -33,7 +33,7 @@ uint64_t cvSignal(cond_t cv) {
 	if (!listIsEmpty(cv->cv_list)) {
 		rProcess = listGetFirst(cv->cv_list);
 		listRemove(cv->cv_list, rProcess);
-		unBlockProcess(rProcess->id);
+		unBlockProcess(rProcess);
 	}
 
 	return rProcess->id;
@@ -43,7 +43,7 @@ void cvBroadcast(cond_t cv) {
 	while (!listIsEmpty(cv->cv_list)) {
 		process *rProcess = listGetFirst(cv->cv_list);
 		listRemove(cv->cv_list, rProcess);
-		unBlockProcess(rProcess->id);
+		unBlockProcess(rProcess);
 	}
 }
 

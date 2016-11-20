@@ -119,6 +119,7 @@
 	
 	typedef char bool;
 	typedef struct mutex *mutex;
+	typedef struct semaphore *semaphore;
 	typedef unsigned int size_t;
 	typedef int (*func) (int, char **);
 

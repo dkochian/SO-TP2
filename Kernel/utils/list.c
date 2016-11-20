@@ -25,7 +25,7 @@ list listBuild(bool (*f) (element_t , element_t)) {
 	if(l == NULL)
 		return NULL;
 
-	l->m = initLock();
+	l->m = lockBuild();
 	if(l->m == NULL) {
 		k_free(l);
 		return NULL;
@@ -54,7 +54,7 @@ void listDestroy(list l) {
 
 	k_free(l);
 	unlock(tempLock); 
-	destroyLock(tempLock);
+	lockDestroy(tempLock);
 }
 
 bool listAdd(list l, element_t item) {
@@ -228,7 +228,7 @@ void listPrint(list l) {
 	node *current = l->head;
 
 	print("---", -1);
-	printNewline();
+	printNewLine();
 	while(current != NULL) {
 		printDec(index++, -1);
 		print(": ", -1);
@@ -237,17 +237,17 @@ void listPrint(list l) {
 		printDec(current->item->id, -1);
 		print(") status: ", -1);
 		printDec(current->item->state, -1);
-		printNewline();
+		printNewLine();
 
 		current = current->next;
 	}
 	print("---", -1);
-	printNewline();
+	printNewLine();
 	unlock(l->m);
 }
 
 void listPrintSize(list l) {
 	print("list size: ", -1);
 	printDec(listGetSize(l), -1);
-	printNewline();
+	printNewLine();
 }

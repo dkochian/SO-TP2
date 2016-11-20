@@ -8,8 +8,8 @@
     
     typedef struct mutex *mutex;
 
-    mutex initLock();
-    void destroyLock(mutex l);
+    mutex lockBuild();
+    void lockDestroy(mutex l);
     void lock(mutex l);
     void unlock(mutex l);
     bool isLocked(mutex l);

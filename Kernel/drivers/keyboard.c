@@ -44,7 +44,7 @@ static cond_t cv;
 static bool bufferEmpty = true;*/
 
 bool keyboardInit() {
-	/*kb_mutex = initLock();
+	/*kb_mutex = lockBuild();
 
 	if(kb_mutex == NULL)
 		return false;
@@ -52,7 +52,7 @@ bool keyboardInit() {
 	cv = cvInitialize();
 
 	if(cv == NULL){
-		destroyLock(kb_mutex);
+		lockDestroy(kb_mutex);
 		print("siiiiiii",-1);
 		return false;
 	}*/

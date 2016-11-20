@@ -48,7 +48,7 @@ void printnColor(char* str, char color) {
 	setColor(bColor);
 }
 
-void printNewline() {
+void printNewLine() {
 	putchar('\n');
 }
 void printNum(int num) {

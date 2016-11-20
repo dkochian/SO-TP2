@@ -13,11 +13,15 @@
 		char color;
 	} charStructure;
 
+	bool videoBuild();
+	void videoDestroy();
+	void videoStartLocking();
+	void videoStopLocking();
 	void print(const char* str, char color);
 	void putChar(char c, char color);
 	void printDec(uint64_t value, char color);
 	void printHex(uint64_t value, char color);
-	void printNewline();
+	void printNewLine();
 	void clear();
 	void setDefaultColor(char color);
 	void setBgDefaultColor(char color);
@@ -25,5 +29,8 @@
 	void printPixel(uint16_t x, uint16_t y, ColorRGB* color);
 	void drawSquare(uint16_t x, uint16_t y, uint16_t l, char color);
 	void printToast(const char* str, int size);
+
+	void unsafe_print(const char* str, char color);
+	void unsafe_printNewLine();
 
 #endif
