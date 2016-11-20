@@ -1,6 +1,6 @@
 #include "../../Common/common.h"
 #include "include/mmu.h"
-#include "scheduler/include/process.h"
+#include "scheduler/include/scheduler.h"
 #include "../drivers/include/video.h"
 
 

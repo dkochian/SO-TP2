@@ -89,28 +89,30 @@ void doA(int x, int y, int l, char color) {
 		}
 	}
 }
-
+#define SIZE (64)
+#define SPACER (16)
+#define TOPGAP (128)
 static void updateSquare(int pos, char color) {
-	int x = 64+ 128*(pos);
-	int y = 64;
-	int l = 64;
+	int x = SPACER + (SIZE+SPACER)*(pos);
+	int y = TOPGAP;
+	int l = SIZE;
 	doA(x, y, l, color);
 }
 
 static void updateState(int pos, bool hand, char color) {
 	if(hand==LEFT) {
-		int x = 64+ 128*(pos);
-		int y = 64;
-		int l = 32;
+		int x = SPACER+ (SIZE+SPACER)*(pos);
+		int y = TOPGAP;
+		int l = SIZE/2;
 		doA(x, y, l, color);
-		y = 96;
+		y += SIZE/2;
 		doA(x, y, l, color);
 	} else {
-		int x = 96+ 128*(pos);
-		int y = 64;
-		int l = 32;
+		int x = SPACER+SIZE/2+ (SIZE+SPACER)*(pos);
+		int y = TOPGAP;
+		int l = SIZE/2;
 		doA(x, y, l, color);
-		y = 96;
+		y += SIZE/2;
 		doA(x, y, l, color);
 	}
 }
@@ -299,16 +301,16 @@ int philosophers(int argc, char **argv) {
 	for(int i=0; i<total; i++) {
 		launchPhilosopher(i, (i+1)%total );
 	}
-												//psCommand(0, (char **) "");
+												psCommand(0, (char **) "");
 	
 
-	while(true) {}
+	//while(true) {}
 
 
 	bool exitFlag = false;
 	char c;
 	while(!exitFlag) {
-		c = getchar(false);
+		c = getchar(true);
 		if(c=='w' || c=='W') {
 			
 			if(addPhilosopher()) {

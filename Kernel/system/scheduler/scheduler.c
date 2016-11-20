@@ -128,7 +128,7 @@ process *getCurrentProcess() {
 }
 
 uint64_t contextSwitch(uint64_t stack) {
-	if(current_process == NULL || current_process->state == LOCKED)
+	if(current_process == NULL )
 		return 0;
 
 	current_process->rsp = stack;

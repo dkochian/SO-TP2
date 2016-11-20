@@ -38,36 +38,44 @@ void destroyLock(mutex l) {
 
 void lock(mutex l) {
     process *p = getCurrentProcess();
-    if(p == NULL) //Used only by master of the puppets
+    if(p == NULL) { //Used only by master of the puppets
         _lock(&l->lock);
-    else {
-        if(_lock(&l->lock) == 1) {
-            if(queueExists(l->m_queue, p) == false) {
-                queuePush(l->m_queue, p);
-                blockProcess(p->id);
-            }
-
-            _yield();
-        }
-        l->blocked[p->id] = (p->state == BLOCKED);
-        p->state = LOCKED;
+        return;
     }
+    
+    if(_lock(&l->lock) == 1) {
+    	queuePush(l->m_queue, p);
+        blockProcess(p->id);
+        /*
+        if(queueExists(l->m_queue, p) == false) {
+            queuePush(l->m_queue, p);
+            blockProcess(p->id);
+        }*/
+
+        _yield();
+    }
+    //l->blocked[p->id] = (p->state == BLOCKED);
+    //p->state = LOCKED;
 }
 
 void unlock(mutex l) {
     process *p = getCurrentProcess();
-    if(p != NULL) {
-        if(l->blocked[p->id] == true)
-            p->state = BLOCKED;
-        else
-            p->state = RUNNING;
-
-        if(queueIsEmpty(l->m_queue) == false) {
-            p = queuePop(l->m_queue);
-            unBlockProcess(p->id);
-            return;
-        }
+    if(p == NULL) {
+    	_unlock(&l->lock);
+    	return;
     }
+/*
+    if(l->blocked[p->id] == true)
+        p->state = BLOCKED;
+    else
+        p->state = RUNNING;
+*/
+    if(queueIsEmpty(l->m_queue) == false) {
+        p = queuePop(l->m_queue);
+        unBlockProcess(p->id);
+        return;
+    }
+
     
     _unlock(&l->lock);
 }
