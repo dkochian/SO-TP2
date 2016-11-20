@@ -6,7 +6,7 @@
 #include "../../drivers/include/video.h"
 
 //NUEVA IMPLEMENTACION, NO FUNCIONA. PROBAR PRODCON Y VER QUE DESBLOQUEA UN PROCESO DISTINTO AL QUE BLOQUEA. AGREGA MAL A LA QUEUE?
-/*
+
 sem_t semOpen(char * name, int value) {
 	sem_t sem = k_malloc(sizeof(sem_t));
 
@@ -46,19 +46,19 @@ void semWait(sem_t sem) {
 	if (sem->value > 0) {
 		sem->value--;
 		unlock(sem->s_mutex);
-		return;
 	} else {
-		if(queueExists(sem->s_queue, p) == false) {
+		//if(queueExists(sem->s_queue, p) == false) {
 			queuePush(sem->s_queue, p);
-			print("bloqueo:", -1);
-			printDec(p->id, -1);
-			printNewline();
+						print("bloqueo:", -1);
+						printDec(p->id, -1);
+						printNewline();
 			blockProcess(p->id);
-		}
+		//}
 		unlock(sem->s_mutex);
 		_yield();
-		semWait(sem);
+		//semWait(sem);
 	}
+	return;
 }
 
 void semPost(sem_t sem) {
@@ -66,16 +66,18 @@ void semPost(sem_t sem) {
 	sem->value++;
 	if(queueIsEmpty(sem->s_queue) == false) {
 		process *p = queuePop(sem->s_queue);
-		print("desbloqueo:", -1);
-		printDec(p->id, -1);
-		printNewline();
+					print("desbloqueo:", -1);
+					printDec(p->id, -1);
+					printNewline();
 		unBlockProcess(p->id);
+	} else {
+		unlock(sem->s_mutex);
 	}
-	unlock(sem->s_mutex);
+	return;
 }
-*/
 
 
+/*
 sem_t semOpen(char * name, int value) {
 	sem_t sem = k_malloc(sizeof(sem_t));
 
@@ -118,3 +120,4 @@ void semPost(sem_t sem) {
 	sem->value++;
 	unlock(sem->s_mutex);
 }
+*/

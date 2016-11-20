@@ -73,11 +73,10 @@ void unlock(mutex l) {
     if(queueIsEmpty(l->m_queue) == false) {
         p = queuePop(l->m_queue);
         unBlockProcess(p->id);
-        return;
+    } else {
+		_unlock(&l->lock);
     }
-
-    
-    _unlock(&l->lock);
+    return;
 }
 
 bool isLocked(mutex l) {
