@@ -9,6 +9,10 @@
 cond_t cvInitialize() {
     cond_t cv = k_malloc(sizeof(cond_t));
 	cv->cv_list = listBuild(&equal);
+	if (cv->cv_list){
+		k_free(cv);
+		return NULL;
+	}
     return cv;
 }
 

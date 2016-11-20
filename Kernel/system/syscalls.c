@@ -148,6 +148,7 @@ static void write(int out, char* str, int size) {
 
 void read(int in, char* buffer, char aux) {
 	if(in == STDIN) {
+		//readFull(buffer,aux);
 		process *p = getForeground();
 		*buffer = getKey(aux, p);
 	}

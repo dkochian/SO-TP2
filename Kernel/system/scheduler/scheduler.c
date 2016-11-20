@@ -203,19 +203,7 @@ psContext *processesStatus() {
 	res->numbProcess = listSize;
 	res->processes = k_malloc(sizeof(char)* listSize);
 	res->separateChar = '&';
-/*
-	res->processes[0] = k_malloc(sizeof(char) * 60);
-	k_itoa(current_process->id, buffer);
-	k_strcat(res->processes[0], buffer);
-	k_strcat(res->processes[0], "&");
-	k_strcat(res->processes[0], current_process->name);
-	k_strcat(res->processes[0], "&");
-	k_itoa(current_process->state, buffer);
-	k_strcat(res->processes[0], buffer);
-	k_strcat(res->processes[0], "&");
-	k_itoa(current_process->foreground, buffer);
-	k_strcat(res->processes[0], buffer);
-*/
+
 	list wProcessList = waiting_list;
 	listResetCursor(wProcessList);
 

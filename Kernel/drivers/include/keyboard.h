@@ -29,5 +29,6 @@
 	bool keyboardInit();
 	void keyboardHandler(unsigned char key);
 	char getKey(char write, process* p);
+	void readFull(char * buffer, char aux);
 
 #endif

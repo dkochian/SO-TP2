@@ -1,6 +1,7 @@
 #include "include/video.h"
 #include "include/keyboard.h"
 #include "../system/ipc/include/mutex.h"
+#include "../system/ipc/include/condVar.h"
 #include "../system/scheduler/include/scheduler.h"
 
 static void addKeyBuffer(int key);
@@ -38,13 +39,23 @@ static unsigned char kb_map[3][85] = {
 static char lineBuffer[KB_SIZE];
 static int lineIndex;
 static kbStatus	kb;
-//static mutex kb_mutex;
+/*static mutex kb_mutex;
+static cond_t cv;
+static bool bufferEmpty = true;*/
 
 bool keyboardInit() {
 	/*kb_mutex = initLock();
 
 	if(kb_mutex == NULL)
-		return false;*/
+		return false;
+
+	cv = cvInitialize();
+
+	if(cv == NULL){
+		destroyLock(kb_mutex);
+		print("siiiiiii",-1);
+		return false;
+	}*/
 
 	for(int i = 0; i < KB_SIZE; ++i) {
 		kb.buffer[i] = EMPTY;
@@ -64,7 +75,19 @@ void keyboardHandler(unsigned char key) {
 	addKeyBuffer(key);
 	//signal(&sem)
 }
+/*void readFull(char * buffer, char aux){
 
+
+    lock(kb_mutex);
+    while (getForeground()->id != getCurrentPid() || bufferEmpty == true ){
+        cvWait(cv, kb_mutex);
+    }
+    unlock(kb_mutex);
+
+	process *p = getForeground();
+	*buffer = getKey(aux, p);
+
+}*/
 char getKey(char write, process *p) {
 	char c;
 
@@ -122,5 +145,8 @@ static void addKeyBuffer(int key) {
 
 		if(kb.writeIndex == KB_SIZE)
 			kb.writeIndex = 0;
+
+		/*bufferEmpty = false;
+		cvBroadcast(cv);*/
 	}
 }

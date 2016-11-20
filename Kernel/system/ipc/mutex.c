@@ -44,8 +44,10 @@ void lock(mutex l) {
     }
     
     if(_lock(&l->lock) == 1) {
-    	queuePush(l->m_queue, p);
-        blockProcess(p->id);
+       if(queueExists(l->m_queue, p) == false) {
+	       queuePush(l->m_queue, p);
+            blockProcess(p->id);
+        }
         /*
         if(queueExists(l->m_queue, p) == false) {
             queuePush(l->m_queue, p);
@@ -73,9 +75,11 @@ void unlock(mutex l) {
     if(queueIsEmpty(l->m_queue) == false) {
         p = queuePop(l->m_queue);
         unBlockProcess(p->id);
-    } else {
-		_unlock(&l->lock);
+        return;
     }
+
+	_unlock(&l->lock);
+
     return;
 }
 
