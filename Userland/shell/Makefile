@@ -1,8 +1,9 @@
 include ../Makefile.inc
 
 MODULE=shellModule.bin
-#SOURCES=_loader.c shell.c commands.c fractals.c philosophers.c producerConsumer.c buffer.c
-SOURCES=_loader.c shell.c $(wildcard extra/*.c) $(wildcard tests/*.c)
+SOURCES=_loader.c shell.c extra/commands.c extra/fractal.c extra/philosophers.c extra/producerConsumer.c extra/buffer.c tests/cvtest.c tests/pipeTest.c
+#$(wildcard tests/*.c)
+#SOURCES=_loader.c shell.c $(wildcard extra/*.c) $(wildcard tests/*.c)
 OBJECTS=$(SOURCES:.c=.o)
 LIBC=-L../ -lc
 

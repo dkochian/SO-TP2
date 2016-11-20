@@ -4,14 +4,16 @@
 #include <integer.h>
 #include <mutex.h>
 #include <semaphore.h>
+#include <draw.h>
 #include "include/philosophers.h"
 
 #include "include/commands.h"
 #include "../include/common.h"
 
+//extern void putPixel(uint16_t x, uint16_t y, ColorRGB* color);
 
 static void control();
-
+/*
 ColorRGB baseColors[16] = {
 		{0,		0,		0},
 		{0,		0,		255},
@@ -30,7 +32,7 @@ ColorRGB baseColors[16] = {
 		{255,	255,	0},
 		{255,	255,	255}
 	};
-
+*/
 
 
 //	http://pseudomuto.com/development/2014/03/01/dining-philosophers-in-c/
@@ -43,13 +45,14 @@ typedef enum {
 **  Global Data **
 *****************/
 volatile static int speed;
+uint64_t childs[MAX_PHILOSOPHERS];
 
 volatile static int total;
 mutex_u_t forks[MAX_PHILOSOPHERS];
 
-mutex_u_t semLock;
-volatile int sem;
-//sem_u_t sem;
+												//mutex_u_t semLock;
+												//volatile int sem;
+sem_u_t sem;
 
 mutex_u_t editLock;
 volatile edit_t edit[MAX_PHILOSOPHERS];
@@ -57,13 +60,12 @@ volatile edit_t edit[MAX_PHILOSOPHERS];
 /***************
 **  Semaphore **
 ***************/
-static void grabSem(mutex_u_t lock_v, volatile int* value) {
+/*static void grabSem(mutex_u_t lock_v, volatile int* value) {
 	while(true) {
 		lock(lock_v);
 		if( (*value)>0 ) {
 			(*value)--;
 			unlock(lock_v);
-			printn("grabbed");
 			return;
 		} else {
 			unlock(lock_v);
@@ -81,7 +83,7 @@ static void releaseSem(mutex_u_t lock_v, volatile int* value) {
 	unlock(lock_v);
 	printn("dropped");
 }
-
+*/
 /**************
 **  Display  **
 **************/
@@ -90,39 +92,48 @@ static void releaseSem(mutex_u_t lock_v, volatile int* value) {
 #define RIGHT true
 
 
-void doA(int x, int y, int l, char color) {
+/*void doA(int x, int y, int l, char color) {
 	ColorRGB c = baseColors[(uint16_t)color];
 	for(int i=0; i<l; i++) {
 		for(int j=0; j<l; j++) {
+			print("<");
 			putPixel(x+i, y+j , &c);
+			print(">");
 		}
 	}
-}
+}*/
 #define SIZE (64)
 #define SPACER (16)
 #define TOPGAP (48)
 static void updateSquare(int pos, char color) {
+	//ColorRGB c = charToRGB(color);
 	int x = SPACER + (SIZE+SPACER)*(pos);
 	int y = TOPGAP;
 	int l = SIZE;
-	doA(x, y, l, color);
+	drawSquare(x,y,l,color);
+	//doA(x, y, l, color);
 }
 
 static void updateState(int pos, bool hand, char color) {
+	//ColorRGB c = charToRGB(color);
 	if(hand==LEFT) {
 		int x = SPACER+ (SIZE+SPACER)*(pos);
 		int y = TOPGAP;
 		int l = SIZE/2;
-		doA(x, y, l, color);
+		drawSquare(x,y,l,color);
+		//doA(x, y, l, color);
 		y += SIZE/2;
-		doA(x, y, l, color);
+		drawSquare(x,y,l,color);
+		//doA(x, y, l, color);
 	} else {
 		int x = SPACER+SIZE/2+ (SIZE+SPACER)*(pos);
 		int y = TOPGAP;
 		int l = SIZE/2;
-		doA(x, y, l, color);
+		drawSquare(x,y,l,color);
+		//doA(x, y, l, color);
 		y += SIZE/2;
-		doA(x, y, l, color);
+		drawSquare(x,y,l,color);
+		//doA(x, y, l, color);
 	}
 }
 
@@ -164,8 +175,8 @@ static int philosopher(int argc, char** argv) {
 		updateSquare(pos, MAGENTA);
 		sleep2();
 
-		//sem_wait(sem);
-		grabSem(semLock, &sem);
+		sem_wait(sem);
+												//grabSem(semLock, &sem);
 		
 		// CAN GRAB
 		updateSquare(pos, RED);
@@ -195,8 +206,8 @@ static int philosopher(int argc, char** argv) {
 		updateState(pos, LEFT, LIGHT_GREEN);
 		sleep2();
 
-		//sem_post(sem);
-		releaseSem(semLock, &sem);
+		sem_post(sem);
+												//releaseSem(semLock, &sem);
 		
 		// OUT EAT
 		updateSquare(pos, LIGHT_BLUE);
@@ -238,27 +249,28 @@ static int philosopher(int argc, char** argv) {
 **************/
 static int init() {
 	total = INIT_PHILOSOPHERS;
-	/*sem = sem_open(NULL, total-1);
+	sem = sem_open(NULL, total-1);
 	if(sem==NULL) {
 		return 1;
-	}*/
-												sem = total-1;
-												semLock = initLock();
+	}
+												//sem = total-1;
+												//semLock = initLock();
 	editLock = initLock();
 	if(editLock ==NULL) {
-		//sem_close(sem);
+		sem_close(sem);
 		return 1;
 	}
 	for(int i=0; i<MAX_PHILOSOPHERS; i++) {
 		forks[i] = initLock();
-		if(forks[i] == NULL) {
-			//sem_close(sem);
+		if(forks[i] == NULL) {	//ERROR
+			sem_close(sem);
 			destroyLock(editLock);
 			for(int j=0; j<i; j++)
 				destroyLock(forks[j]);
 			return 1;
 		}
 		edit[i] = NO_ACTION;
+		childs[i] = NULL;
 	}
 	return 0;
 }
@@ -273,7 +285,7 @@ static void launchPhilosopher(int pos, int left) {
 	itoa(left, arg2);
 	argv[0] = arg1;
 	argv[1] = arg2;
-	newProcess("Phi-Child", philosopher, argc, argv);
+	childs[pos] = newProcess("Phi-Child", philosopher, argc, argv);
 }
 
 static void action(int pos, edit_t value) {
@@ -300,11 +312,11 @@ static bool addPhilosopher() {
 	launchPhilosopher(total, total-1);
 	action(0, INC);
 
-	//sem_post(sem);
+	sem_post(sem);
 
-										grabSem(semLock, &sem);
-										sem++;
-										releaseSem(semLock, &sem);
+										//grabSem(semLock, &sem);
+										//sem++;
+										//releaseSem(semLock, &sem);
 	total++;
 	return true;
 }
@@ -313,10 +325,10 @@ static bool removePhilosopher() {
 	if(total<=MIN_PHILOSOPHERS)
 		return false;
 
-	//sem_wait(sem);
-										grabSem(semLock, &sem);
-										sem--;
-										releaseSem(semLock, &sem);
+	sem_wait(sem);
+										//grabSem(semLock, &sem);
+										//sem--;
+										//releaseSem(semLock, &sem);
 	action(0, DEC);
 	action(total-1, KILL);
 	total--;
@@ -324,10 +336,17 @@ static bool removePhilosopher() {
 }
 
 static void exitNicely() {
-	for(int i = total-1; i>=0; i--) {
-		action(i, KILL);
+	for(int i=0; i< MAX_PHILOSOPHERS; i++) {
+		if(childs[i]!=NULL) {
+			kill(childs[i]);
+		}
 	}
-	// liberar mutexes y sem
+	sem_close(sem);
+										//destroyLock(semLock);
+	destroyLock(editLock);
+	for(int i=0; i<MAX_PHILOSOPHERS; i++) {
+		destroyLock(forks[i]);
+	}
 }
 
 /***********
@@ -365,6 +384,7 @@ int philosophers(int argc, char **argv) {
 
 	printn("Exiting Philosophers...");
 	exitNicely();
+	clear();
 	return 0;
 }
 
