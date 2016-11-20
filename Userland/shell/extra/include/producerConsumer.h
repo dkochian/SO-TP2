@@ -3,6 +3,6 @@
 	
 	#include "../../../Common/common.h"
 
-	void producerConsumer();
+	int producerConsumer(int argc, char **argv);
 
 #endif

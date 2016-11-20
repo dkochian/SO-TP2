@@ -32,7 +32,7 @@ int helpCommand(int argc, char **argv) {
 	}
 
 	for(int index = 0; index < MAX_COMMANDS; index++) {
-		if(struc[index].created == true && strcmp(argv, struc[index].name) == 0) {
+		if(struc[index].created == true && strcmp(argv[0], struc[index].name) == 0) {
 			printn(struc[index].help);
 			return 0;
 		}

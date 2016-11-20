@@ -34,7 +34,7 @@ void mysleep(long int num) {
 	while(i-- > 0);
 }
 
-void producerConsumer() {
+int producerConsumer(int argc, char **argv) {
 
 	int i = 0;
 
@@ -45,6 +45,7 @@ void producerConsumer() {
 
 	if (itemMutex == NULL) {
 		printn("Failed to create itemMutex");
+		return 1;
 	}
 
 	//Counts full buffer slots
@@ -52,6 +53,7 @@ void producerConsumer() {
 
 	if (fullCount == NULL) {
 		printn("Failed to create fullCount");
+		return 1;
 	}
 
 	//Counts empty buffer slots
@@ -59,6 +61,7 @@ void producerConsumer() {
 
 	if (emptyCount == NULL){
 		printn("Failed to create emptyCount");
+		return 1;
 	}
 
 	//Semaphore initialization
@@ -83,6 +86,7 @@ void producerConsumer() {
 	sem_close(itemMutex);
 	sem_close(emptyCount);
 	sem_close(fullCount);
+	return 0;
 }
 
 //static int a = 10;
