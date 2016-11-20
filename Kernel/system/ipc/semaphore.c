@@ -70,9 +70,8 @@ void semPost(sem_t sem) {
 					printDec(p->id, -1);
 					printNewline();
 		unBlockProcess(p->id);
-	} else {
-		unlock(sem->s_mutex);
 	}
+	unlock(sem->s_mutex);
 	return;
 }
 

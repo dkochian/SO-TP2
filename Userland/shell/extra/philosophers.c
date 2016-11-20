@@ -3,13 +3,14 @@
 #include <string.h>
 #include <integer.h>
 #include <mutex.h>
+#include <semaphore.h>
 #include "include/philosophers.h"
 
 #include "include/commands.h"
 #include "../include/common.h"
 
 
-
+static void control();
 
 ColorRGB baseColors[16] = {
 		{0,		0,		0},
@@ -46,6 +47,7 @@ mutex_u_t forks[MAX_PHILOSOPHERS];
 
 mutex_u_t semLock;
 volatile int sem;
+//sem_u_t sem;
 
 mutex_u_t editLock;
 volatile edit_t edit[MAX_PHILOSOPHERS];
@@ -123,7 +125,7 @@ static void mysleep(long int num) {
 }
 
 static void sleep2() {
-	mysleep(2);
+	mysleep(10);
 }
 
 /******************
@@ -149,6 +151,7 @@ static int philosopher(int argc, char** argv) {
 		updateSquare(pos, MAGENTA);
 		sleep2();
 
+		//sem_wait(sem);
 		grabSem(&semLock, &sem);
 		
 		// CAN GRAB
@@ -179,6 +182,7 @@ static int philosopher(int argc, char** argv) {
 		updateState(pos, LEFT, LIGHT_GREEN);
 		sleep2();
 
+		//sem_post(sem);
 		releaseSem(&semLock, &sem);
 		
 		// OUT EAT
@@ -219,15 +223,31 @@ static int philosopher(int argc, char** argv) {
 /**************
 **  Control  **
 **************/
-static void init() {
+static int init() {
 	total = INIT_PHILOSOPHERS;
-	sem = total-1;
-	semLock = initLock();
+	/*sem = sem_open(NULL, total-1);
+	if(sem==NULL) {
+		return 1;
+	}*/
+												sem = total-1;
+												semLock = initLock();
 	editLock = initLock();
+	if(editLock ==NULL) {
+		//sem_close(sem);
+		return 1;
+	}
 	for(int i=0; i<MAX_PHILOSOPHERS; i++) {
 		forks[i] = initLock();
+		if(forks[i] == NULL) {
+			//sem_close(sem);
+			destroyLock(editLock);
+			for(int j=0; j<i; j++)
+				destroyLock(forks[j]);
+			return 1;
+		}
 		edit[i] = NO_ACTION;
 	}
+	return 0;
 }
 
 static void launchPhilosopher(int pos, int left) {
@@ -266,9 +286,12 @@ static bool addPhilosopher() {
 		return false;
 	launchPhilosopher(total, total-1);
 	action(0, INC);
-	grabSem(semLock, &sem);
-	sem++;
-	releaseSem(semLock, &sem);
+
+	//sem_post(sem);
+
+										grabSem(semLock, &sem);
+										sem++;
+										releaseSem(semLock, &sem);
 	total++;
 	return true;
 }
@@ -276,9 +299,11 @@ static bool addPhilosopher() {
 static bool removePhilosopher() {
 	if(total<=MIN_PHILOSOPHERS)
 		return false;
-	grabSem(semLock, &sem);
-	sem--;
-	releaseSem(semLock, &sem);
+
+	//sem_wait(sem);
+										grabSem(semLock, &sem);
+										sem--;
+										releaseSem(semLock, &sem);
 	action(0, DEC);
 	action(total-1, KILL);
 	total--;
@@ -289,6 +314,7 @@ static void exitNicely() {
 	for(int i = total-1; i>=0; i--) {
 		action(i, KILL);
 	}
+	// liberar mutexes y sem
 }
 
 /***********
@@ -297,17 +323,21 @@ static void exitNicely() {
 int philosophers(int argc, char **argv) {
 	clear();
 	printn("Loading Philosophers...");
-	init();
+	if( init()==1) {
+		printn("Error loading Philosophers");
+		return 1;
+	}
 	for(int i=0; i<total; i++) {
 		launchPhilosopher(i, (i+1)%total );
 	}
-												psCommand(0, (char **) "");
+												//psCommand(0, (char **) "");
 	
 
 	//while(true) {}
-
-
-	bool exitFlag = false;
+	control();
+	printn("Exiting Philosophers...");
+	exitNicely();
+	/*bool exitFlag = false;
 	char c;
 	while(!exitFlag) {
 		c = getchar(true);
@@ -336,6 +366,47 @@ int philosophers(int argc, char **argv) {
 			exitFlag = true;
 		}
 	}
-
+*/
 	return 0;
+}
+
+
+static void control() {
+	bool end = false;
+	int c;
+	while(!end) {
+		print("Input: ");
+		do {
+			c = getchar(true);
+		} while(c==0);
+		printNewline();
+		switch(c) {
+			case 'w':
+			case 'W':
+				if(addPhilosopher()) {
+					printn("Added philosopher.");
+				} else {
+					print("Can't add. Max is ");
+					printNum(MAX_PHILOSOPHERS);
+					printn(".");
+				}
+				break;
+			case 's':
+			case 'S':
+				if(removePhilosopher()) {
+					printn("Removed philosopher.");
+				} else {
+					print("Can't remove. Min is ");
+					printNum(MIN_PHILOSOPHERS);
+					printn(".");
+				}
+				break;
+			case 'q':
+			case 'Q':
+				end = true;
+				break;
+			default:
+				printn("Press: 'w' to add, 's' to remove, 'q' to quit.");
+		}
+	}
 }
