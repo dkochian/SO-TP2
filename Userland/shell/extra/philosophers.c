@@ -42,6 +42,8 @@ typedef enum {
 /*****************
 **  Global Data **
 *****************/
+volatile static int speed;
+
 volatile static int total;
 mutex_u_t forks[MAX_PHILOSOPHERS];
 
@@ -61,6 +63,7 @@ static void grabSem(mutex_u_t lock_v, volatile int* value) {
 		if( (*value)>0 ) {
 			(*value)--;
 			unlock(lock_v);
+			printn("grabbed");
 			return;
 		} else {
 			unlock(lock_v);
@@ -70,9 +73,13 @@ static void grabSem(mutex_u_t lock_v, volatile int* value) {
 }
 
 static void releaseSem(mutex_u_t lock_v, volatile int* value) {
+	print("AAA");
 	lock(lock_v);
+	print("BBB");
 	(*value)++;
+	print("CCC");
 	unlock(lock_v);
+	printn("dropped");
 }
 
 /**************
@@ -93,7 +100,7 @@ void doA(int x, int y, int l, char color) {
 }
 #define SIZE (64)
 #define SPACER (16)
-#define TOPGAP (128)
+#define TOPGAP (48)
 static void updateSquare(int pos, char color) {
 	int x = SPACER + (SIZE+SPACER)*(pos);
 	int y = TOPGAP;
@@ -125,7 +132,7 @@ static void mysleep(long int num) {
 }
 
 static void sleep2() {
-	mysleep(10);
+	mysleep(2);
 }
 
 /******************
@@ -133,15 +140,21 @@ static void sleep2() {
 ******************/
 static int philosopher(int argc, char** argv) {
 	int pos = strintPos(argv[0]);
-	int left = strintPos(argv[1]);
+	int right = strintPos(argv[1]);
 	free(argv[0]);
 	free(argv[1]);
 	free(argv);
 	//print("Generated Philosopher N°: ");
-	//printNum(pos);
-	//printNewline();
-	int right = pos;
+	int left = pos;
 	bool alive = true;
+	
+	/*printNum(pos);
+	print(":");
+	printNum(left);
+	print("-");
+	printNum(right);
+	printNewline();
+	*/
 	while(alive) {
 		// THINKING
 		updateSquare(pos, BLUE);
@@ -152,47 +165,47 @@ static int philosopher(int argc, char** argv) {
 		sleep2();
 
 		//sem_wait(sem);
-		grabSem(&semLock, &sem);
+		grabSem(semLock, &sem);
 		
 		// CAN GRAB
 		updateSquare(pos, RED);
 		sleep2();
 
-		lock(& (forks[right]) );
+		lock( (forks[right]) );
 
 		// GRABBED RIGHT
 		updateState(pos, RIGHT, GREEN);
 		sleep2();
 
-		lock(& (forks[left]) );
+		lock( (forks[left]) );
 		
 		// GRABBED LEFT - EATING
 		updateState(pos, LEFT, GREEN);
 		sleep2();
 
-		unlock(& (forks[right]) );
+		unlock( (forks[right]) );
 
 		// DROPPED RIGHT
 		updateState(pos, RIGHT, LIGHT_GREEN);
 		sleep2();
 
-		unlock(& (forks[left]) );
+		unlock( (forks[left]) );
 		
 		// DROPPED LEFT
 		updateState(pos, LEFT, LIGHT_GREEN);
 		sleep2();
 
 		//sem_post(sem);
-		releaseSem(&semLock, &sem);
+		releaseSem(semLock, &sem);
 		
 		// OUT EAT
 		updateSquare(pos, LIGHT_BLUE);
 		sleep2();
 
-		lock(&editLock);
+		lock(editLock);
 		
 		// CHECK MESSAGE
-		updateSquare(pos, WHITE);
+		//updateSquare(pos, WHITE);
 		sleep2();
 
 		switch( edit[pos] ) {
@@ -213,7 +226,7 @@ static int philosopher(int argc, char** argv) {
 				;
 		}
 		edit[pos] = NO_ACTION;
-		unlock(&editLock);
+		unlock(editLock);
 	}
 
 	updateSquare(pos, BLACK);
@@ -330,43 +343,28 @@ int philosophers(int argc, char **argv) {
 	for(int i=0; i<total; i++) {
 		launchPhilosopher(i, (i+1)%total );
 	}
-												//psCommand(0, (char **) "");
 	
+	//color  code
+	print("Colors:  ");
+	printColor("Thinking  ", BLUE);
+	printColor("Hungry  ", MAGENTA);
+	printColor("Enabled  ", RED);
+	printColor("Eating  ", GREEN);
+	printColor("Done Eating  ", LIGHT_GREEN);
+	printColor("Disabled  ", LIGHT_BLUE);
+	printNewline();
 
-	//while(true) {}
+	printNewline();
+	printNewline();
+	printNewline();
+	printNewline();
+	printNewline();
+	printNewline();
+
 	control();
+
 	printn("Exiting Philosophers...");
 	exitNicely();
-	/*bool exitFlag = false;
-	char c;
-	while(!exitFlag) {
-		c = getchar(true);
-		if(c=='w' || c=='W') {
-			
-			if(addPhilosopher()) {
-				print("yay");
-				// success
-			} else {
-				print("nay");
-				// cant add. max is MAX_PHILOSOPHERS
-			} 
-
-		} else if(c=='s' || c=='S') {
-
-			if(removePhilosopher()) {
-				print("yay");
-				// sucess
-			} else {
-				print("nay");
-				// can't remove. min is MIN_PHILOSOPHERS
-			}
-
-		} else {
-			exitNicely();
-			exitFlag = true;
-		}
-	}
-*/
 	return 0;
 }
 
@@ -401,12 +399,22 @@ static void control() {
 					printn(".");
 				}
 				break;
+			case 'a':
+			case 'A':
+				if(speed < MAX_SPEED)
+					speed++;
+				break;
+			case 'd':
+			case 'D':
+				if(speed > MIN_SPEED)
+					speed--;
+				break;
 			case 'q':
 			case 'Q':
 				end = true;
 				break;
 			default:
-				printn("Press: 'w' to add, 's' to remove, 'q' to quit.");
+				printn("Press: 'w' to add, 's' to remove, 'd' to speed up, 'a' to slow down, & 'q' to quit.");
 		}
 	}
 }
