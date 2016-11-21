@@ -24,8 +24,8 @@ int pipeTestCommand(int argc, char **argv) {
 	print("Creating the mutex...\n");
 	p_mutex = mutexInit();
 	if(p_mutex == NULL) {
-		print("Couldn't create the mutex.\n");
 		pipeDestroy(pipeId);
+		print("Couldn't create the mutex.\n");
 		return 1;
 	}
 
@@ -51,6 +51,9 @@ int pipeTestCommand(int argc, char **argv) {
 	wPid(pA);
 	wPid(pB);
 
+	pipeDestroy(pipeId);
+	mutexDestroy(p_mutex);
+
 	return 0;
 }
 
@@ -68,6 +71,7 @@ static int processA(int argc, char **argv) {
 }
 
 static int processB(int argc, char **argv) {
+	sleep(1);
 	write(STDPIPE, "h", NULL, pipeId);
 	sleep(2);
 	write(STDPIPE, "o", NULL, pipeId);

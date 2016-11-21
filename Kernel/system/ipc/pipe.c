@@ -5,6 +5,8 @@
 #include "../../include/common.h"
 #include "../../utils/include/lib.h"
 
+#include "../../drivers/include/video.h"
+
 typedef struct pipe {
 	char *buffer;
 	semaphore rSem;
@@ -96,6 +98,9 @@ char pipeRead(uint64_t id) {
 
 	char c;
 	semWait(p->rSem);
+	print("[read] buffer: ", -1);
+	print(p->buffer, -1);
+	printNewLine();
 	c = p->buffer[p->readIndex++];
 	semPost(p->wSem);
 
@@ -112,6 +117,9 @@ bool pipeWrite(uint64_t id, char c) {
 
 	semWait(p->wSem);
 	p->buffer[p->writeIndex++] = c;
+	print("[write] buffer: ", -1);
+	print(p->buffer, -1);
+	printNewLine();
 	semPost(p->rSem);
 
 	if(p->writeIndex < MAX_BUFFER - 1)
@@ -132,7 +140,7 @@ static bool getFreePipeId(pipe *p) {
 	uint64_t i;
 	bool found = false;
 	lock(p_mutex);
-	for(i=0; i<MAX_PIPES && found == false; i++) {
+	for(i=1; i<MAX_PIPES && found == false; i++) {
 		if(id_table[i] == NULL) {
 			p->id = i;
 			id_table[i] = p;

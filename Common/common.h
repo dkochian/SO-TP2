@@ -91,7 +91,7 @@
 	#define INVALID_PROCESS_ID	(-1)
 
 	//Pipes
-	#define INVALID_PIPE_ID		(-1)
+	#define INVALID_PIPE_ID		(0)
 
 	//Other
 	#define VGA_WIDTH		1024
