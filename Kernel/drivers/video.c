@@ -13,6 +13,7 @@ static void iPrintNewLine();
 static char isValidColor(char color);
 static ColorRGB getRGBColor(char color);
 static char isValidOffset(int row, int col);
+static void iPrint(const char *str, char color);
 static void printChar(char c, int row, int col, char color);
 static void printBase(uint64_t value, uint32_t base, char color);
 static void iPrintPixel(uint16_t x, uint64_t y, ColorRGB *color);
@@ -80,14 +81,7 @@ void print(const char* str, char color) {
 	if(must_lock == true)
 		lock(v_mutex);
 
-	for(int i = 0; str[i] != '\0' && isValidOffset(ROW(offset), COL(offset)); i++) {
-		if(str[i] == '\n')
-			iPrintNewLine();
-		else {
-			printChar(str[i], ROW(offset), COL(offset), color);
-			offset++;
-		}
-	}
+	iPrint(str, color);
 
 	if(must_lock == true)
 		unlock(v_mutex);
@@ -100,7 +94,7 @@ void printToast(const char* str, int size) {
 	int
 		bOffset = offset;
 	offset = (HEIGHT - 1)*WIDTH + WIDTH/3;
-	print(str, COLOR_NULL);
+	iPrint(str, COLOR_NULL);
 	offset = bOffset;
 
 	if(must_lock == true)
@@ -214,23 +208,6 @@ char getDefaultColor() {
 	return aux;
 }
 
-void drawSquare(uint16_t x, uint16_t y, uint16_t l, char colorCode) {
-	ColorRGB color = getRGBColor(colorCode);
-
-	uint64_t vesaBufferInt = *(uint32_t *)0x5080;
-	unsigned char* vesaBuffer = (unsigned char *)vesaBufferInt;
-	unsigned char* address;
-	
-	for(int i=0; i<l; i++) {
-		for(int j=0;j<l;j++) {
-			address = vesaBuffer + 3*(x+i + (y+j)*1024);
-			address[2] = color.r;
-			address[1] = color.g;
-			address[0] = color.b;
-		}
-	}
-}
-
 void printPixel(uint16_t x, uint16_t y, ColorRGB *color) {
 	if(must_lock == true)
 		lock(v_mutex);
@@ -239,6 +216,17 @@ void printPixel(uint16_t x, uint16_t y, ColorRGB *color) {
 
 	if(must_lock == true)
 		unlock(v_mutex);
+}
+
+static void iPrint(const char *str, char color) {
+	for(int i = 0; str[i] != '\0' && isValidOffset(ROW(offset), COL(offset)); i++) {
+		if(str[i] == '\n')
+			iPrintNewLine();
+		else {
+			printChar(str[i], ROW(offset), COL(offset), color);
+			offset++;
+		}
+	}
 }
 
 static void iPrintNewLine() {

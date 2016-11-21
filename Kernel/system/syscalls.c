@@ -81,9 +81,6 @@ void sysCallHandler(uint64_t arg1, uint64_t arg2, uint64_t arg3, uint64_t arg4, 
 		case WAITPID:
 			waitPid((uint64_t) arg2);
 			break;
-		case DRAWSQUARE:
-			drawSquare((uint16_t) arg2, (uint16_t) arg3, (uint16_t) arg4, (char) arg5);
-			break;
 		case SEMOPEN:
 			*((semaphore *) arg3) = semBuild((int) arg2);
 			break;
