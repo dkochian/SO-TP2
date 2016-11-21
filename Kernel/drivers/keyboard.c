@@ -1,7 +1,6 @@
 #include "include/video.h"
 #include "include/keyboard.h"
-#include "../system/ipc/include/mutex.h"
-#include "../system/ipc/include/condVar.h"
+#include "../system/ipc/include/semaphore.h"
 #include "../system/scheduler/include/scheduler.h"
 
 static void addKeyBuffer(int key);
@@ -39,8 +38,15 @@ static unsigned char kb_map[3][85] = {
 static char lineBuffer[KB_SIZE];
 static int lineIndex;
 static kbStatus	kb;
+static semaphore kb_sem;
+static int counter;
 
 bool keyboardInit() {
+	kb_sem = semBuild(0);
+
+	if(kb_sem == NULL)
+		return false;
+
 	for(int i = 0; i < KB_SIZE; ++i) {
 		kb.buffer[i] = EMPTY;
 		lineBuffer[i] = EMPTY;
@@ -51,6 +57,7 @@ bool keyboardInit() {
 	kb.capsOn = false;
 	kb.shiftOn = false;
 	lineIndex = 0;
+	counter = 0;
 
 	return true;
 }
@@ -62,6 +69,9 @@ void keyboardHandler(unsigned char key) {
 char getKey(char write) {
 	char c;
 
+	semWait(kb_sem);
+	counter--;
+
 	c = kb.buffer[kb.readIndex];
 
 	if(c == EMPTY)
@@ -72,7 +82,7 @@ char getKey(char write) {
 	if(kb.readIndex == KB_SIZE)
 		kb.readIndex = 0;
 
-	if(c != EMPTY && write == true)
+	if(write == true)
 		putChar(c, -1); //Print the char to the console
 
 	return c;
@@ -81,6 +91,8 @@ char getKey(char write) {
 static void addKeyBuffer(int key) {
 	unsigned char
 		keyboard = 0;
+	bool
+		signal = false;
 
 	if(key == CAPS)
 		kb.capsOn = !kb.capsOn;
@@ -102,6 +114,7 @@ static void addKeyBuffer(int key) {
 				if(lineBuffer[lineIndex - 1] != EMPTY) {
 					lineBuffer[--lineIndex] = EMPTY;
 					kb.buffer[kb.writeIndex++] = '\b';
+					signal = true;
 				}
 			}
 		}else if(value == '\n') {
@@ -110,12 +123,19 @@ static void addKeyBuffer(int key) {
 				lineBuffer[i] = EMPTY;
 
 			kb.buffer[kb.writeIndex++] = value;
+			signal = true;
 		}else if(value != DO_NOTHING && value != ESCAPE && lineIndex < KB_SIZE) {
 			lineBuffer[lineIndex++] = value;
 			kb.buffer[kb.writeIndex++] = value;
+			signal = true;
 		}
 
 		if(kb.writeIndex == KB_SIZE)
 			kb.writeIndex = 0;
+	}
+
+	if(signal == true && counter < KB_SIZE - 1) {
+		semPost(kb_sem);
+		counter++;
 	}
 }
