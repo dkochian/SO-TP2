@@ -1,6 +1,8 @@
 #ifndef _INC_SYSCALL_
 	#define _INC_SYSCALL_
 
+	//TODO: Remove all the system calls that we are not using. ex: blockMyself(), and all the kernel code related to it.
+
 	#include "../../../Common/common.h"
 
 	extern void _syscall(int, int, int, int, int, int);
@@ -31,14 +33,13 @@
 
 	void yield();
 	
-	mutex sysMutexInit();
-	void sysMutexLock(mutex m);
-	void sysMutexUnlock(mutex m);
-	void sysMutexDestroy(mutex m);
+	mutex mutexInit();
+	void mutexDestroy(mutex m);
+	void lock(mutex m);
+	void unlock(mutex m);
 	void sysMutexIsLocked(mutex m, bool *res);
 
 	void blockMyself();
-	//void drawSquare(uint16_t x, uint16_t y, uint16_t l, char color);
 
 	semaphore semBuild(int value);
 	void semDestroy(semaphore s);

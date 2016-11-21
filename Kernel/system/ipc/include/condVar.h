@@ -4,6 +4,7 @@
 	#include "mutex.h"
 	#include "../../../../Common/common.h"
 
+	//TODO: Why use a struct for a single member?
 	struct cond_t {
 		list cv_list;
 	};
@@ -15,7 +16,5 @@
 	uint64_t cvSignal(cond_t cv);
 	void cvBroadcast(cond_t cv);
 	void cvDestroy(cond_t cv);
-
-
 
 #endif

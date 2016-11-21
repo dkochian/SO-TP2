@@ -11,5 +11,4 @@
 	void cvBroadcast(cond_u_t cv);
 	void cvDestroy(cond_u_t cv);
 
-
 #endif

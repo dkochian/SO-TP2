@@ -36,7 +36,7 @@ void sysCallHandler(uint64_t arg1, uint64_t arg2, uint64_t arg3, uint64_t arg4, 
 			sleep((int) arg2);
 			break;
 		case DRAWPIXEL:
-			printPixel((int) arg2, (int) arg4, (ColorRGB*) arg3);
+			printPixel((int) arg2, (int) arg3, (ColorRGB*) arg4);
 			break;
 		case MALLOC:
 			*((uintptr_t *) arg3) = (uint64_t) k_malloc((size_t) arg2);
@@ -147,11 +147,8 @@ static void write(int out, char* str, int size) {
 }
 
 void read(int in, char* buffer, char aux) {
-	if(in == STDIN) {
-		//readFull(buffer,aux);
-		process *p = getForeground();
-		*buffer = getKey(aux, p);
-	}
+	if(in == STDIN)
+		*buffer = getKey(aux);
 	else if(in == COLOR)
 		*buffer = getDefaultColor();
 }

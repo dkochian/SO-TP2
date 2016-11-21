@@ -39,24 +39,8 @@ static unsigned char kb_map[3][85] = {
 static char lineBuffer[KB_SIZE];
 static int lineIndex;
 static kbStatus	kb;
-/*static mutex kb_mutex;
-static cond_t cv;
-static bool bufferEmpty = true;*/
 
 bool keyboardInit() {
-	/*kb_mutex = lockBuild();
-
-	if(kb_mutex == NULL)
-		return false;
-
-	cv = cvInitialize();
-
-	if(cv == NULL){
-		lockDestroy(kb_mutex);
-		print("siiiiiii",-1);
-		return false;
-	}*/
-
 	for(int i = 0; i < KB_SIZE; ++i) {
 		kb.buffer[i] = EMPTY;
 		lineBuffer[i] = EMPTY;
@@ -73,27 +57,15 @@ bool keyboardInit() {
 
 void keyboardHandler(unsigned char key) {
 	addKeyBuffer(key);
-	//signal(&sem)
 }
-/*void readFull(char * buffer, char aux){
 
-
-    lock(kb_mutex);
-    while (getForeground()->id != getCurrentPid() || bufferEmpty == true ){
-        cvWait(cv, kb_mutex);
-    }
-    unlock(kb_mutex);
-
-	process *p = getForeground();
-	*buffer = getKey(aux, p);
-
-}*/
-char getKey(char write, process *p) {
+char getKey(char write) {
 	char c;
 
-	//wait(sem)
-
 	c = kb.buffer[kb.readIndex];
+
+	if(c == EMPTY)
+		return EMPTY;
 	
 	kb.buffer[kb.readIndex++] = EMPTY; //Remove the readed char from the buffer
 
@@ -145,8 +117,5 @@ static void addKeyBuffer(int key) {
 
 		if(kb.writeIndex == KB_SIZE)
 			kb.writeIndex = 0;
-
-		/*bufferEmpty = false;
-		cvBroadcast(cv);*/
 	}
 }

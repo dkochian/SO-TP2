@@ -3,6 +3,8 @@
 #include "../include/common.h"
 #include "../system/ipc/include/mutex.h"
 
+//TODO: Delete of characters if fucked up, should be fixed
+
 #define ROW(cursor_offset) ((cursor_offset)/WIDTH)
 #define COL(cursor_offset) ((cursor_offset)%WIDTH)
 
@@ -126,7 +128,7 @@ void putChar(char c, char color) {
 		offset--;
 		printChar(' ', ROW(offset), COL(offset), color);
 	} else if(c == '\n') {
-		printNewLine();
+		iPrintNewLine();
 		if(ROW(offset) == HEIGHT)
 			reDrawMatrix();
 	}

@@ -14,6 +14,7 @@
 	bool queueIsEmpty(queue q);
 	bool queueExists(queue q, element_t item);
 
+	//TODO: remove next, it's just for testing and should never be used
 	void queuePrint(queue q);
 	
 #endif

@@ -10,6 +10,6 @@
 
 	char *cpuVendor(char *result);
 
-	void _accelPIT(void);
+	void _accelPIT(void);//TODO: Whouldn't it be extern?
 
 #endif

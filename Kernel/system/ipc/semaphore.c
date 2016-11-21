@@ -44,16 +44,13 @@ void semDestroy(semaphore s) {
 }
 
 void semWait(semaphore s) {
-	print("Sem wait", -1);
-	printNewLine();
-	process *p = getCurrentProcess();
-
 	lock(s->s_mutex);
 	if(s->value > 0 && queueIsEmpty(s->s_queue) == true) {
 		s->value--;
 		unlock(s->s_mutex);
 		return;
 	}
+	process *p = getCurrentProcess();
 	queuePush(s->s_queue, p);
 	blockProcess(p);
 	unlock(s->s_mutex);
@@ -66,8 +63,6 @@ void semWait(semaphore s) {
 }
 
 void semPost(semaphore s) {
-	print("Sem post", -1);
-	printNewLine();
 	lock(s->s_mutex);
 	s->value++;
 	unlock(s->s_mutex);

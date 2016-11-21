@@ -1,18 +1,17 @@
 #ifndef DRAW_H
-#define DRAW_H
+	#define DRAW_H
 
-#include "syscall.h"
-#include "../../../Common/common.h"
+	#include "syscall.h"
+	#include "../../../Common/common.h"
 
-#define MAXY 700
+	#define MAXY 700
 
-ColorRGB charToRGB(char in);
+	ColorRGB charToRGB(char in);
 
-ColorRGB * colorRGB(uint8_t r, uint8_t g, uint8_t b);
+	ColorRGB * colorRGB(uint8_t r, uint8_t g, uint8_t b);
 
-void drawSquare(int x, int y, int l,  uint32_t c);
+	void drawSquare(int x, int y, int l,  uint32_t c);
 
-void drawRectangleBottonToTop(int x, int y, int width, int height, ColorRGB color);
-
+	void drawRectangleBottonToTop(int x, int y, int width, int height, ColorRGB color);
 
 #endif

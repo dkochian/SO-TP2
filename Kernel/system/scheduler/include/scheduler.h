@@ -1,5 +1,4 @@
 #ifndef _INC_SCHEDULER_
-
 	#define _INC_SCHEDULER_
 
 	#include "process.h"

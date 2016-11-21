@@ -4,7 +4,7 @@
 #include <string.h>
 #include <syscall.h>
 
-#include "../include/cvtest.h"
+#include "../tests/include/cvtest.h"
 #include "include/fractal.h"
 #include "include/commands.h"
 #include "../include/common.h"
@@ -420,46 +420,47 @@ int mutextest(int argc, char **argv) {
 		return 1;
 	}
 
-	void *m;
-	bool lock;
+	mutex m;
+	bool l;
 
-	m = sysMutexInit();
+	m = mutexInit();
 	if(m == NULL) {
 		printn("Couldn't create the mutex");
 		return 1;
 	}
 	printn("Muted Created");
 
-	sysMutexLock(m);
-	sysMutexIsLocked(m, &lock);
-	if(lock == false) {
+	lock(m);
+	sysMutexIsLocked(m, &l);
+	if(l == false) {
 		printn("Lock failed");
-		sysMutexDestroy(m);
+		mutexDestroy(m);
 		return 1;
 	}
 	printn("Locked successfully");
 
-	sysMutexUnlock(m);
-	sysMutexIsLocked(m, &lock);
-	if(lock == true) {
+	unlock(m);
+	sysMutexIsLocked(m, &l);
+	if(l == true) {
 		printn("Unlock failed");
-		sysMutexDestroy(m);
+		mutexDestroy(m);
 		return 1;
 	}
 	printn("Unlocked successfully");
 
-	sysMutexDestroy(m);
+	mutexDestroy(m);
 	printn("Mutex destroyed");
 
 	return 0;
 }
+
 int cvTestCommand(int argc, char **argv) {
 	if(argc != 0) {
 		helpCommand(1, (char **) "testCV");
 		return 1;
 	}
 
-	cvTestDep(0,NULL);
+	//cvTestDep(0,NULL);
 	return 0;
 }
 

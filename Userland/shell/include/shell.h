@@ -15,12 +15,6 @@
 		int (*func)(int argc, char **argv);
 	} commandExec;
 
-	typedef struct {
-		int argc;
-		char* name;
-		char **argv;
-	} commandData;
-
 	int main(int argc, char **argv);
 	commandExec* getAllCommands();
 	

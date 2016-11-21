@@ -17,7 +17,7 @@
 	int disclaimerCommand(int argc, char **argv);
 	int resetCommand(int argc, char **argv);
 	int colorBgCommand(int argc, char **argv);
-	int mutextest(int argc, char **argv);
+	int mutextest(int argc, char **argv);//TODO: REMOVE THIS, THERE'S A TEST FOR IT ON THE KERNEL, NO NEED FOR A TEST ON USERLAND AS A COMMAND!
 	int ipcCommand(int argc, char **argv);
 	int cvTestCommand(int argc, char **argv);
 

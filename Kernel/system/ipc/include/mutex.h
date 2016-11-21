@@ -12,6 +12,6 @@
     void lockDestroy(mutex l);
     void lock(mutex l);
     void unlock(mutex l);
-    bool isLocked(mutex l);
+    bool isLocked(mutex l);//TODO: If it's only used by the test command (userland), then remove it (and the command), no need for a test command
 
 #endif

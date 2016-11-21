@@ -6,9 +6,15 @@
 #include "include/common.h"
 #include "extra/include/commands.h"
 
-
+//TODO: Shouldn't this includes be removed?
 #include "extra/include/philosophers.h"
 #include "extra/include/producerConsumer.h"
+
+typedef struct {
+	int argc;
+	char* name;
+	char **argv;
+} commandData;
 
 static int insertToBuffer(char c);
 static void resetBuffer();
@@ -61,7 +67,7 @@ int main(int argc, char ** argv) {
 	while(true) {
 		c = getchar(true);
 
-		if(insertToBuffer(c) == 1) {
+		if(insertToBuffer(c) == 1) {//if(insertToBuffer(c) == 1) {
 			int
 				result = parseBuffer(&cmd);//if result==0 empty line, result==1 try to execute command, result == -1 command's name is too long
 			resetBuffer();
@@ -108,6 +114,7 @@ static int insertToBuffer(char c) {
 		return -1;
 
 	buffer[bIndex++] = c;
+
 	if(c == '\n')
 		return 1;
 

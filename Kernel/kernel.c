@@ -10,7 +10,7 @@
 #include "system/scheduler/include/process.h"
 #include "system/scheduler/include/scheduler.h"
 
-//Tests (AKA should be removed)
+//Tests
 #include "tests/include/video_test.h"
 #include "tests/include/mutex_test.h"
 #include "tests/include/waitpid_test.h"

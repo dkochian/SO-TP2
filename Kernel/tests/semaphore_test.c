@@ -67,8 +67,9 @@ static int processA(int argc, char **argv) {
 	print("Semaphore process A OK\n", -1);
 	sleep(5);
 	semPost(s);
+	sleep(3);
 	semPost(s);
-	sleep(5);
+	sleep(10);
 	semPost(s);
 	
 	return 0;

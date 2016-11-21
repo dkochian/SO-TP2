@@ -3,7 +3,6 @@
 #include <stdio.h>
 #include <string.h>
 #include <integer.h>
-#include "../../libc/include/mutex.h"
 #include "../include/cvtest.h"
 #include "../../libc/include/syscall.h"
 #include "../../libc/include/condVarU.h"
@@ -16,7 +15,7 @@ int NUMTHREADS = 2;
    main thread via cond */
 
 int done = 0;
-mutex_u_t m;
+mutex m;
 cond_u_t cond;
 
 /* Note: error checking on pthread_X calls ommitted for clarity - you
@@ -26,7 +25,7 @@ cond_u_t cond;
  * but the code assumes pointers and long ints are the same size
  * (probably 64bits), which is a little hacky. */
 
-void processEntry(char * id) {
+/*void processEntry(char * id) {
     //int myid = (long)id; // force the pointer to be a 64bit integer
   
     int workloops = 5;
@@ -61,7 +60,7 @@ void processEntry(char * id) {
 int cvTestDep(int argc, char ** argv){
     printColor( "Condition Variable Test Starting" , YELLOW);
     printNewLine();
-    m = sysMutexInit();
+    m = mutexInit();
     if(m == NULL) {
         printn("Couldn't create the mutex");
         printColor( "Test failed" , RED);
@@ -75,7 +74,7 @@ int cvTestDep(int argc, char ** argv){
         printn("Couldn't create the condition variable");
         printColor( "Test failed" , RED);
         printNewLine();
-        destroyLock(m);
+        mutexDestroy(m);
         return 0;
     }
 
@@ -90,7 +89,8 @@ int cvTestDep(int argc, char ** argv){
         strcat(name, "[Thread] ");
         itoa(t,buff);
         strcat(name, buff);
-        /*threads[t] = */newProcess(name, processEntry, 1, buff);
+        //threads[t] = newProcess(name, processEntry, 1, buff);
+        newProcess(name, processEntry, 1, buff);
         free(name);
     }
 
@@ -105,14 +105,12 @@ int cvTestDep(int argc, char ** argv){
         printNum(NUMTHREADS);
         printn(" so waiting on condition");
 
-        /* block this thread until another thread signals cond. While
-        blocked, the mutex is released, then re-aquired before this
-        thread is woken up and the call returns. */ 
+        //block this thread until another thread signals cond. While blocked, the mutex is released, then re-aquired before this thread is woken up and the call returns.
         cvWait(cond, m); 
 
         printn( "[thread main] wake - cond was signalled." ); 
 
-        /* we go around the loop with the lock held */
+        //we go around the loop with the lock held
     }
 
     print( "[thread main] done == ");
@@ -121,8 +119,8 @@ int cvTestDep(int argc, char ** argv){
 
     unlock(m);
 
-    destroyLock(m);
+    mutexDestroy(m);
     cvDestroy(cond);
 
     return 1;
-}
+}*/

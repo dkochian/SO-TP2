@@ -41,7 +41,7 @@ void sleep(int seconds){
 }
 
 void putPixel(uint16_t x, uint16_t y, ColorRGB* color) {
-	_syscall(DRAWPIXEL, x, (uintptr_t) color, y, NULL, NULL);
+	_syscall(DRAWPIXEL, x, y, (uintptr_t) color, NULL, NULL);
 }
 
 void* malloc(size_t size) {
@@ -81,22 +81,22 @@ void yield() {
 	_syscall(YIELD, NULL, NULL, NULL, NULL, NULL);
 }
 
-mutex sysMutexInit() {
+mutex mutexInit() {
 	mutex res = NULL;
 	_syscall(MINIT, (uintptr_t) &res, NULL, NULL, NULL, NULL);
 	return res;
 }
 
-void sysMutexLock(mutex m) {
+void mutexDestroy(mutex m) {
+	_syscall(MDESTROY, (uintptr_t) m, NULL, NULL, NULL, NULL);
+}
+
+void lock(mutex m) {
 	_syscall(MLOCK, (uintptr_t) m, NULL, NULL, NULL, NULL);
 }
 
-void sysMutexUnlock(mutex m) {
+void unlock(mutex m) {
 	_syscall(MUNLOCK, (uintptr_t) m, NULL, NULL, NULL, NULL);
-}
-
-void sysMutexDestroy(mutex m) {
-	_syscall(MDESTROY, (uintptr_t) m, NULL, NULL, NULL, NULL);
 }
 
 void sysMutexIsLocked(mutex m, bool *res) {
