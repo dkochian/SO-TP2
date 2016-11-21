@@ -163,36 +163,6 @@ element_t listPeekFirst(list l) {
 	return item;
 }
 
-bool listSetNext(list l, element_t item) {
-	node *current;
-	node *prev;
-	lock(l->m);
-	current = l->head;
-	prev = NULL;
-
-	while(current != NULL) {
-		if(l->cmp(current->item, item) == true) {
-			if(prev != NULL)
-				prev->next = current->next;
-
-			break;
-		}
-
-		prev = current;
-		current = current->next;
-	}
-
-	if(current == NULL) {
-		unlock(l->m);
-		return false;
-	}
-
-	current->next = l->head->next;
-	l->head->next = current;
-	unlock(l->m);
-	return true;
-}
-
 element_t listGet(list l) {
 	lock(l->m);
 	if(l->cursor == NULL)

@@ -80,8 +80,6 @@ void unBlockProcess(process * p) {
 		return;
 
 	p->state = WAITING;
-
-	//listSetNext(waiting_list, p);
 }
 
 void setForeground(uint64_t pid) {
@@ -126,29 +124,10 @@ uint64_t contextSwitch(uint64_t stack) {
 	if(current_process->state != BLOCKED)
 		current_process->state = WAITING;
 
-	//process *aux = current_process;
-
 	current_process = schedule();
 
 	if(current_process == NULL)
 		return 0;
-
-	/*if(current_process->id != aux->id) {
-		print("[old] ", -1);
-		print(aux->name, -1);
-		print("(id: ", -1);
-		printDec(aux->id, -1);
-		print(") status: ", -1);
-		printDec(aux->state, -1);
-		printNewLine();
-		print("[new] ", -1);
-		print(current_process->name, -1);
-		print("(id: ", -1);
-		printDec(current_process->id, -1);
-		print(") status: ", -1);
-		printDec(current_process->state, -1);
-		printNewLine();
-	}*/
 
 	current_process->state = RUNNING;
 

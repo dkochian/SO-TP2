@@ -69,6 +69,9 @@ void keyboardHandler(unsigned char key) {
 char getKey(bool write) {
 	char c;
 
+	if (getForeground() != getCurrentProcess())
+		return EMPTY;
+
 	semWait(kb_sem);
 	counter--;
 
