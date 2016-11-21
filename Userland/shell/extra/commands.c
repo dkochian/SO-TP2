@@ -7,6 +7,7 @@
 #include "include/fractal.h"
 #include "include/commands.h"
 #include "../include/common.h"
+#include "../tests/include/cond_var_test.h"
 
 static void *const sampleDataModuleAddress = (void *) 0x500000;
 static int readNumber();
@@ -459,7 +460,7 @@ int cvTestCommand(int argc, char **argv) {
 		return 1;
 	}
 
-	//cvTestDep();
+	//startVariableConditionTest(0,NULL);
 	return 0;
 }
 
