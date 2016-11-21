@@ -8,12 +8,9 @@
 #include "../../drivers/include/video.h"
 
 typedef struct pipe {
-	char *buffer;
-	semaphore rSem;
-	semaphore wSem;
-	int readIndex;
-	int writeIndex;
+	semaphore sem;
 	int id;
+	char *buffer;
 } pipe;
 
 static void freePipeId(uint64_t id);
@@ -48,33 +45,21 @@ uint64_t pipeBuild() {
 		return INVALID_PIPE_ID;
 	}
 
-	p->rSem = semBuild(0);
-	if(p->rSem == NULL) {
+	p->sem = semBuild(0);
+	if(p->sem == NULL) {
 		k_free(p->buffer);
-		k_free(p);
-		return INVALID_PIPE_ID;
-	}
-
-	p->wSem = semBuild(MAX_BUFFER);
-	if(p->wSem == NULL) {
-		k_free(p->buffer);
-		semDestroy(p->rSem);
 		k_free(p);
 		return INVALID_PIPE_ID;
 	}
 
 	if(getFreePipeId(p) == false) {
 		k_free(p->buffer);
-		semDestroy(p->rSem);
-		semDestroy(p->wSem);
+		semDestroy(p->sem);
 		k_free(p);
 		return INVALID_PIPE_ID;
 	}
 
-	p->readIndex = 0;
-	p->writeIndex = 0;
-
-	memset(p->buffer, EMPTY, MAX_BUFFER);
+	memset(p->buffer, '\0', MAX_BUFFER);
 
 	return p->id;
 }
@@ -86,46 +71,34 @@ void pipeDestroy(uint64_t id) {
 
 	freePipeId(p->id);
 	k_free(p->buffer);
-	semDestroy(p->rSem);
-	semDestroy(p->wSem);
+	semDestroy(p->sem);
 	k_free(p);
 }
 
-char pipeRead(uint64_t id) {
+void pipeRead(uint64_t id, char *str) {
+	int index = 0;
 	pipe *p = getPipeFromId(id);
 	if(p == NULL)
-		return EMPTY;
+		return;
 
-	char c;
-	semWait(p->rSem);
-	c = p->buffer[p->readIndex++];
-	semPost(p->wSem);
-
-	if(p->readIndex == MAX_BUFFER - 1)
-		p->readIndex = 0;
-
-	print("[read] c: ", -1);
-	putChar(c, -1);
-	printNewLine();
-
-	return c;
+	semWait(p->sem);
+	while(p->buffer[index] != '\0' && index < MAX_BUFFER) {
+		str[index] = p->buffer[index];
+		index++;
+	}
 }
 
-bool pipeWrite(uint64_t id, char c) {
+bool pipeWrite(uint64_t id, const char *str) {
+	int index = 0;
 	pipe *p = getPipeFromId(id);
 	if(p == NULL)
 		return false;
 
-	semWait(p->wSem);
-	p->buffer[p->writeIndex++] = c;
-	semPost(p->rSem);
-
-	if(p->writeIndex < MAX_BUFFER - 1)
-		p->writeIndex = 0;
-
-	print("[write] buffer: ", -1);
-	print(p->buffer, -1);
-	printNewLine();
+	while(str[index] != '\0' && index < MAX_BUFFER) {
+		p->buffer[index] = str[index];
+		index++;
+	}
+	semPost(p->sem);
 
 	return true;
 }
@@ -149,7 +122,6 @@ static bool getFreePipeId(pipe *p) {
 			found = true;
 		}
 	}
-
 	unlock(p_mutex);
 	return found;
 }

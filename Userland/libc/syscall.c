@@ -4,11 +4,11 @@ void syscall(int id, int type, uintptr_t* addr, char size, uint64_t aux1, uint64
 	_syscall(id, type, (uintptr_t) addr, size, aux1, aux2);
 }
 
-void write(int type, char* str, int size, uint64_t aux) {
+void write(int type, const char *str, int size, uint64_t aux) {
 	_syscall(SYSWRITE, type, (uintptr_t) str, size, aux, NULL);
 }
 
-void read(int type, char* str, uint64_t aux) {
+void read(int type, char *str, uint64_t aux) {
 	_syscall(SYSREAD, type, (uintptr_t) str, aux, NULL, NULL);
 }
 
