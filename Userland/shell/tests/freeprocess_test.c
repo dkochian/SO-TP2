@@ -1,43 +1,40 @@
-#include "../drivers/include/video.h"
-#include "../system/scheduler/include/process.h"
-#include "../system/scheduler/include/scheduler.h"
-
-#include "../utils/include/clock.h"
+#include <stdio.h>
+#include <syscall.h>
 
 static int processA(int argc, char **argv);
 
-int startFreeProcessTest(int argc, char **argv) {
+int freeProcessTestCommand(int argc, char **argv) {
 	uint64_t pA;
 
-	print("Creating \"FreeProcess process A\"\n", -1);
-	pA = newProcess("FreeProcess process A", processA, 0, NULL);
+	print("Creating \"kill process A\"\n");
+	pA = newProcess("kill process A", processA, 0, NULL);
 	if(pA == INVALID_PROCESS_ID) {
-		print("Couldn't create \"FreeProcess process A\"\n", -1);
+		print("Couldn't create \"kill process A\"\n");
 		return 1;
 	}
 
-	print("I'll wait for \"FreeProcess process A\" (id: ", -1);
-	printNum(pA, -1);
-	print(")\n", -1);
+	print("I'll wait for \"kill process A\" (id: ");
+	printNum(pA);
+	print(")\n");
 	wPid(pA);
-	print("Hey I can run again!\n", -1);
+	print("Hey I can run again!\n");
 
-	print("Creating \"FreeProcess process A\" again\n", -1);
-	pA = newProcess("FreeProcess process A", processA, 0, NULL);
+	print("Creating \"kill process A\" again\n");
+	pA = newProcess("kill process A", processA, 0, NULL);
 	if(pA == INVALID_PROCESS_ID) {
-		print("Couldn't create \"FreeProcess process A\"\n", -1);
+		print("Couldn't create \"kill process A\"\n");
 		return 1;
 	}
 
-	print("I'll again wait for \"FreeProcess process A\" (id: ", -1);
-	printNum(pA, -1);
-	print(")\n", -1);
+	print("I'll again wait for \"kill process A\" (id: ");
+	printNum(pA);
+	print(")\n");
 
 	return 0;
 }
 
 static int processA(int argc, char **argv) {
-	print("FreeProcess process A running\n", -1);
+	print("kill process A running\n");
 	sleep(3);
 
 	return 0;

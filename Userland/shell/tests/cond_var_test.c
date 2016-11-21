@@ -1,10 +1,10 @@
 //https://gist.github.com/rtv/4989304
 
-#include <strdio.h>
+//#include <strdio.h>
 #include <string.h>
-#include "include/cond_var_test.h"
+/*#include "include/cond_var_test.h"
 #include "../../libc/include/syscall"
-#include "../../libc/include/condVarU"
+#include "../../libc/include/condVarU"*/
 
 /*
 static int done = 0;
@@ -44,7 +44,7 @@ static int processEntry(int argc, char **argv) {
 
 int startVariableConditionTest(int argc, char **argv){
     printColor( "Condition Variable Test Starting\n" , YELLOW);
-    m = lockBuild();
+    m = mutexInit();
     if(m == NULL) {
         printn("Couldn't create the mutex");
         printColor( "Test failed\n" , RED);
@@ -56,7 +56,7 @@ int startVariableConditionTest(int argc, char **argv){
     if(cond == NULL) {
         printn("Couldn't create the condition variable");
         printColor( "Test failed\n" , RED);
-        lockDestroy(m);
+        mutexDestroy(m);
         return 1;
     }
     char name[MAXTESTP][11];
@@ -94,7 +94,7 @@ int startVariableConditionTest(int argc, char **argv){
 
     unlock(m);
 
-    lockDestroy(m);
+    mutexDestroy(m);
     cvDestroy(cond);
     done = 0;
     //k_free(buff);

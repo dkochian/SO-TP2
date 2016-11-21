@@ -1,6 +1,6 @@
-#ifndef _INC_FREEPROCESS_TEST_
-	#define _INC_FREEPROCESS_TEST_
+#ifndef _INC_kill_TEST_
+	#define _INC_kill_TEST_
 
-	int startFreeProcessTest(int argc, char **argv);
+	int freeProcessTestCommand(int argc, char **argv);
 	
 #endif

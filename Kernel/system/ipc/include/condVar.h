@@ -5,7 +5,7 @@
 	#include "../../../utils/include/list.h"
 	#include "../../../../Common/common.h"
 
-	typedef struct cond_t *list;
+	typedef struct list *cond_t;
 
 	cond_t cvInitialize();
 	void cvWait(cond_t cv, mutex cv_mutex);
