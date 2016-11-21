@@ -21,8 +21,6 @@
 	bool listExists(list l, element_t item);
 	list listBuild(bool (*f) (element_t , element_t));
 	int listGetSize(list l);
-
-	//TODO: remove next, it's just for testing and should never be used
 	void listPrint(list l);
 	void listPrintSize(list l);
 #endif

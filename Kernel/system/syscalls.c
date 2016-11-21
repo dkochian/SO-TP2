@@ -49,7 +49,7 @@ void sysCallHandler(uint64_t arg1, uint64_t arg2, uint64_t arg3, uint64_t arg4, 
 			*((uint64_t *) arg6) = newProcess((char *) arg2, (func) arg3, (int) arg4, (char **) arg5);
 		}break;
 		case KILLPROCESS:
-			removeProcess(getProcessFromId((uint64_t)arg2));
+			freeProcess(arg2);
 			break;
 		case PS:
 			*((uintptr_t *) arg2) = (uint64_t) processesStatus();

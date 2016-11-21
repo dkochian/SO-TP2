@@ -21,5 +21,7 @@ void * k_malloc(size_t size) {
 }
 
 void k_free(void * page) {
+	process * p = getCurrentProcess();
+	p->mallocsUsed--;
 	memory_stack[++current] = page;
 }

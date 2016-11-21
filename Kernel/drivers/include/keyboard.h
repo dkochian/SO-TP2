@@ -12,13 +12,16 @@
 	#define SHIFTR	 		54
 	#define SHIFTL_RL 		170
 	#define SHIFTR_RL 		182
+	#define CTRLL 			29
+	#define CTRLL_RL		157
 	
 	
 
 	typedef struct {
 		uint8_t
 			shiftOn,
-			capsOn;
+			capsOn,
+			controlOn;
 		int
 			writeIndex,
 			readIndex;

@@ -2,6 +2,7 @@
 #include "include/keyboard.h"
 #include "../system/ipc/include/semaphore.h"
 #include "../system/scheduler/include/scheduler.h"
+#include "../system/include/signals.h"
 
 static void addKeyBuffer(int key);
 
@@ -9,7 +10,7 @@ static unsigned char kb_map[3][85] = {
 	{
 		DO_NOTHING, ESCAPE, '1', '2', '3', '4', '5', '6', '7', '8', '9', '0', '-', '=', '\b',
 		DO_NOTHING, 'q', 'w', 'e', 'r', 't', 'y', 'u', 'i', 'o', 'p', '[', ']', '\n',
-		DO_NOTHING, 'a', 's', 'd', 'f', 'g', 'h', 'j', 'k', 'l', ';', '\'', '`', SHIFTL,
+		CTRLL, 'a', 's', 'd', 'f', 'g', 'h', 'j', 'k', 'l', ';', '\'', '`', SHIFTL,
 		'\\', 'z', 'x', 'c', 'v', 'b', 'n', 'm', ',', '.', '/', SHIFTR, DO_NOTHING,
 		DO_NOTHING, ' ', CAPS, DO_NOTHING, DO_NOTHING, DO_NOTHING, DO_NOTHING, DO_NOTHING, DO_NOTHING,
 		DO_NOTHING, DO_NOTHING, DO_NOTHING, DO_NOTHING, DO_NOTHING, DO_NOTHING, '7', '8', '9',
@@ -18,7 +19,7 @@ static unsigned char kb_map[3][85] = {
 	{
 		DO_NOTHING, ESCAPE, '!', '@', '#', '$', '%', '^', '&', '*', '(', ')', '_', '+', '\b',
 		DO_NOTHING, 'Q', 'W', 'E', 'R', 'T', 'Y', 'U', 'I', 'O', 'P', '{', '}', '\n',
-		DO_NOTHING, 'A', 'S', 'D', 'F', 'G', 'H', 'J', 'K', 'L', ':', '"', '~', SHIFTL,
+		CTRLL, 'A', 'S', 'D', 'F', 'G', 'H', 'J', 'K', 'L', ':', '"', '~', SHIFTL,
 		'\\', 'Z', 'X', 'C', 'V', 'B', 'N', 'M', '<', '>', '?', SHIFTR, DO_NOTHING,
 		DO_NOTHING, ' ', CAPS, DO_NOTHING, DO_NOTHING, DO_NOTHING, DO_NOTHING, DO_NOTHING, DO_NOTHING,
 		DO_NOTHING, DO_NOTHING, DO_NOTHING, DO_NOTHING, DO_NOTHING, DO_NOTHING, '7', '8', '9',
@@ -27,7 +28,7 @@ static unsigned char kb_map[3][85] = {
 	{
 		DO_NOTHING, ESCAPE, '1', '2', '3', '4', '5', '6', '7', '8', '9', '0', '-', '=', '\b',
 		DO_NOTHING, 'Q', 'W', 'E', 'R', 'T', 'Y', 'U', 'I', 'O', 'P', '[', ']', '\n',
-		DO_NOTHING, 'A', 'S', 'D', 'F', 'G', 'H', 'J', 'K', 'L', ';', '\'', '|', SHIFTL,
+		CTRLL, 'A', 'S', 'D', 'F', 'G', 'H', 'J', 'K', 'L', ';', '\'', '|', SHIFTL,
 		'\\', 'Z', 'X', 'C', 'V', 'B', 'N', 'M', ',', '.', '/', SHIFTR, DO_NOTHING,
 		DO_NOTHING, ' ', CAPS, DO_NOTHING, DO_NOTHING, DO_NOTHING, DO_NOTHING, DO_NOTHING, DO_NOTHING,
 		DO_NOTHING, DO_NOTHING, DO_NOTHING, DO_NOTHING, DO_NOTHING, DO_NOTHING, '7', '8', '9',
@@ -56,6 +57,7 @@ bool keyboardInit() {
 	kb.readIndex = 0;
 	kb.capsOn = false;
 	kb.shiftOn = false;
+	kb.controlOn = false;
 	lineIndex = 0;
 	counter = 0;
 
@@ -103,6 +105,10 @@ static void addKeyBuffer(int key) {
 		kb.shiftOn = true;
 	else if(key == SHIFTR_RL || key == SHIFTL_RL)
 		kb.shiftOn = false;
+	else if(key == CTRLL)
+		kb.controlOn = true;
+	else if(key == CTRLL_RL)
+		kb.controlOn = false;
 	else if(!((key >> 7) & 0x1)) {
 		if(kb.capsOn)
 			keyboard = 2;
@@ -127,6 +133,15 @@ static void addKeyBuffer(int key) {
 
 			kb.buffer[kb.writeIndex++] = value;
 			signal = true;
+		}else if(kb.controlOn == true && value == 'c'){
+			ctrlCHandler();
+			lineIndex = 0;
+			for(int i=0; i<KB_SIZE; i++)
+				lineBuffer[i] = EMPTY;
+
+			kb.buffer[kb.writeIndex++] = '\n';
+			signal = true;
+
 		}else if(value != DO_NOTHING && value != ESCAPE && lineIndex < KB_SIZE) {
 			lineBuffer[lineIndex++] = value;
 			kb.buffer[kb.writeIndex++] = value;

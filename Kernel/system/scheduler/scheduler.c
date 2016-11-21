@@ -54,13 +54,7 @@ bool removeProcess(process *p) {
 
 	if(p == NULL)
 		return res;
-
-	if(p->id == 0){//You can't kill dummy
-		print("Master of the Puppets is indestructible....", RED);
-		printNewLine();
-		return false;
-	} 
-	
+			
 	res = listRemove(waiting_list, p);
 
 	killProcess(p);
@@ -167,6 +161,7 @@ static process *schedule() {
 psContext *processesStatus() {
 	char buffer[10] = {0};
 	int listSize = listGetSize(waiting_list);
+	printDec(listSize,YELLOW);
 	int i, aux;
 
 	psContext * res = k_malloc(sizeof(psContext));

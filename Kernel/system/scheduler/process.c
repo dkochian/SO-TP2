@@ -107,13 +107,27 @@ void freeProcess(int pid) {
 	if(p == NULL)
 		return;
 
+	if (pid == 0) {
+		print("You can not kill Master of the Puppets\n",RED);
+		return;
+	}
+	if (pid == 1) {
+		print("You can not kill the shell, Master of the Puppets it's protecting it\n",RED);
+		return;
+	}
+
 	removeProcess(p);	//Remove the process from the scheduler
 	removeWaitProcess(p);
+
 	freeProcessId(pid);	//Free the process id
 
 	listDestroy(p->wait_list);
 	k_free((void *) p->s_frame);
 	k_free(p);
+
+	if(pid == getCurrentPid()){
+		_yield();
+	}
 }
 
 void waitPid(uint64_t pid){
