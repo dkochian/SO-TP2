@@ -18,6 +18,6 @@ video:
 	@cat Video >> video.bin && dd if=/dev/zero bs=1 count=1 >> video.bin
 
 clean:
-	@rm -rf extra/*.o *.o ../*.bin *.bin
+	@rm -rf extra/*.o test/*.o *.o ../*.bin *.bin
 
 .PHONY: all clean video
