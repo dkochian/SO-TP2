@@ -161,7 +161,7 @@ static process *schedule() {
 psContext *processesStatus() {
 	char buffer[10] = {0};
 	int listSize = listGetSize(waiting_list);
-	printDec(listSize,YELLOW);
+
 	int i, aux;
 
 	psContext * res = k_malloc(sizeof(psContext));
