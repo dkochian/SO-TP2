@@ -129,26 +129,26 @@ void semPost(semaphore s) {
 	_syscall(SEMPOST, (uintptr_t) s, NULL, NULL, NULL, NULL);
 }
 
-void *syscvInit(){
+cond_t syscvInit(){
 	uintptr_t res = NULL;
 	_syscall(CVINIT, (uintptr_t) &res, NULL, NULL, NULL, NULL);
 	return (void *) res;
 }
 
-void syscvWait(void * cv, mutex m){
+void syscvWait(cond_t cv, mutex m){
 	_syscall(CVWAIT,(uintptr_t) cv, (uintptr_t) m, NULL, NULL, NULL);
 }
 
-uint64_t syscvSignal(void * cv){
+uint64_t syscvSignal(cond_t cv){
 	uint64_t res;
 	_syscall(CVSIG,(uintptr_t) cv, (uintptr_t) &res, NULL, NULL, NULL);
 	return res;
 }
 
-void syscvBroadcast(void * cv) {
+void syscvBroadcast(cond_t cv) {
 	_syscall(CVBROAD, (uintptr_t) cv, NULL, NULL, NULL, NULL);
 }
 
-void syscvDestroy(void * cv) {
+void syscvDestroy(cond_t cv) {
 	_syscall(CVDESTROY, (uintptr_t) cv, NULL, NULL, NULL, NULL);
 }

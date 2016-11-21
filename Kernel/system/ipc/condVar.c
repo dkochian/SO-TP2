@@ -2,17 +2,16 @@
 
 #include "../include/mmu.h"
 #include "include/condVar.h"
-#include "../../utils/include/list.h"
+#include "../../drivers/include/video.h"
 #include "../scheduler/include/scheduler.h"
 
 
 cond_t cvInitialize() {
-    cond_t cv = k_malloc(sizeof(cond_t));
-	cv->cv_list = listBuild(&equal);
-	if (cv->cv_list){
-		k_free(cv);
+	cond_t cv = listBuild(&equal);
+	if (cv == NULL){
 		return NULL;
 	}
+
     return cv;
 }
 
@@ -20,7 +19,7 @@ void cvWait(cond_t cv, mutex cv_mutex) {
 
 	process *cProcess = getCurrentProcess();
 	unlock(cv_mutex);
-	listAdd(cv->cv_list, cProcess);
+	listAdd(cv, cProcess);
 
 	blockProcess(cProcess);  
 	_yield();
@@ -28,27 +27,23 @@ void cvWait(cond_t cv, mutex cv_mutex) {
 	lock(cv_mutex);
 }
 
-uint64_t cvSignal(cond_t cv) {
+void cvSignal(cond_t cv) {
 	process *rProcess;
-	if (!listIsEmpty(cv->cv_list)) {
-		rProcess = listGetFirst(cv->cv_list);
-		listRemove(cv->cv_list, rProcess);
+	if (listIsEmpty(cv) == false) {
+		rProcess = listGetFirst(cv);
 		unBlockProcess(rProcess);
 	}
-
-	return rProcess->id;
 }
 
 void cvBroadcast(cond_t cv) {
-	while (!listIsEmpty(cv->cv_list)) {
-		process *rProcess = listGetFirst(cv->cv_list);
-		listRemove(cv->cv_list, rProcess);
+	while (listIsEmpty(cv) == false) {
+		process *rProcess = listGetFirst(cv);
 		unBlockProcess(rProcess);
 	}
 }
 
 void cvDestroy(cond_t cv) {
 	cvBroadcast(cv);
-	listDestroy(cv->cv_list);
+	listDestroy(cv);
 	k_free(cv);
 }

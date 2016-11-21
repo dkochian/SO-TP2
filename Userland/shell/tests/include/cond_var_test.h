@@ -3,8 +3,9 @@
 
 	#include "../../../Common/common.h"
 
-	int cvTestDep(int argc, char ** argv);
-	void processEntry( char * id );
+	#define MAXTESTP 4
+
+	int startVariableConditionTest(int argc, char **argv);
 
 #endif
 	

@@ -101,8 +101,6 @@ commandExec* getAllCommands() {
 }
 
 static int insertToBuffer(char c) {
-	if(c == EMPTY)
-		return 0;
 	if(c == '\b') {
 		buffer[bIndex] = '\0';
 		if(bIndex > 0)

@@ -4,7 +4,6 @@
 #include <string.h>
 #include <syscall.h>
 
-#include "../tests/include/cvtest.h"
 #include "include/fractal.h"
 #include "include/commands.h"
 #include "../include/common.h"
@@ -460,7 +459,7 @@ int cvTestCommand(int argc, char **argv) {
 		return 1;
 	}
 
-	//cvTestDep(0,NULL);
+	//cvTestDep();
 	return 0;
 }
 

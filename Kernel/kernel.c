@@ -14,6 +14,7 @@
 #include "tests/include/video_test.h"
 #include "tests/include/mutex_test.h"
 #include "tests/include/waitpid_test.h"
+#include "tests/include/cond_var_test.h"	
 #include "tests/include/scheduler_test.h"
 #include "tests/include/semaphore_test.h"
 #include "tests/include/freeprocess_test.h"
@@ -113,6 +114,8 @@ int main() {
 
 	videoStartLocking();
 
+	clear();
+
 	//Tests
 	//startVideoTest();
 	//startSchedulerTest();
@@ -120,8 +123,8 @@ int main() {
 	//startWaitpidTest();
 	//startFreeProcessTest();
 	//startSemaphoreTest();
+	//startVariableConditionTest();
 
-	clear();
 	((EntryPoint)sampleCodeModuleAddress)();
 
 	return 0;
