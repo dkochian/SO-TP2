@@ -181,9 +181,9 @@ _keyboardHandler:
 ; syscalls idt handler -> processed in C
 ;------------------------------------------------------------
 _sysCallHandler:
-    cli
+    ;cli
     call sysCallHandler
-    sti
+    ;sti
     iretq
 
 ;------------------------------------------------------------

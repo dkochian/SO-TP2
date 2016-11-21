@@ -9,7 +9,7 @@
 	bool pipeInit();
 	uint64_t pipeBuild();
 	void pipeDestroy(uint64_t id);
-	char pipeRead(uint64_t id);
-	bool pipeWrite(uint64_t id, char c);
+	void pipeRead(uint64_t id, char *str);
+	bool pipeWrite(uint64_t id, const char *str);
 
 #endif

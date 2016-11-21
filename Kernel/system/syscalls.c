@@ -13,8 +13,8 @@
 
 #include "../utils/include/string.h"
 
-static void write(int out, char* str, int size, uint64_t aux);
-static void read(int in, char* buffer, uint64_t aux);
+static void write(int out, char *str, int size, uint64_t aux);
+static void read(int in, char *buffer, uint64_t aux);
 
 void sysCallHandler(uint64_t arg1, uint64_t arg2, uint64_t arg3, uint64_t arg4, uint64_t arg5, uint64_t arg6) {
 	switch(arg1) {
@@ -123,7 +123,7 @@ void sysCallHandler(uint64_t arg1, uint64_t arg2, uint64_t arg3, uint64_t arg4, 
 	}
 }
 
-static void write(int out, char* str, int size, uint64_t aux) {
+static void write(int out, char *str, int size, uint64_t aux) {
 	switch(out) {
 		case STDERR: {
 			int
@@ -151,16 +151,16 @@ static void write(int out, char* str, int size, uint64_t aux) {
 			printToast(str, size);
 			break;
 		case STDPIPE:
-			pipeWrite(aux, *str);
+			pipeWrite(aux, str);
 			break;
 	}
 }
 
-static void read(int in, char* buffer, uint64_t aux) {
+static void read(int in, char *buffer, uint64_t aux) {
 	if(in == STDIN)
 		*buffer = getKey((bool) aux);
 	else if(in == STDCOLOR)
 		*buffer = getDefaultColor();
 	else if(in == STDPIPE)
-		*buffer = pipeRead(aux);
+		pipeRead(aux, buffer);
 }

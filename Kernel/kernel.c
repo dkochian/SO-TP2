@@ -112,7 +112,7 @@ int main() {
 	if(!(pmStatus & scStatus & kbStatus & piStatus))
 		return 1;
 
-	//videoStartLocking(); //TODO: Uncomment this line, it's commented just for the pipe's testing.
+	videoStartLocking();
 
 	clear();
 	((EntryPoint)sampleCodeModuleAddress)();

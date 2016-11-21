@@ -2,7 +2,6 @@
 #include <syscall.h>
 
 static uint64_t pipeId;
-static bool writing;
 static mutex p_mutex;
 
 static int processA(int argc, char **argv);
@@ -12,20 +11,10 @@ int pipeTestCommand(int argc, char **argv) {
 	uint64_t pA;
 	uint64_t pB;
 
-	writing = true;
-
 	print("Creating the pipe...\n");
 	pipeId = pipeBuild();
 	if(pipeId == INVALID_PIPE_ID) {
 		print("Couldn't create the pipe.\n");
-		return 1;
-	}
-
-	print("Creating the mutex...\n");
-	p_mutex = mutexInit();
-	if(p_mutex == NULL) {
-		pipeDestroy(pipeId);
-		print("Couldn't create the mutex.\n");
 		return 1;
 	}
 
@@ -52,19 +41,15 @@ int pipeTestCommand(int argc, char **argv) {
 	wPid(pB);
 
 	pipeDestroy(pipeId);
-	mutexDestroy(p_mutex);
 
 	return 0;
 }
 
 static int processA(int argc, char **argv) {
-	char c;
+	char buffer[MAX_BUFFER];
 	print("ProcessA read: ");
-	while(writing == true) {
-		read(STDPIPE, &c, pipeId);
-		if(c != EMPTY)
-			putchar(c);
-	}
+	read(STDPIPE, buffer, pipeId);
+	print(buffer);
 	printNewLine();
 
 	return 0;
@@ -72,17 +57,7 @@ static int processA(int argc, char **argv) {
 
 static int processB(int argc, char **argv) {
 	sleep(1);
-	write(STDPIPE, "h", NULL, pipeId);
-	sleep(2);
-	write(STDPIPE, "o", NULL, pipeId);
-	sleep(1);
-	write(STDPIPE, "l", NULL, pipeId);
-	sleep(5);
-	write(STDPIPE, "a", NULL, pipeId);
-
-	lock(p_mutex);
-	writing = false;
-	unlock(p_mutex);
+	write(STDPIPE, "hola", NULL, pipeId);
 
 	return 1;
 }
