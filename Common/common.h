@@ -32,7 +32,7 @@
 	#define DRAWPIXEL			10
 	#define MALLOC				11
 	#define FREE				12
-	#define NEWPROCESS			13	
+	#define NEWPROCESS			13
 	#define KILLPROCESS			14
 	#define PS					15
 	#define PID					16
@@ -44,18 +44,17 @@
 	#define MISLOCK				22
 	#define BLOCKSELF			23
 	#define WAITPID				24
-	#define DRAWSQUARE			25
-	#define SEMOPEN				26
-	#define SEMCLOSE			27
-	#define SEMWAIT				28
-	#define SEMPOST				29
-	#define CVINIT				30
-	#define CVWAIT				31
-	#define CVSIG				32
-	#define CVBROAD				33
-	#define CVDESTROY			34
-	#define PINIT				35
-	#define PDESTROY			36
+	#define SEMOPEN				25
+	#define SEMCLOSE			26
+	#define SEMWAIT				27
+	#define SEMPOST				28
+	#define CVINIT				29
+	#define CVWAIT				30
+	#define CVSIG				31
+	#define CVBROAD				32
+	#define CVDESTROY			33
+	#define PINIT				34
+	#define PDESTROY			35
 
 	//Keyboard
 	#define EMPTY				0

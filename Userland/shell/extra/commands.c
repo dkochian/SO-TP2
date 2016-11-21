@@ -348,6 +348,7 @@ int ipcCommand(int argc, char **argv){
 	printn("------------IPC implemented------------");
 	printnColor("\t. Global Mutexes ", LIGHT_BLUE);
 	printnColor("\t. Global variables condition", YELLOW);
+	printnColor("\t. Pipes", YELLOW);
 	printnColor("\t. Semaphores", LIGHT_BLUE);
 
 	printn("-------------------------------");
