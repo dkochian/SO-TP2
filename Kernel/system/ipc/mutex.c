@@ -56,7 +56,7 @@ void lock(mutex l) {
 
         _yield();
     }
-    //l->blocked[p->id] = (p->state == BLOCKED);
+    l->blocked[p->id] = (p->state == BLOCKED);
     //p->state = LOCKED;
 }
 
@@ -66,12 +66,12 @@ void unlock(mutex l) {
     	_unlock(&l->lock);
     	return;
     }
-/*
+
     if(l->blocked[p->id] == true)
         p->state = BLOCKED;
     else
         p->state = RUNNING;
-*/
+
     if(queueIsEmpty(l->m_queue) == false) {
         p = queuePop(l->m_queue);
         unBlockProcess(p->id);

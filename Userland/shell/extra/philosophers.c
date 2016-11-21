@@ -143,7 +143,7 @@ static void mysleep(long int num) {
 }
 
 static void sleep2() {
-	mysleep(2);
+	mysleep(speed);
 }
 
 /******************
@@ -173,7 +173,7 @@ static int philosopher(int argc, char** argv) {
 		
 		// HUNGRY
 		updateSquare(pos, MAGENTA);
-		sleep2();
+		//sleep2();
 
 		sem_wait(sem);
 												//grabSem(semLock, &sem);
@@ -186,7 +186,7 @@ static int philosopher(int argc, char** argv) {
 
 		// GRABBED RIGHT
 		updateState(pos, RIGHT, GREEN);
-		sleep2();
+		//sleep2();
 
 		lock( (forks[left]) );
 		
@@ -198,13 +198,13 @@ static int philosopher(int argc, char** argv) {
 
 		// DROPPED RIGHT
 		updateState(pos, RIGHT, LIGHT_GREEN);
-		sleep2();
+		//sleep2();
 
 		unlock( (forks[left]) );
 		
 		// DROPPED LEFT
 		updateState(pos, LEFT, LIGHT_GREEN);
-		sleep2();
+		//sleep2();
 
 		sem_post(sem);
 												//releaseSem(semLock, &sem);
@@ -216,8 +216,7 @@ static int philosopher(int argc, char** argv) {
 		lock(editLock);
 		
 		// CHECK MESSAGE
-		//updateSquare(pos, WHITE);
-		sleep2();
+		updateSquare(pos, DARK_GRAY);
 
 		switch( edit[pos] ) {
 			case INC: {
@@ -248,6 +247,7 @@ static int philosopher(int argc, char** argv) {
 **  Control  **
 **************/
 static int init() {
+	speed = INIT_SPEED;
 	total = INIT_PHILOSOPHERS;
 	sem = sem_open(NULL, total-1);
 	if(sem==NULL) {
@@ -354,7 +354,7 @@ static void exitNicely() {
 ***********/
 int philosophers(int argc, char **argv) {
 	clear();
-	printn("Loading Philosophers...");
+	printn("Loading Dining Philosophers...");
 	if( init()==1) {
 		printn("Error loading Philosophers");
 		return 1;
@@ -371,7 +371,7 @@ int philosophers(int argc, char **argv) {
 	printColor("Eating  ", GREEN);
 	printColor("Done Eating  ", LIGHT_GREEN);
 	printColor("Disabled  ", LIGHT_BLUE);
-	printNewline();
+	printnColor("Checking  ", DARK_GRAY);
 
 	printNewline();
 	printNewline();
@@ -401,20 +401,24 @@ static void control() {
 		switch(c) {
 			case 'w':
 			case 'W':
+				print("Adding philosopher...      ");
 				if(addPhilosopher()) {
-					printn("Added philosopher.");
+					printnColor("Done.", GREEN);
 				} else {
-					print("Can't add. Max is ");
+					printColor("Can't add. ", RED);
+					print("Max is ");
 					printNum(MAX_PHILOSOPHERS);
 					printn(".");
 				}
 				break;
 			case 's':
 			case 'S':
+				print("Removing philosopher...    ");
 				if(removePhilosopher()) {
-					printn("Removed philosopher.");
+					printnColor("Done.", GREEN);
 				} else {
-					print("Can't remove. Min is ");
+					printColor("Can't remove. ", RED);
+					print("Min is ");
 					printNum(MIN_PHILOSOPHERS);
 					printn(".");
 				}
@@ -435,6 +439,7 @@ static void control() {
 				break;
 			default:
 				printn("Press: 'w' to add, 's' to remove, 'd' to speed up, 'a' to slow down, & 'q' to quit.");
+				psCommand(0, NULL);
 		}
 	}
 }
