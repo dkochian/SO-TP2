@@ -139,9 +139,8 @@ static void addKeyBuffer(int key) {
 			for(int i=0; i<KB_SIZE; i++)
 				lineBuffer[i] = EMPTY;
 
-			kb.buffer[kb.writeIndex++] = '\n';
+			kb.buffer[kb.writeIndex++] = value;
 			signal = true;
-
 		}else if(value != DO_NOTHING && value != ESCAPE && lineIndex < KB_SIZE) {
 			lineBuffer[lineIndex++] = value;
 			kb.buffer[kb.writeIndex++] = value;

@@ -106,7 +106,6 @@ void freeProcess(int pid) {
 
 	if(p == NULL)
 		return;
-
 	if (pid == 0) {
 		print("You can not kill Master of the Puppets\n",RED);
 		return;
