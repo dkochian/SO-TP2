@@ -54,7 +54,6 @@
 	#define CVBROAD				33
 	#define CVDESTROY			34
 
-
 	//Keyboard
 	#define EMPTY				0
 	#define WIDTH 				128
@@ -87,6 +86,11 @@
 
 	//Process
 	#define INVALID_PROCESS_ID	(-1)
+
+	//Other
+	#define VGA_WIDTH		1024
+	#define VGA_HEIGHT		768
+	#define VGA_DEPTH		24
 
 	typedef struct {
 		uint8_t

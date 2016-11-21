@@ -111,11 +111,6 @@ void wPid(uint64_t pid) {
 	_syscall(WAITPID, pid, NULL, NULL, NULL, NULL);
 }
 
-/*void drawSquare(uint16_t x, uint16_t y, uint16_t l, char colorCode) {
-	_syscall(DRAWSQUARE, x, y, l, colorCode, NULL);
-
-}*/
-
 semaphore semBuild(int value) {
 	semaphore res = NULL;
 	_syscall(SEMOPEN, value, (uintptr_t) &res, NULL, NULL, NULL);

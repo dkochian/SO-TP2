@@ -2,9 +2,10 @@
 #include "../include/mmu.h"
 #include "../scheduler/include/scheduler.h"
 
-//TODO: remove next, it's just for testing and should never be used
 #include "../../drivers/include/video.h"
 #include "../scheduler/include/process.h"
+extern mutex v_mutex;
+//extern mutex m;
 
 extern int _lock(int *lock);
 extern void _unlock(int *lock);
@@ -38,8 +39,14 @@ void lockDestroy(mutex l) {
 }
 
 void lock(mutex l) {
+    process *p = getCurrentProcess();
+    /*if(l == m) {
+        print("[lock] ", 1);
+        print(p->name, 1);
+        printNewLine();
+    }*/
+
     if(_lock(&l->lock) == 1) {
-        process *p = getCurrentProcess();
         queuePush(l->m_queue, p);
         blockProcess(p);
 
@@ -48,8 +55,15 @@ void lock(mutex l) {
 }
 
 void unlock(mutex l) {
+    process *p = getCurrentProcess();
+    /*if(l == m) {
+        print("[unlock] ", 3);
+        print(p->name, 3);
+        printNewLine();
+    }*/
+
     if(queueIsEmpty(l->m_queue) == false) {
-        process *p = queuePop(l->m_queue);
+        p = queuePop(l->m_queue);
         unBlockProcess(p);
         return;
     }

@@ -22,7 +22,7 @@ ColorRGB baseColors[16] = {
 ColorRGB charToRGB(char in) {
 	//if(in<16 && in>=0) {
 		return baseColors[(uint32_t)in];
-	
+
 }
 
 ColorRGB * colorRGB(uint8_t r, uint8_t g, uint8_t b) {
@@ -49,7 +49,7 @@ void drawRectangleBottonToTop(int x, int y, int width, int height, ColorRGB colo
 	int i,j;
 
 	for (i = x; i < x+width; i++) {
-		for (j = MAXY-y-height; j < MAXY-y; j++) {
+		for (j = VGA_HEIGHT-y-height; j < VGA_HEIGHT-y; j++) {
 			putPixel(i,j,&color);
 		}
 	}

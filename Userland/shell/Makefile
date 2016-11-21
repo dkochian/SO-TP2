@@ -1,8 +1,7 @@
 include ../Makefile.inc
 
 MODULE=shellModule.bin
-SOURCES=_loader.c shell.c extra/commands.c extra/fractal.c extra/philosophers.c extra/producerConsumer.c extra/buffer.c tests/cvtest.c tests/pipeTest.c
-#after buffer extra/visualProdCons.c
+SOURCES=_loader.c shell.c extra/commands.c extra/fractal.c extra/philosophers.c extra/producerConsumer.c extra/buffer.c extra/visualProdCons.c tests/cvtest.c tests/pipeTest.c
 OBJECTS=$(SOURCES:.c=.o)
 LIBC=-L../ -lc
 
