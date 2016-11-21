@@ -17,7 +17,7 @@ static int processEntry(int argc, char **argv) {
     for( i = 0; i < workloops; i++ ) {
         print(id);
         printn(" is working....");
-        //sleep(1);  
+        sleep(1);  
     }
 
     print((char *)argv);
@@ -27,9 +27,6 @@ static int processEntry(int argc, char **argv) {
     if(done >= MAX_PROCESS)
         syscvSignal(cond);
     unlock(m);
-
-
-    while(true) {}
 
     return 0;
 }
@@ -72,7 +69,7 @@ int varaibleConditionTestCommand(int argc, char **argv){
     unlock(m);
 
     for (i = 0; i < MAX_PROCESS; i++) {
-        kill(process[i]);
+        wPid(process[i]);
     }
 
     mutexDestroy(m);
