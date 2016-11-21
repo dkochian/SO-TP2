@@ -5,7 +5,6 @@
 #include <integer.h>
 #include <syscall.h>
 #include "include/cond_var_test.h"
-#include "../extra/include/commands.h"
 
 static int done = 0;
 static int processEntry(int argc, char **argv);
@@ -43,10 +42,6 @@ static int processEntry(int argc, char **argv) {
 }
 
 int varaibleConditionTestCommand(int argc, char **argv){
-    if(argc != 0) {
-        helpCommand(1, (char **) "cvTest");
-        return 1;
-    }
     printColor( "Condition Variable Test Starting\n" , YELLOW);
     m = mutexInit();
     if(m == NULL) {

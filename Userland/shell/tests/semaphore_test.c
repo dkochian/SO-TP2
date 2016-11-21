@@ -68,6 +68,8 @@ int semaphoreTestCommand(int argc, char **argv) {
 	wPid(pA);
 	wPid(pB);
 	wPid(pC);
+
+	semDestroy(s);
 	
 	return 0;
 }
