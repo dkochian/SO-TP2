@@ -21,6 +21,7 @@ typedef struct {
 	int argc;
 	char* name;
 	char **argv;
+	bool foreground;
 } commandData;
 
 static int insertToBuffer(char c);
@@ -80,6 +81,9 @@ int main(int argc, char ** argv) {
 	while(true) {
 		c = getchar(true);
 
+		if(c == EMPTY)
+			print("fuck");
+
 		if(insertToBuffer(c) == 1) {
 			int
 				result = parseBuffer(&cmd);//if result==0 empty line, result==1 try to execute command, result == -1 command's name is too long
@@ -100,6 +104,7 @@ int main(int argc, char ** argv) {
 					}
 				}
 			}
+
 			printHeader();
 		}
 	}
@@ -115,6 +120,7 @@ commandExec* getAllCommands() {
 static int insertToBuffer(char c) {
 	if(c == EMPTY)
 		return 0;
+
 	if(c == '\b') {
 		buffer[bIndex] = '\0';
 		if(bIndex > 0)
@@ -144,7 +150,12 @@ static bool parseBuffer(commandData *cmd) {
 	clearBuffer(cmd);
 
 	int
-		index = 0; 
+		index = 0;
+
+	if(buffer[0] == '&') {
+		index++;
+		cmd->foreground = true;
+	}
 
 	while(buffer[index] != '\n') {
 		if(buffer[index] == ' ') {
@@ -152,13 +163,18 @@ static bool parseBuffer(commandData *cmd) {
 			break;
 		}
 
-		cmd->name[index] = buffer[index];
+		if(cmd->foreground == true)
+			cmd->name[index - 1] = buffer[index];
+		else
+			cmd->name[index] = buffer[index];
+
 		index++;
+
 		if(index == MAX_BUFFER-1)
 			return false;
 	}
 
-	if(buffer[index - 1 ] != '\n') {
+	if(buffer[index - 1] != '\n') {
 		index++;
 
 		strcpy(cmd->argv[0], &buffer[index]);
@@ -190,11 +206,25 @@ static void clearBuffer(commandData *cmd) {
 		i++;
 	}
 	cmd->argc = 0;
+	cmd->foreground = false;
 }
 
 static bool executeCommand(commandData cmd) {
 	for(int index = 0; index < MAX_COMMANDS; index++) {
 		if(commandTable[index].created == true && strcmp(cmd.name, commandTable[index].name) == 0) {
+			if(cmd.foreground == true) {
+				char tmp[MAX_BUFFER];
+				int i = 0;
+
+				strcpy(tmp, cmd.name);
+				cmd.name[0] = '&';
+
+				while(tmp[i] != '\0') {
+					cmd.name[i + 1] = tmp[i];
+					i++;
+				}
+			}
+			
 			uint64_t pid = newProcess(cmd.name, commandTable[index].func, cmd.argc, cmd.argv);
 			wPid(pid);
 			return true;
