@@ -45,7 +45,7 @@ uint64_t pipeBuild() {
 
 	if(p->buffer == NULL) {
 		k_free(p);
-		return NULL;
+		return INVALID_PIPE_ID;
 	}
 
 	p->rSem = semBuild(0);
@@ -98,14 +98,15 @@ char pipeRead(uint64_t id) {
 
 	char c;
 	semWait(p->rSem);
-	print("[read] buffer: ", -1);
-	print(p->buffer, -1);
-	printNewLine();
 	c = p->buffer[p->readIndex++];
 	semPost(p->wSem);
 
 	if(p->readIndex == MAX_BUFFER - 1)
 		p->readIndex = 0;
+
+	print("[read] c: ", -1);
+	putChar(c, -1);
+	printNewLine();
 
 	return c;
 }
@@ -117,13 +118,14 @@ bool pipeWrite(uint64_t id, char c) {
 
 	semWait(p->wSem);
 	p->buffer[p->writeIndex++] = c;
-	print("[write] buffer: ", -1);
-	print(p->buffer, -1);
-	printNewLine();
 	semPost(p->rSem);
 
 	if(p->writeIndex < MAX_BUFFER - 1)
 		p->writeIndex = 0;
+
+	print("[write] buffer: ", -1);
+	print(p->buffer, -1);
+	printNewLine();
 
 	return true;
 }
