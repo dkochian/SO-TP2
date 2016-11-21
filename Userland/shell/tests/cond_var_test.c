@@ -16,8 +16,6 @@ static void mysleep(long int num) {
 }
 
 static int processEntry(int argc, char **argv) {   
-    //printNum(done);
-    //print("&");
     char* id = (char *)argv; 
     int workloops = 5;
     int i;
@@ -30,10 +28,7 @@ static int processEntry(int argc, char **argv) {
     print((char *)argv);
     print(" checking condition.\n");
 
-    lock(m);
-    print("in lock");
     done++;
-    printNum(done);
     if(done>=4)
         syscvSignal(cond);
     unlock(m);
