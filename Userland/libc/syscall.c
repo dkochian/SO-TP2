@@ -4,24 +4,24 @@ void syscall(int id, int type, uintptr_t* addr, char size, uint64_t aux1, uint64
 	_syscall(id, type, (uintptr_t) addr, size, aux1, aux2);
 }
 
-void write(int type, char* str, int size) {
-	_syscall(SYSWRITE, type, (uintptr_t) str, size, NULL, NULL);
+void write(int type, char* str, int size, uint64_t aux) {
+	_syscall(SYSWRITE, type, (uintptr_t) str, size, aux, NULL);
 }
 
-void read(int type, char* str, char aux) {
+void read(int type, char* str, uint64_t aux) {
 	_syscall(SYSREAD, type, (uintptr_t) str, aux, NULL, NULL);
 }
 
 void setColor(char color) {
-	_syscall(SYSWRITE, COLOR, (uintptr_t) &color, NULL, NULL, NULL);
+	_syscall(SYSWRITE, STDCOLOR, (uintptr_t) &color, NULL, NULL, NULL);
 }
 
 void setBgColor(char color) {
-	_syscall(SYSWRITE, BGCOLOR, (uintptr_t) &color, NULL, NULL, NULL);
+	_syscall(SYSWRITE, STDBGCOLOR, (uintptr_t) &color, NULL, NULL, NULL);
 }
 
 void getColor(char* color) {
-	_syscall(SYSREAD, COLOR, (uintptr_t) color, NULL, NULL, NULL);
+	_syscall(SYSREAD, STDCOLOR, (uintptr_t) color, NULL, NULL, NULL);
 }
 
 void clear() {
@@ -149,4 +149,14 @@ void syscvBroadcast(cond_t cv) {
 
 void syscvDestroy(cond_t cv) {
 	_syscall(CVDESTROY, (uintptr_t) cv, NULL, NULL, NULL, NULL);
+}
+
+uint64_t pipeBuild() {
+	uint64_t res;
+	_syscall(PINIT, (uintptr_t) &res, NULL, NULL, NULL, NULL);
+	return res;
+}
+
+void pipeDestroy(uint64_t id) {
+	_syscall(PDESTROY, id, NULL, NULL, NULL, NULL);
 }

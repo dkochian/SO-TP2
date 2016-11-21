@@ -7,6 +7,7 @@
 #include "drivers/include/video.h"
 #include "system/include/syscalls.h"
 #include "drivers/include/keyboard.h"
+#include "system/ipc/include/pipe.h"
 #include "system/scheduler/include/process.h"
 #include "system/scheduler/include/scheduler.h"
 
@@ -51,7 +52,7 @@ void *initializeKernelBinary()
 }
 
 int main() {
-	bool pmStatus, scStatus, kbStatus;
+	bool pmStatus, scStatus, kbStatus, piStatus;
 
 	mmuBuild();
 	if(videoBuild() == false)
@@ -59,8 +60,10 @@ int main() {
 	
 	pmStatus = buildProcessManager();
 	scStatus = buildScheduler();
+	kbStatus = keyboardInit();
+	piStatus = pipeInit();
 	buildIDT();
-	kbStatus = keyboardInit();		
+	_accelPIT();
 
 	print("Memory Manager	[ ", -1);
 	print("OK", GREEN);
@@ -84,6 +87,13 @@ int main() {
 		print("ERROR", COLOR_ERROR);
 	print(" ]\n", -1);
 
+	print("Pipes											[", -1);
+	if(piStatus == true)
+		print("OK", GREEN);
+	else
+		print("ERROR", COLOR_ERROR);
+	print(" ]\n", -1);
+
 	print("IDT												[ ", -1);
 	print("OK", GREEN);
 	print(" ]\n", -1);
@@ -95,13 +105,12 @@ int main() {
 		print("ERROR", COLOR_ERROR);
 	print(" ]\n", -1);
 
-	if(!(pmStatus & scStatus & kbStatus))
-		return 1;
-	
-	_accelPIT();
 	print("PIT turbo						[ ", -1);
 	print("OK", GREEN);
 	print(" ]\n", -1);
+
+	if(!(pmStatus & scStatus & kbStatus & piStatus))
+		return 1;
 
 	videoStartLocking();
 

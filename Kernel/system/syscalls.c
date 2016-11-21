@@ -1,6 +1,7 @@
 #include "include/mmu.h"
 #include "include/syscalls.h"
 #include "../include/common.h"
+#include "ipc/include/pipe.h"
 #include "ipc/include/mutex.h"
 #include "ipc/include/condVar.h"
 #include "ipc/include/semaphore.h"
@@ -12,25 +13,25 @@
 
 #include "../utils/include/string.h"
 
-static void write(int out, char* str, int size);
-static void read(int in, char* buffer, char aux);
+static void write(int out, char* str, int size, uint64_t aux);
+static void read(int in, char* buffer, uint64_t aux);
 
 void sysCallHandler(uint64_t arg1, uint64_t arg2, uint64_t arg3, uint64_t arg4, uint64_t arg5, uint64_t arg6) {
 	switch(arg1) {
 		case SYSWRITE:
-			write(arg2, (char *) arg3, (int) arg4);
+			write(arg2, (char *) arg3, (int) arg4, arg5);
 			break;
 		case SYSREAD:
-			read(arg2, (char *) arg3, (char) arg4);
+			read(arg2, (char *) arg3, arg4);
 			break;
 		case CLEAR:
 			clear();
 			break;
 		case GETTIME:
-			getTime((timeStruct*) arg2);
+			getTime((timeStruct *) arg2);
 			break;
 		case GETDATE:
-			getDate(arg2);
+			getDate((dateStruct *)arg2);
 			break;
 		case SLEEP:
 			sleep((int) arg2);
@@ -110,13 +111,19 @@ void sysCallHandler(uint64_t arg1, uint64_t arg2, uint64_t arg3, uint64_t arg4, 
 		case CVDESTROY:
 			cvDestroy((cond_t)arg2);
 			break;
+		case PINIT:
+			*((uint64_t *) arg2) = pipeBuild();
+			break;
+		case PDESTROY:
+			pipeDestroy(arg2);
+			break;
 		default:
-			write(STDERR, "Error: Invalid system call.", 28);
+			write(STDERR, "Error: Invalid system call.", 28, NULL);
 			break;
 	}
 }
 
-static void write(int out, char* str, int size) {
+static void write(int out, char* str, int size, uint64_t aux) {
 	switch(out) {
 		case STDERR: {
 			int
@@ -134,21 +141,26 @@ static void write(int out, char* str, int size) {
 				putChar(str[i++], -1);
 			break;
 		}
-		case COLOR:
+		case STDCOLOR:
 			setDefaultColor(str[0]);
 			break;
-		case BGCOLOR:
+		case STDBGCOLOR:
 			setBgDefaultColor(str[0]);
 			break;
-		case TOAST:
+		case STDTOAST:
 			printToast(str, size);
+			break;
+		case STDPIPE:
+			pipeWrite(aux, *str);
 			break;
 	}
 }
 
-void read(int in, char* buffer, char aux) {
+static void read(int in, char* buffer, uint64_t aux) {
 	if(in == STDIN)
-		*buffer = getKey(aux);
-	else if(in == COLOR)
+		*buffer = getKey((bool) aux);
+	else if(in == STDCOLOR)
 		*buffer = getDefaultColor();
+	else if(in == STDPIPE)
+		*buffer = pipeRead(aux);
 }

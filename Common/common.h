@@ -16,9 +16,10 @@
 	#define STDOUT				1
 	#define STDERR				2
 	#define STDIN				3
-	#define COLOR				4
-	#define TOAST				5
-	#define BGCOLOR				6
+	#define STDCOLOR			4
+	#define STDTOAST			5
+	#define STDBGCOLOR			6
+	#define STDPIPE				7
 
 	//System calls ids
 	#define SYSREAD				3
@@ -53,6 +54,8 @@
 	#define CVSIG				32
 	#define CVBROAD				33
 	#define CVDESTROY			34
+	#define PINIT				35
+	#define PDESTROY			36
 
 	//Keyboard
 	#define EMPTY				0
@@ -86,6 +89,9 @@
 
 	//Process
 	#define INVALID_PROCESS_ID	(-1)
+
+	//Pipes
+	#define INVALID_PIPE_ID		(-1)
 
 	//Other
 	#define VGA_WIDTH		1024

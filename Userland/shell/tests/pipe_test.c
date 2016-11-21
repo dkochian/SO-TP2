@@ -1,155 +1,85 @@
-//Crear tres binarios, spawner spawnea a s1 y s2,
-//s1 y s2 comunican un dialogo hardcodeado, donde uno
-//espera al otro para hablar
-
 #include <stdio.h>
-/*#include <unistd.h>
-#include <sys/wait.h>
+#include <syscall.h>
 
-void send(int fd);
-void recieve(int fd);
+static uint64_t pipeId;
+static bool writing;
+static mutex p_mutex;
 
-void lock(int fd) {
-	char toRead[1];
-	while(read(fd, toRead, 1) < 1);
-}
+static int processA(int argc, char **argv);
+static int processB(int argc, char **argv);
 
-void step(int fd) {
-	char * toWrite = "\n";
-	while(write(fd, toWrite, 1) < 1);
-}
+int pipeTestCommand(int argc, char **argv) {
+	uint64_t pA;
+	uint64_t pB;
 
-int main(int argc, char * argv[]) {
-	int s1tos2[2];
-	int s2tos1[2];
-	char * args[] = { NULL };
-	int child1;
-	int child2;
+	writing = true;
 
-	if (pipe(s1tos2) != 0 || pipe(s2tos1) != 0) {
-		printColor("Couldn't create pipe.", COLOR_ERROR);
-		return 0;
+	pipeId = pipeBuild();
+
+	print("Creating the pipe...\n");
+	if(pipeId == INVALID_PIPE_ID) {
+		print("Couldn't create the pipe.\n");
+		return 1;
 	}
 
-	if ((child1 = fork()) == 0) {
-		printColor("failed to spawn sibling", COLOR_ERROR);
-	} else if ((child2 = fork()) == 0) {
-		printColor("failed to spawn sibling", COLOR_ERROR);
+	p_mutex = mutexInit();
+
+	if(p_mutex == NULL) {
+		print("Couldn't create the mutex.\n");
+		pipeDestroy(pipeId);
+		return 1;
 	}
 
-	wPid(child1);
-	wPid(child2);
-
-	close(s1tos2[0]);
-	close(s1tos2[1]);
-	close(s2tos1[0]);
-	close(s2tos1[1]);
-}
-int main(int argc, char * argv[]) {
-	int myLock = 3;
-	int myStep = 6;
-	int otherLock = 5;
-	int otherStep = 4;
-	
-	close(otherLock);
-	close(otherStep);
-
-	printf("Iniciando Lucia\n");
-	step(myStep);
-	lock(myLock);
-	printf("L: ¿Quién es?\n");
-	step(myStep);
-	lock(myLock);
-	printf("L: ¿Qué vienes a buscar?\n"); 
-	step(myStep);
-	lock(myLock);
-	printf("L: Ya es tarde...\n");
-	step(myStep);
-	lock(myLock);
-	printf("L: Porque ahora soy yo la que quiere estar sin ti...\n");
-}
-int main(int argc, char * argv[]) {
-	int myLock = 5;
-	int myStep = 4;
-	int otherLock = 3;
-	int otherStep = 6;
-
-	close(otherLock);
-	close(otherStep);
-
-	lock(myLock);
-	printf("J: Iniciando Joaquin\n");
-	step(myStep);
-	lock(myLock);
-	printf("J: Soy yo...\n");
-	step(myStep);
-	lock(myLock);
-	printf("J: A ti...\n"); 
-	step(myStep);
-	lock(myLock);
-	printf("J: m¿Por qué?\n");
-	step(myStep);
-}
-
-#include <stdio.h>
-#include <unistd.h>
-
-void send(int fd);
-void recieve(int fd);
-
-int main(int argc, char * argv[]) {
-	int fds[2];
-	int child;
-
-	if (pipe(fds) != 0) {
-		fprintf(stderr, "Couldn't create pipe.\n");
-		return 0;
+	print("Creating \"pipe process A\"...\n");
+	pA = newProcess("pipe process A", processA, 0, NULL);
+	if(pA == INVALID_PROCESS_ID) {
+		pipeDestroy(pipeId);
+		mutexDestroy(p_mutex);
+		print("Couldn't create \"pipe process A\"\n");
+		return 1;
 	}
 
-
-	if ((child = fork()) == 0) {
-		//Child
-		close(fds[0]);
-		send(fds[1]);
-		close(fds[1]);
-	} else if (child != -1) {
-		//Parent
-		close(fds[1]);
-		recieve(fds[0]);
-		close(fds[0]);
-	} else {
-		//Error
-		fprintf(stderr, "Couldn't fork.\n");
+	print("Creating \"pipe process B\"...\n");
+	pB = newProcess("pipe process B", processB, 0, NULL);
+	if(pB == INVALID_PROCESS_ID) {
+		pipeDestroy(pipeId);
+		mutexDestroy(p_mutex);
+		kill(pA);
+		print("Couldn't create \"pipe process B\"\n");
+		return 1;
 	}
+
+	wPid(pA);
+	wPid(pB);
 
 	return 0;
 }
 
-void send(int fd) {
-	int c = 0;
-	int w = 0;
-	char writeBuffer[1024];
-	int written = 0;
-	
-	while((c = getchar()) != EOF && w < 1024)
-		writeBuffer[w++] = c;
+static int processA(int argc, char **argv) {
+	char c;
+	print("ProcessA read: ");
+	while(writing == true) {
+		read(STDPIPE, &c, pipeId);
+		if(c != EMPTY)
+			putchar(c);
+	}
+	printNewLine();
 
-	while(written < w)
-		written += write(fd, writeBuffer + written, w - written);
+	return 0;
 }
 
-void recieve(int fd) {
-	int r = 0;
-	int size = 1024;
-	char readBuffer[1024];
-	char * readPtr = readBuffer;
+static int processB(int argc, char **argv) {
+	write(STDPIPE, "h", NULL, pipeId);
+	sleep(2);
+	write(STDPIPE, "o", NULL, pipeId);
+	sleep(1);
+	write(STDPIPE, "l", NULL, pipeId);
+	sleep(5);
+	write(STDPIPE, "a", NULL, pipeId);
 
-	while (size > 0 && (r = read(fd, readPtr, size))) {
-		readPtr += r;
-		size -= r;
-	}
+	lock(p_mutex);
+	writing = false;
+	unlock(p_mutex);
 
-	readBuffer[readPtr - readBuffer] = '\0';
-
-	printf("Read: %s\n", readBuffer);
-}*/
+	return 1;
+}

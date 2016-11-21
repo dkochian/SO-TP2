@@ -23,6 +23,7 @@ clean:
 	@cd Userland; make clean --no-print-directory
 
 run: clean all
+	#@qemu-system-x86_64 -hda Image/x64BareBonesImage.qcow2 -m 512 -vga std > /dev/null 2>&1
 	qemu-system-x86_64 -hda Image/x64BareBonesImage.qcow2 -m 512 -vga std
 
 .PHONY: toolchain bootloader image collections kernel userland all clean run

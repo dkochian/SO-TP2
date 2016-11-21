@@ -66,7 +66,7 @@ void keyboardHandler(unsigned char key) {
 	addKeyBuffer(key);
 }
 
-char getKey(char write) {
+char getKey(bool write) {
 	char c;
 
 	semWait(kb_sem);

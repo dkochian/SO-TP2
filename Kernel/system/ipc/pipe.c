@@ -1,280 +1,151 @@
 #include "include/pipe.h"
-
+#include "include/mutex.h"
 #include "../include/mmu.h"
-#include "../scheduler/include/scheduler.h"
+#include "include/semaphore.h"
+#include "../../include/common.h"
+#include "../../utils/include/lib.h"
 
-#define DEBUG_PIPES 0
-/*
-static inline size_t pipe_unread(pipe_device_t * pipe) {
-	if (pipe->read_ptr == pipe->write_ptr) {
-		return 0;
-	}
-	if (pipe->read_ptr > pipe->write_ptr) {
-		return (pipe->size - pipe->read_ptr) + pipe->write_ptr;
-	} else {
-		return (pipe->write_ptr - pipe->read_ptr);
-	}
-}
+typedef struct pipe {
+	char *buffer;
+	semaphore rSem;
+	semaphore wSem;
+	int readIndex;
+	int writeIndex;
+	int id;
+} pipe;
 
-size_t pipe_size(fs_node_t * node) {
-	pipe_device_t * pipe = (pipe_device_t *)node->inode;
-	return pipe_unread(pipe);
-}
+static void freePipeId(uint64_t id);
+static pipe *getPipeFromId(uint64_t id);
+static bool getFreePipeId(pipe *p);
 
-static inline size_t pipe_available(pipe_device_t * pipe) {
-	if (pipe->read_ptr == pipe->write_ptr) {
-		return pipe->size - 1;
-	}
+static mutex p_mutex;
+static pipe *id_table[MAX_PIPES];
 
-	if (pipe->read_ptr > pipe->write_ptr) {
-		return pipe->read_ptr - pipe->write_ptr - 1;
-	} else {
-		return (pipe->size - pipe->write_ptr) + pipe->read_ptr - 1;
-	}
-}
+bool pipeInit() {
+	p_mutex = lockBuild();
 
-static inline void pipe_increment_read(pipe_device_t * pipe) {
-	pipe->read_ptr++;
-	if (pipe->read_ptr == pipe->size) {
-		pipe->read_ptr = 0;
-	}
-}
-
-static inline void pipe_increment_write(pipe_device_t * pipe) {
-	pipe->write_ptr++;
-	if (pipe->write_ptr == pipe->size) {
-		pipe->write_ptr = 0;
-	}
-}
-
-static inline void pipe_increment_write_by(pipe_device_t * pipe, size_t amount) {
-	pipe->write_ptr = (pipe->write_ptr + amount) % pipe->size;
-}
-
-uint32_t read_pipe(fs_node_t *node, uint32_t offset, uint32_t size, uint8_t *buffer) {
-	//assert(node->inode != 0 && "Attempted to read from a fully-closed pipe.");
-
-	// Retreive the pipe object associated with this file node 
-	pipe_device_t * pipe = (pipe_device_t *)node->inode;
-
-	#if DEBUG_PIPES
-		if (pipe->size > 300) { //Ignore small pipes (ie, keyboard) 
-			print("[debug] Call to read from pipe 0x",-1);
-			printHex(node->inode,-1);
-			printNewLine();
-			print("        Unread bytes:    ",-1);
-			printDec(pipe_unread(pipe));
-			printNewLine();
-			print("        Total size:      ");
-			printDec(pipe->size);
-			printNewLine();
-			print("        Request size:    ");
-			printDec(size);
-			printNewLine();
-			print("        Write pointer:   ");
-			printDec(pipe->write_ptr);
-			printNewLine();
-			print("        Read  pointer:   ");
-			printDec(pipe->read_ptr);
-			printNewLine();
-			print("        Buffer address:  0x");
-			printHex(pipe->buffer,-1);
-			printNewLine();
-		}
-	#endif
-
-	size_t collected = 0;
-	while (collected == 0) {
-		lock(&pipe->pi_mutex);
-		while (pipe_unread(pipe) > 0 && collected < size) {
-			buffer[collected] = pipe->buffer[pipe->read_ptr];
-			pipe_increment_read(pipe);
-			collected++;
-		}
-		unlock(&pipe->pi_mutex);
-		//wakeup_queue(pipe->wait_queue);
-		//switch_from_cross_thread_lock();
-		// Deschedule and switch 
-		if (collected == 0) {
-			//sleep_on(pipe->wait_queue);
-		}
-	}
-
-	return collected;
-}
-
-uint32_t write_pipe(fs_node_t *node, uint32_t offset, uint32_t size, uint8_t *buffer) {
-	//assert(node->inode != 0 && "Attempted to write to a fully-closed pipe.");
-
-	// Retreive the pipe object associated with this file node 
-	pipe_device_t * pipe = (pipe_device_t *)node->inode;
-
-#if DEBUG_PIPES
-	if (pipe->size > 300) { // Ignore small pipes (ie, keyboard) 
-		print("[debug] Call to write to pipe 0x",-1);
-		printHex(node->inode,-1);
-		printNewLine();
-		print("        Available space: ");
-		printDec(pipe_available(pipe));
-		printNewLine();
-		print("        Total size:      ");
-		printDec(pipe->size);
-		printNewLine();
-		print("        Request size:    ");
-		printDec(size);
-		printNewLine();
-		print("        Write pointer:   ");
-		printDec(pipe->write_ptr);
-		printNewLine();
-		print("        Read  pointer:   ");
-		printDec(pipe->read_ptr);
-		printNewLine();
-		print("        Buffer address:  0x");
-		printHex(pipe->buffer,-1);
-		printNewLine();
-		print(" Write: ");
-		print(buffer,-1);
-		printNewLine();
-	}
-#endif
-
-	size_t written = 0;
-	while (written < size) {
-		lock(&pipe->pi_mutex);
-
-#if 0
-		size_t available = 0;
-		if (pipe->read_ptr <= pipe->write_ptr) {
-			available = pipe->size - pipe->write_ptr;
-		} else {
-			available = pipe->read_ptr - pipe->write_ptr - 1;
-		}
-		if (available) {
-			available = min(available, size - written);
-			memcpy(&pipe->buffer[pipe->write_ptr], buffer, available);
-			pipe_increment_write_by(pipe, available);
-			written += available;
-		}
-#else
-		while (pipe_available(pipe) > 0 && written < size) {
-			pipe->buffer[pipe->write_ptr] = buffer[written];
-			pipe_increment_write(pipe);
-			written++;
-		}
-#endif
-
-		unlock(&pipe->pi_mutex);
-		//wakeup_queue(pipe->wait_queue);
-		if (written < size) {
-			//sleep_on(pipe->wait_queue);
-		}
-	}
-
-	return written;
-}
-
-
-int wakeup_queue(list_t * queue) {
-	int awoken_processes = 0;
-	while (queue->length > 0) {
-		node_t * node = list_pop(queue);
-		if (!((process_t *)node->value)->finished) {
-			make_process_ready(node->value);
-		}
-		awoken_processes++;
-	}
-	return awoken_processes;
-}
-
-int sleep_on(list_t * queue) {
-	if (current_process->sleep_node.prev || current_process->sleep_node.next) {
-		// uh, we can't sleep right now, we're marked as ready 
-		switch_task(0);
-		return 0;
-	}
-	list_append(queue, (node_t *)&current_process->sleep_node);
-	switch_task(0);
-	return 0;
-}	
-void make_process_ready(process_t * proc) {
-	if (proc->sched_node.prev != NULL || proc->sched_node.next != NULL) // Process is already ready, or someone stole our scheduling node.  
-		return;
-	list_append(process_queue, &proc->sched_node);
-}
-
-
-void open_pipe(fs_node_t * node, uint8_t read, uint8_t write) {
-	//assert(node->inode != 0 && "Attempted to open a fully-closed pipe.");
-
-	// Retreive the pipe object associated with this file node 
-	pipe_device_t * pipe = (pipe_device_t *)node->inode;
-
-	// Add a reference 
-	pipe->refcount++;
-
-	return;
-}
-
-void close_pipe(fs_node_t * node) {
-	//assert(node->inode != 0 && "Attempted to close an already fully-closed pipe.");
-
-	// Retreive the pipe object associated with this file node 
-	pipe_device_t * pipe = (pipe_device_t *)node->inode;
-
-	// Drop one reference 
-	pipe->refcount--;
-
-	// Check the reference count number 
-	if (pipe->refcount == 0) {
-#if 0
-		/// No other references exist, free the pipe (but not its buffer) 
-		free(pipe->buffer);
-		list_free(pipe->wait_queue);
-		free(pipe->wait_queue);
-		free(pipe);
-		// And let the creator know there are no more references 
-		node->inode = 0;
-#endif
-	}
-
-	return;
-}
-
-fs_node_t * make_pipe(size_t size) {
-	fs_node_t * fnode = k_malloc(sizeof(fs_node_t));
-	pipe_device_t * pipe = k_malloc(sizeof(pipe_device_t));
-	mutex pi_mutexCreate = lockBuild();
-	if (pi_mutexCreate == NULL) 
+	if(p_mutex == NULL)
 		return false;
 
-	fnode->inode = 0;
-	fnode->name[0] = '\0';
-	k_strcpy(fnode->name, "[pipe]");
-	fnode->uid   = 0;
-	fnode->gid   = 0;
-	fnode->flags = FS_PIPE;
-	fnode->read  = read_pipe;
-	fnode->write = write_pipe;
-	fnode->open  = open_pipe;
-	fnode->close = close_pipe;
-	fnode->inode = (uintptr_t)pipe;
+	for(uint64_t i=0; i<MAX_PIPES; i++)
+		id_table[i] = NULL;
 
-	pipe->buffer    = k_malloc(size);
-	pipe->write_ptr = 0;
-	pipe->read_ptr  = 0;
-	pipe->size      = size;
-	pipe->refcount  = 0;
-	pipe->pi_mutex  = &pi_mutexCreate;
+	return true;
+}
 
-	pipe->wait_queue = listBuild(&equal);
+uint64_t pipeBuild() {
+	pipe *p = k_malloc(sizeof(pipe));
 
-	return fnode;
-}*/
+	if(p == NULL)
+		return INVALID_PIPE_ID;
 
+	p->buffer = k_malloc(sizeof(char)*MAX_BUFFER);
 
-	//USERLAND 
-	/*
-static int mkpipe() {
-	fs_node_t * node = make_pipe(4096 * 2);
-	return process_append_fd((process_t *)current_process, node);
-}*/
+	if(p->buffer == NULL) {
+		k_free(p);
+		return NULL;
+	}
+
+	p->rSem = semBuild(0);
+	if(p->rSem == NULL) {
+		k_free(p->buffer);
+		k_free(p);
+		return INVALID_PIPE_ID;
+	}
+
+	p->wSem = semBuild(MAX_BUFFER);
+	if(p->wSem == NULL) {
+		k_free(p->buffer);
+		semDestroy(p->rSem);
+		k_free(p);
+		return INVALID_PIPE_ID;
+	}
+
+	if(getFreePipeId(p) == false) {
+		k_free(p->buffer);
+		semDestroy(p->rSem);
+		semDestroy(p->wSem);
+		k_free(p);
+		return INVALID_PIPE_ID;
+	}
+
+	p->readIndex = 0;
+	p->writeIndex = 0;
+
+	memset(p->buffer, EMPTY, MAX_BUFFER);
+
+	return p->id;
+}
+
+void pipeDestroy(uint64_t id) {
+	pipe *p = getPipeFromId(id);
+	if(p == NULL)
+		return;
+
+	freePipeId(p->id);
+	k_free(p->buffer);
+	semDestroy(p->rSem);
+	semDestroy(p->wSem);
+	k_free(p);
+}
+
+char pipeRead(uint64_t id) {
+	pipe *p = getPipeFromId(id);
+	if(p == NULL)
+		return EMPTY;
+
+	char c;
+	semWait(p->rSem);
+	c = p->buffer[p->readIndex++];
+	semPost(p->wSem);
+
+	if(p->readIndex == MAX_BUFFER - 1)
+		p->readIndex = 0;
+
+	return c;
+}
+
+bool pipeWrite(uint64_t id, char c) {
+	pipe *p = getPipeFromId(id);
+	if(p == NULL)
+		return false;
+
+	semWait(p->wSem);
+	p->buffer[p->writeIndex++] = c;
+	semPost(p->rSem);
+
+	if(p->writeIndex < MAX_BUFFER - 1)
+		p->writeIndex = 0;
+
+	return true;
+}
+
+static pipe *getPipeFromId(uint64_t id) {
+	pipe *p;
+	lock(p_mutex);
+	p = id_table[id];
+	unlock(p_mutex);
+	return p;
+}
+
+static bool getFreePipeId(pipe *p) {
+	uint64_t i;
+	bool found = false;
+	lock(p_mutex);
+	for(i=0; i<MAX_PIPES && found == false; i++) {
+		if(id_table[i] == NULL) {
+			p->id = i;
+			id_table[i] = p;
+			found = true;
+		}
+	}
+
+	unlock(p_mutex);
+	return found;
+}
+
+static void freePipeId(uint64_t id) {
+	lock(p_mutex);
+	id_table[id] = NULL;
+	unlock(p_mutex);
+}

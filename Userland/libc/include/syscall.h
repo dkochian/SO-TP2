@@ -8,8 +8,8 @@
 	extern void _syscall(int, int, int, int, int, int);
 
 	void syscall(int id, int type, uintptr_t* addr, char size, uint64_t aux1, uint64_t aux2);
-	void write(int type, char* str, int size);
-	void read(int type, char* str, char aux);
+	void write(int type, char* str, int size, uint64_t aux);
+	void read(int type, char* str, uint64_t aux);
 	void setColor(char color);
 	void setBgColor(char color);
 	void getColor(char* color);
@@ -52,5 +52,7 @@
 	void syscvBroadcast(cond_t cv);
 	void syscvDestroy(cond_t cv);
 
-
+	uint64_t pipeBuild();
+	void pipeDestroy(uint64_t id);
+	
 #endif

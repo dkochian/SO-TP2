@@ -4,7 +4,7 @@
 static unsigned int countDigits(int num);
 
 void putchar(char c) {
-	write(STDOUT, &c, 1);
+	write(STDOUT, &c, 1, NULL);
 }
 
 void putcharColor(char c, char color) {
@@ -24,7 +24,7 @@ char getchar(char write) {
 }
 
 void print(char* str) {
-	write(STDOUT, str, strlen(str));
+	write(STDOUT, str, strlen(str), NULL);
 }
 
 void printColor(char* str, char color) {
@@ -75,7 +75,7 @@ void toast(char* str, char color) {
 	char bColor;
 	getColor(&bColor);
 	setColor(color);
-	write(TOAST, str, strlen(str));
+	write(STDTOAST, str, strlen(str), NULL);
 	setColor(bColor);
 }
 

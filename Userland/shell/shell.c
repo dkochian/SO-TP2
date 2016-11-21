@@ -10,6 +10,8 @@
 #include "extra/include/philosophers.h"
 #include "extra/include/producerConsumer.h"
 
+#include "tests/include/pipe_test.h"
+
 typedef struct {
 	int argc;
 	char* name;
@@ -49,6 +51,7 @@ commandExec
 		{true, "prodcon", "Starts ProducerConsumer program.", "Usage: producerconsumer", &producerConsumer},
 		{true, "ipc", "Shows all the IPC implemented.", "Usage: ipc", &ipcCommand},
 		{true, "testCV", "Deployees condition variable test.", "Usage: testCV", &cvTestCommand},
+		{true, "testpi", "Deployees condition variable test.", "Usage: testCV", &pipeTestCommand},
 	};
 
 int main(int argc, char ** argv) {
