@@ -1,7 +1,10 @@
+TODO:
+	- Actualizar y agregar q hay que solucionar todos los TODO
+	- Fractal tarda demasiado, modificar el parametro de video
+	- Por favor cambiar los colores de ps, ipc y cualquier otro comando q tenga esos colores (evitar demostrar q sos de boca jonas (ipc))
 
 Requerimientos:
 	- Procesos, Context Switching y Scheduling
-		- Los dormidos deben ser ignorados por el scheduler.
 		- Sólo el que esta en "foreground" puede leer el input de teclado.
 		- Proceso "foreground" != Proceso "current".
 		- Syscalls:
@@ -14,8 +17,6 @@ Requerimientos:
 		- philosophers: resolución del problema de los filósofos.
 			- Poder agregar o quitar filósofos dinamicamente (con 'w' y 's')
 
-
-
 Consideraciones:
 	- Elegir limitaciones para simplificar el desarrollo
 	- Citar en el informe cualquier código copiado de fuente externa.
@@ -25,8 +26,4 @@ Opcionales:
 	- Re-escribir syscall read (keyboard input) para dormir el proceso en foreground hasta que el usuario ingrese un '\n' en el buffer de teclado.
 	- Dormir proceso hasta que suceda evento X.
 	- Enviar señal a proceso (wakeup call).
-	- yield().
 	- Aplicación: envío de mensajes en formato string entre dos procesos
-
-
-
