@@ -133,14 +133,6 @@ static void addKeyBuffer(int key) {
 
 			kb.buffer[kb.writeIndex++] = value;
 			signal = true;
-		}else if(kb.controlOn == true && value == 'c'){
-			ctrlCHandler();
-			lineIndex = 0;
-			for(int i=0; i<KB_SIZE; i++)
-				lineBuffer[i] = EMPTY;
-
-			kb.buffer[kb.writeIndex++] = value;
-			signal = true;
 		}else if(value != DO_NOTHING && value != ESCAPE && lineIndex < KB_SIZE) {
 			lineBuffer[lineIndex++] = value;
 			kb.buffer[kb.writeIndex++] = value;
