@@ -124,6 +124,7 @@
 	typedef char bool;
 	typedef struct mutex *mutex;
 	typedef struct semaphore *semaphore;
+	typedef struct cond_t *list;
 	typedef unsigned int size_t;
 	typedef int (*func) (int, char **);
 

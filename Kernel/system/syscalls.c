@@ -102,7 +102,7 @@ void sysCallHandler(uint64_t arg1, uint64_t arg2, uint64_t arg3, uint64_t arg4, 
 			cvWait((cond_t)arg2,(mutex) arg3);
 			break;
 		case CVSIG:
-			*((uintptr_t *) arg3) = cvSignal((cond_t)arg2);
+			cvSignal((cond_t)arg2);
 			break;
 		case CVBROAD:
 			cvBroadcast((cond_t)arg2);
