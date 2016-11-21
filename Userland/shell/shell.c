@@ -5,6 +5,8 @@
 
 #include "include/common.h"
 #include "extra/include/commands.h"
+#include "extra/include/philosophers.h"
+#include "extra/include/producerConsumer.h"
 #include "tests/include/freeprocess_test.h"
 #include "tests/include/mutex_test.h"
 #include "tests/include/scheduler_test.h"
@@ -14,9 +16,6 @@
 #include "tests/include/cond_var_test.h"
 #include "tests/include/pipe_test.h"
 
-//TODO: Shouldn't this includes be removed?
-#include "extra/include/philosophers.h"
-#include "extra/include/producerConsumer.h"
 
 typedef struct {
 	int argc;
@@ -38,7 +37,7 @@ int
 commandExec
 	commandTable[MAX_COMMANDS] = {
 		{true, "echo", "Prints the input.", "Usage: echo <text>", &echoCommand},
-		{true, "help", "Prints information about a command.", "Usage: help (command)", &helpCommand},
+		{true, "help", "Prints information about a command.", "Usage: help <command>", &helpCommand},
 		{true, "clear", "Clears the screen", "Usage: clear", &clearCommand},
 		{true, "commands", "Prints all commands.", "Usage: commands", &commandsCommand},
 		{true, "time", "Prints the time.", "Usage: time", &timeCommand},
@@ -55,14 +54,14 @@ commandExec
 		{true, "philosophers", "Starts Dining Philosophers problem.", "Usage: philosophers", &philosophers},
 		{true, "prodcon", "Starts ProducerConsumer program.", "Usage: producerconsumer", &producerConsumer},
 		{true, "ipc", "Shows all the IPC implemented.", "Usage: ipc", &ipcCommand},
-		{true, "mtest", "Deployees mutext test.", "Usage: mtest", &mutexTestCommand},
-		{true, "fptest", "Deployees free process test.", "Usage: fptest", &freeProcessTestCommand},
-		{true, "sctest", "Deployees scheduler test.", "Usage: sctest", &schedulerTestCommand},
-		{true, "semtest", "Deployees semaphore test.", "Usage: semtest", &semaphoreTestCommand},
-		{true, "vidtest", "Deployees video test.", "Usage: vidtest", &videoTestCommand},
-		{true, "wptest", "Deployees waitpid test.", "Usage: wptest", &waitpidTestCommand},
-		{true, "cvtest", "Deployees condition variable test.", "Usage: cvtest", &varaibleConditionTestCommand},
-		{true, "pitest", "Deployees condition variable test.", "Usage: pitest", &pipeTestCommand}
+		{true, "mtest", "Deploys mutext test.", "Usage: mtest", &mutexTestCommand},
+		{true, "fptest", "Deploys free process test.", "Usage: fptest", &freeProcessTestCommand},
+		{true, "sctest", "Deploys scheduler test.", "Usage: sctest", &schedulerTestCommand},
+		{true, "semtest", "Deploys semaphore test.", "Usage: semtest", &semaphoreTestCommand},
+		{true, "vidtest", "Deploys video test.", "Usage: vidtest", &videoTestCommand},
+		{true, "wptest", "Deploys waitpid test.", "Usage: wptest", &waitpidTestCommand},
+		{true, "cvtest", "Deploys condition variable test.", "Usage: cvtest", &varaibleConditionTestCommand},
+		{true, "pitest", "Deploys pipe test.", "Usage: pitest", &pipeTestCommand}
 	};
 
 int main(int argc, char ** argv) {
