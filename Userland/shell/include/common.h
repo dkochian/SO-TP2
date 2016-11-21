@@ -3,4 +3,6 @@
 	
 	#include "../../../Common/common.h"
 
+	#define CICLES		100
+
 #endif

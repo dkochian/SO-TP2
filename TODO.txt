@@ -6,7 +6,6 @@ TODO:
 Requerimientos:
 	- Procesos, Context Switching y Scheduling
 		- Sólo el que esta en "foreground" puede leer el input de teclado.
-		- Proceso "foreground" != Proceso "current".
 		- Syscalls:
 			- Crear.
 	- IPC y primitivas de sincronización
@@ -24,6 +23,4 @@ Consideraciones:
 
 Opcionales:
 	- Re-escribir syscall read (keyboard input) para dormir el proceso en foreground hasta que el usuario ingrese un '\n' en el buffer de teclado.
-	- Dormir proceso hasta que suceda evento X.
-	- Enviar señal a proceso (wakeup call).
 	- Aplicación: envío de mensajes en formato string entre dos procesos

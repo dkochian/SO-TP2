@@ -67,6 +67,9 @@ int main(int argc, char ** argv) {
 	while(true) {
 		c = getchar(true);
 
+		if(c == EMPTY)
+			print("fuck");
+
 		if(insertToBuffer(c) == 1) {
 			int
 				result = parseBuffer(&cmd);//if result==0 empty line, result==1 try to execute command, result == -1 command's name is too long
@@ -101,8 +104,6 @@ commandExec* getAllCommands() {
 }
 
 static int insertToBuffer(char c) {
-	if(c == EMPTY)
-		return 0;
 	if(c == '\b') {
 		buffer[bIndex] = '\0';
 		if(bIndex > 0)

@@ -9,7 +9,7 @@ static int processC(int argc, char **argv);
 
 static semaphore s;
 
-void startSemaphoreTest() {
+int startSemaphoreTest(int argc, char **argv) {
 	uint64_t pA;
 	uint64_t pB;
 	uint64_t pC;
@@ -18,7 +18,7 @@ void startSemaphoreTest() {
 
 	if(s == NULL) {
 		print("Couldn't create the semaphore.\n", -1);
-		return;
+		return 1;
 	}
 
 	print("Creating \"Semaphore process A\"\n", -1);
@@ -26,11 +26,11 @@ void startSemaphoreTest() {
 	if(pA == INVALID_PROCESS_ID) {
 		print("Couldn't create \"Semaphore process A\"\n", -1);
 		semDestroy(s);
-		return;
+		return 1;
 	}
 
 	print("Semaphore process A id: ", -1);
-	printDec(pA, -1);
+	printNum(pA, -1);
 	printNewLine();
 
 
@@ -40,11 +40,11 @@ void startSemaphoreTest() {
 		print("Couldn't create \"Semaphore process B\"\n", -1);
 		freeProcess(pA);
 		semDestroy(s);
-		return;
+		return 1;
 	}
 
 	print("Semaphore process B id: ", -1);
-	printDec(pB, -1);
+	printNum(pB, -1);
 	printNewLine();
 
 
@@ -55,12 +55,14 @@ void startSemaphoreTest() {
 		freeProcess(pA);
 		freeProcess(pB);
 		semDestroy(s);
-		return;
+		return 1;
 	}
 
 	print("Semaphore process C id: ", -1);
-	printDec(pC, -1);
+	printNum(pC, -1);
 	printNewLine();
+
+	return 0;
 }
 
 static int processA(int argc, char **argv) {

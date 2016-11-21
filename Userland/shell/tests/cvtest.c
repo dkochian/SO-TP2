@@ -3,7 +3,7 @@
 #include <stdio.h>
 #include <string.h>
 #include <integer.h>
-#include "../include/cvtest.h"
+#include "include/cvtest.h"
 #include "../../libc/include/syscall.h"
 #include "../../libc/include/condVarU.h"
 

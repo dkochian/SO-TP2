@@ -1,6 +1,6 @@
 #ifndef _INC_MUTEX_TEST_
 	#define _INC_MUTEX_TEST_
 
-	void startLockTest(bool lock);
+	int startLockTest(int argc, char **argv);
 	
 #endif

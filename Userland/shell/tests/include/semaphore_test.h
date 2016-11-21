@@ -1,6 +1,6 @@
 #ifndef _INC_SEMAPHORE_TEST_
 	#define _INC_SEMAPHORE_TEST_
 
-	void startSemaphoreTest();
+	int startSemaphoreTest(int argc, char **argv);
 	
 #endif

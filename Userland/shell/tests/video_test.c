@@ -1,23 +1,23 @@
-#include "../utils/include/clock.h"
+#include "include/video_test.h"
 #include "../drivers/include/video.h"
 #include "../system/scheduler/include/process.h"
 
 static int processA(int argc, char **argv);
 static int processB(int argc, char **argv);
 
-void startSchedulerTest() {
+int startVideoTest(int argc, char **argv) {
 	uint64_t pA;
 	uint64_t pB;
-	
+
 	print("Creating \"Scheduler process A\"\n", -1);
 	pA = newProcess("Scheduler process A", processA, 0, NULL);
 	if(pA == INVALID_PROCESS_ID) {
 		print("Couldn't create \"Scheduler process A\"\n", -1);
-		return;
+		return 1;
 	}
 	
 	print("Scheduler process A id: ", -1);
-	printDec(pA, -1);
+	printNum(pA, -1);
 	printNewLine();
 
 	print("Creating \"Scheduler process B\"\n", -1);
@@ -25,25 +25,25 @@ void startSchedulerTest() {
 	if(pB == INVALID_PROCESS_ID) {
 		print("Couldn't create \"Scheduler process B\"\n", -1);
 		freeProcess(pA);
-		return;
+		return 1;
 	}
 	
 	print("Scheduler process B id: ", -1);
-	printDec(pB, -1);
+	printNum(pB, -1);
 	printNewLine();
+
+	return 0;
 }
 
 static int processA(int argc, char **argv) {
-	static int counter = 0;
+	static int counter = CICLES;
 
 	print("Scheduler process A is running\n", -1);
 
 	while(true) {
 		print("Scheduler process A: row ", -1);
-		printDec(counter++, -1);
+		printNum(counter++, -1);
 		printNewLine();
-
-		sleep(1);
 	}
 
 	return 0;
@@ -56,10 +56,8 @@ static int processB(int argc, char **argv) {
 
 	while(true) {
 		print("Scheduler process B: row ", -1);
-		printDec(counter++, -1);
+		printNum(counter++, -1);
 		printNewLine();
-
-		sleep(1);
 	}
 
 	return 0;

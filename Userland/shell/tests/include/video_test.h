@@ -1,6 +1,6 @@
 #ifndef _INC_VIDEO_TEST_
 	#define _INC_VIDEO_TEST_
 
-	void startVideoTest();
+	int startVideoTest(int argc, char **argv));
 	
 #endif

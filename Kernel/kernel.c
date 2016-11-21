@@ -10,14 +10,6 @@
 #include "system/scheduler/include/process.h"
 #include "system/scheduler/include/scheduler.h"
 
-//Tests
-#include "tests/include/video_test.h"
-#include "tests/include/mutex_test.h"
-#include "tests/include/waitpid_test.h"
-#include "tests/include/scheduler_test.h"
-#include "tests/include/semaphore_test.h"
-#include "tests/include/freeprocess_test.h"
-
 extern uint8_t text;
 extern uint8_t rodata;
 extern uint8_t data;
@@ -112,14 +104,6 @@ int main() {
 	print(" ]\n", -1);
 
 	videoStartLocking();
-
-	//Tests
-	//startVideoTest();
-	//startSchedulerTest();
-	//startLockTest(false);
-	//startWaitpidTest();
-	//startFreeProcessTest();
-	//startSemaphoreTest();
 
 	clear();
 	((EntryPoint)sampleCodeModuleAddress)();
