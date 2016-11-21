@@ -48,7 +48,7 @@
 
 	cond_t syscvInit();
 	void syscvWait(cond_t cv, mutex m);
-	uint64_t syscvSignal(cond_t cv);
+	void syscvSignal(cond_t cv);
 	void syscvBroadcast(cond_t cv);
 	void syscvDestroy(cond_t cv);
 

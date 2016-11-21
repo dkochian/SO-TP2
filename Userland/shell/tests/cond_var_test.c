@@ -1,12 +1,10 @@
 //https://gist.github.com/rtv/4989304
 
-#include <strdio.h>
+#include <stdio.h>
 #include <string.h>
 #include "include/cond_var_test.h"
 #include "../../libc/include/syscall"
-#include "../../libc/include/condVarU"
 
-/*
 static int done = 0;
 static int processEntry(int argc, char **argv);
 static mutex m;
@@ -36,7 +34,7 @@ static int processEntry(int argc, char **argv) {
     printNum(done);
     printn(". Signalling cond.");
 
-    cvSignal(cond); 
+    syscvSignal(cond); 
     unlock(m);
 
     return 0;
@@ -44,19 +42,19 @@ static int processEntry(int argc, char **argv) {
 
 int startVariableConditionTest(int argc, char **argv){
     printColor( "Condition Variable Test Starting\n" , YELLOW);
-    m = lockBuild();
+    m = mutexInit();
     if(m == NULL) {
         printn("Couldn't create the mutex");
         printColor( "Test failed\n" , RED);
         return 1;
     }
 
-    cond = cvInitialize();
+    cond = syscvInit();
     
     if(cond == NULL) {
         printn("Couldn't create the condition variable");
         printColor( "Test failed\n" , RED);
-        lockDestroy(m);
+        mutexDestroy(m);
         return 1;
     }
     char name[MAXTESTP][11];
@@ -65,10 +63,10 @@ int startVariableConditionTest(int argc, char **argv){
 
 
     for( int t = 0; t < MAXTESTP; t++ ) {
-        k_strcat(name[MAXTESTP], "[process ");
-        k_itoa(t,buff[MAXTESTP]);
-        k_strcat(name[MAXTESTP], buff[MAXTESTP]);
-        k_strcat(name[MAXTESTP], "]");
+        strcat(name[MAXTESTP], "[process ");
+        itoa(t,buff[MAXTESTP]);
+        strcat(name[MAXTESTP], buff[MAXTESTP]);
+        strcat(name[MAXTESTP], "]");
 
         newProcess(name[MAXTESTP], processEntry, 1, (char **) buff[MAXTESTP]);
 
@@ -83,7 +81,7 @@ int startVariableConditionTest(int argc, char **argv){
         printNum(MAXTESTP);
         print(" so waiting on condition\n");
 
-        cvWait(cond, m); 
+        syscvWait(cond, m); 
 
         printColor( "[process main] wake - cond was signalled.\n", LIGHT_GREEN ); 
     }
@@ -94,10 +92,10 @@ int startVariableConditionTest(int argc, char **argv){
 
     unlock(m);
 
-    lockDestroy(m);
-    cvDestroy(cond);
+    mutexDestroy(m);
+    syscvDestroy(cond);
     done = 0;
-    //k_free(buff);
-    //k_free(name);
+    //free(buff);
+    //free(name);
     return 1;
-}*/
+}

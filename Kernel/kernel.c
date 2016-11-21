@@ -13,8 +13,7 @@
 //Tests
 #include "tests/include/video_test.h"
 #include "tests/include/mutex_test.h"
-#include "tests/include/waitpid_test.h"
-#include "tests/include/cond_var_test.h"	
+#include "tests/include/waitpid_test.h"	
 #include "tests/include/scheduler_test.h"
 #include "tests/include/semaphore_test.h"
 #include "tests/include/freeprocess_test.h"
