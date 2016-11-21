@@ -54,6 +54,13 @@ bool videoBuild() {
 
 	must_lock = false;
 
+	for(int i=0; i<HEIGHT; i++) {
+		for(int j=0; j<WIDTH; j++) {
+			charMatrix[i][j].c = EMPTY;
+			charMatrix[i][j].color = defaultColor;
+		}
+	}
+
 	return true;
 }
 
@@ -147,7 +154,6 @@ void printNewLine() {
 	if(must_lock == true)
 		lock(v_mutex);
 
-
 	iPrintNewLine();
 
 	if(must_lock == true)
@@ -159,9 +165,16 @@ void clear() {
 		lock(v_mutex);
 
 	ColorRGB bgcolor = getRGBColor(defaultBgColor);
-	for(int i = 0; i < 1025; i ++)
+	for(int i=0; i<1025; i++)
 		for(int j=0; j<769; j++)
 			iPrintPixel(i, j, &bgcolor);
+
+	for(int i=0; i<HEIGHT; i++) {
+		for(int j=0; j<WIDTH; j++) {
+			charMatrix[i][j].c = EMPTY;
+			charMatrix[i][j].color = defaultColor;
+		}
+	}
 
 	offset = 0;
 
