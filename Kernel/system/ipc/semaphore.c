@@ -6,7 +6,7 @@
 #include "../../drivers/include/video.h"
 
 //NUEVA IMPLEMENTACION, NO FUNCIONA. PROBAR PRODCON Y VER QUE DESBLOQUEA UN PROCESO DISTINTO AL QUE BLOQUEA. AGREGA MAL A LA QUEUE?
-
+/*
 sem_t semOpen(char * name, int value) {
 	sem_t sem = k_malloc(sizeof(sem_t));
 
@@ -74,9 +74,9 @@ void semPost(sem_t sem) {
 	unlock(sem->s_mutex);
 	return;
 }
+*/
 
 
-/*
 sem_t semOpen(char * name, int value) {
 	sem_t sem = k_malloc(sizeof(sem_t));
 
@@ -119,4 +119,3 @@ void semPost(sem_t sem) {
 	sem->value++;
 	unlock(sem->s_mutex);
 }
-*/

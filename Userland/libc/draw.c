@@ -22,7 +22,7 @@ ColorRGB baseColors[16] = {
 ColorRGB charToRGB(char in) {
 	//if(in<16 && in>=0) {
 		return baseColors[(uint32_t)in];
-	
+
 }
 
 ColorRGB * colorRGB(uint8_t r, uint8_t g, uint8_t b) {

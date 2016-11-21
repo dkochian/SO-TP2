@@ -4,7 +4,7 @@
 #include "syscall.h"
 #include "../../../Common/common.h"
 
-#define MAXY 700
+#define MAXY 768
 
 ColorRGB charToRGB(char in);
 
