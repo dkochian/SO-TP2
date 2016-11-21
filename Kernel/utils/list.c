@@ -107,6 +107,7 @@ bool listRemove(list l, element_t item) {
 		prev = current;
 		current = current->next;
 	}
+	print("que hago aca??\n", RED);
 	unlock(l->m);
 	return found;
 }

@@ -3,9 +3,9 @@
 
 	#include "../../../Common/common.h"
 
-	#define MAXTESTP 4
+	#define MAXTESTP 2
 
-	int startVariableConditionTest(int argc, char **argv);
+	int varaibleConditionTestCommand(int argc, char **argv);
 
 #endif
 	

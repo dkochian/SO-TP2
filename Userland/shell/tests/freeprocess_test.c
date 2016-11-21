@@ -1,9 +1,14 @@
 #include <stdio.h>
 #include <syscall.h>
+#include "../extra/include/commands.h"
 
 static int processA(int argc, char **argv);
 
 int freeProcessTestCommand(int argc, char **argv) {
+	if(argc != 0) {
+		helpCommand(1, (char **) "fpTest");
+		return 1;
+	}
 	uint64_t pA;
 
 	print("Creating \"kill process A\"\n");
@@ -29,6 +34,8 @@ int freeProcessTestCommand(int argc, char **argv) {
 	print("I'll again wait for \"kill process A\" (id: ");
 	printNum(pA);
 	print(")\n");
+
+	wPid(pA);
 
 	return 0;
 }

@@ -169,8 +169,7 @@ int dateCommand(int argc, char **argv) {
 		return 1;
 	}
 
-	dateStruct
-		date;
+	dateStruct date;
 
 	getDate(&date);
 
@@ -411,56 +410,6 @@ int disclaimerCommand(int argc, char **argv) {
 	printnColor(".                                           |", 0x07);
 	printnColor("|-----------------------------------------------------|", 0x07);
 
-	return 0;
-}
-
-int mutextest(int argc, char **argv) {
-	if(argc != 0) {
-		helpCommand(1, (char **) "test");
-		return 1;
-	}
-
-	mutex m;
-	bool l;
-
-	m = mutexInit();
-	if(m == NULL) {
-		printn("Couldn't create the mutex");
-		return 1;
-	}
-	printn("Muted Created");
-
-	lock(m);
-	sysMutexIsLocked(m, &l);
-	if(l == false) {
-		printn("Lock failed");
-		mutexDestroy(m);
-		return 1;
-	}
-	printn("Locked successfully");
-
-	unlock(m);
-	sysMutexIsLocked(m, &l);
-	if(l == true) {
-		printn("Unlock failed");
-		mutexDestroy(m);
-		return 1;
-	}
-	printn("Unlocked successfully");
-
-	mutexDestroy(m);
-	printn("Mutex destroyed");
-
-	return 0;
-}
-
-int cvTestCommand(int argc, char **argv) {
-	if(argc != 0) {
-		helpCommand(1, (char **) "testCV");
-		return 1;
-	}
-
-	//startVariableConditionTest(0,NULL);
 	return 0;
 }
 

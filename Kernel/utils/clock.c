@@ -1,8 +1,7 @@
 #include "include/clock.h"
-#include "../include/common.h"
 
-void getTime(uint64_t time) {
-	timeStruct* aux = (timeStruct*) time;
+void getTime(timeStruct* time) {
+	timeStruct* aux = time;
 	uint8_t
 		mins = minutes(),
 		hrs = hour(),
@@ -20,9 +19,8 @@ void getTime(uint64_t time) {
 	aux->hrs = hrs;
 }
 
-void getDate(uint64_t date) {
-	dateStruct*
-		aux = (dateStruct*) date;
+void getDate(dateStruct* date) {
+	dateStruct* aux = date;
 	uint8_t
 		d = day(),
 		m = month(),

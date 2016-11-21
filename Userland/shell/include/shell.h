@@ -3,7 +3,7 @@
 
 	#include "../../../Common/common.h"
 
-	#define MAX_COMMANDS	20
+	#define MAX_COMMANDS	25
 	#define MAX_ARG_BUFFER	MAX_BUFFER - 2
 	#define MAX_COLORS		4
 	
