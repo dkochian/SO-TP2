@@ -3,6 +3,8 @@
 
 	#include "../../../Common/common.h"
 
+	#define MAX_PROCESS 10
+	
 	int varaibleConditionTestCommand(int argc, char **argv);
 
 #endif

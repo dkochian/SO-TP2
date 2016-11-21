@@ -12,5 +12,11 @@ void ctrlCHandler(){
 	while(pid > 2) {
 		pid = getProcessFromId(pid)->father;
 	}
+	processesStatus();
+	printNewLine();
+	printDec(pid, CYAN);
+	printNewLine();
 	freeProcess(pid);
+	print("afuera\n",-1);
+	processesStatus();
 }

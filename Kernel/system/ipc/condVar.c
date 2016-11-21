@@ -1,5 +1,3 @@
-//http://www.cs.wustl.edu/~schmidt/win32-cv-1.html
-
 #include "../include/mmu.h"
 #include "include/condVar.h"
 #include "../../drivers/include/video.h"

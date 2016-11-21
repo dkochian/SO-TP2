@@ -10,11 +10,6 @@ static volatile mutex m;
 static volatile cond_t cond;
 static volatile int done = 0;
 
-static void mysleep(long int num) {
-    int i = num * 10000000;
-    while(i-- > 0);
-}
-
 static int processEntry(int argc, char **argv) {   
     char* id = (char *)argv; 
     int workloops = 5;
@@ -22,14 +17,14 @@ static int processEntry(int argc, char **argv) {
     for( i = 0; i < workloops; i++ ) {
         print(id);
         printn(" is working....");
-        mysleep(1);  
+        //sleep(1);  
     }
 
     print((char *)argv);
     print(" checking condition.\n");
 
     done++;
-    if(done>=4)
+    if(done >= MAX_PROCESS)
         syscvSignal(cond);
     unlock(m);
 
@@ -57,27 +52,31 @@ int varaibleConditionTestCommand(int argc, char **argv){
         mutexDestroy(m);
         return 1;
     }
+    uint64_t process[MAX_PROCESS] = {0};
 
     printColor( "[process main] starting\n" , LIGHT_BLUE);
-    uint64_t pA = newProcess("1", processEntry, 1, (char **) "1");
-    uint64_t pB = newProcess("2", processEntry, 1, (char **) "2");
-    uint64_t pC = newProcess("3", processEntry, 1, (char **) "3");
-    uint64_t pD = newProcess("4", processEntry, 1, (char **) "4");
+    int i = 0;
+    char arg[MAX_PROCESS][MAX_PROCESS];
+    for(i = 0; i < MAX_PROCESS; i++){
+        itoa(i+1, arg[i]);
+        process[i] = newProcess(arg[i], processEntry, 1, (char **) arg[i]);
+    }
 
     lock(m);
 
     syscvWait(cond, m);     
-    printColor( "[process main] done == 4 so everyone is done\n", LIGHT_BLUE);
+    printColor( "[process main] done == ", LIGHT_BLUE);
+    printNum(MAX_PROCESS);
+    printColor(" so everyone is done\n", LIGHT_BLUE);
 
     unlock(m);
 
-    kill(pA);
-    kill(pB);
-    kill(pC);
-    kill(pD);
+    for (i = 0; i < MAX_PROCESS; i++) {
+        kill(process[i]);
+    }
+
     mutexDestroy(m);
     syscvDestroy(cond);
-    done = 0;
 
     return 0;
 }

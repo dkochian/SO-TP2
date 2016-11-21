@@ -135,6 +135,8 @@ uint64_t getCurrentPid(){
 static void killProcess(process *p) {
 	process *child;
 
+	//lock(s_mutex);
+
 	if(p == NULL)
 		return;
 
@@ -142,7 +144,10 @@ static void killProcess(process *p) {
 	while(child != NULL) {
 		freeProcess(child->id);
 		child = getFirstWaitProcess(p);
+		print("Mataste:",-1);
+		printDec(child->id,-1);
 	}
+	//unlock(s_mutex);
 }
 
 static process *schedule() {
@@ -161,6 +166,7 @@ static process *schedule() {
 psContext *processesStatus() {
 	char buffer[10] = {0};
 	int listSize = listGetSize(waiting_list);
+	printDec(listSize,YELLOW);
 
 	int i, aux;
 
