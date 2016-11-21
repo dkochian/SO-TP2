@@ -14,16 +14,15 @@ int pipeTestCommand(int argc, char **argv) {
 
 	writing = true;
 
-	pipeId = pipeBuild();
-
 	print("Creating the pipe...\n");
+	pipeId = pipeBuild();
 	if(pipeId == INVALID_PIPE_ID) {
 		print("Couldn't create the pipe.\n");
 		return 1;
 	}
 
+	print("Creating the mutex...\n");
 	p_mutex = mutexInit();
-
 	if(p_mutex == NULL) {
 		print("Couldn't create the mutex.\n");
 		pipeDestroy(pipeId);

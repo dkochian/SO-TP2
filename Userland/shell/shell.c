@@ -5,12 +5,18 @@
 
 #include "include/common.h"
 #include "extra/include/commands.h"
+#include "tests/include/freeprocess_test.h"
+#include "tests/include/mutex_test.h"
+#include "tests/include/scheduler_test.h"
+#include "tests/include/semaphore_test.h"
+#include "tests/include/video_test.h"
+#include "tests/include/waitpid_test.h"
+#include "tests/include/cond_var_test.h"
+#include "tests/include/pipe_test.h"
 
 //TODO: Shouldn't this includes be removed?
 #include "extra/include/philosophers.h"
 #include "extra/include/producerConsumer.h"
-
-#include "tests/include/pipe_test.h"
 
 typedef struct {
 	int argc;
@@ -36,7 +42,7 @@ commandExec
 		{true, "clear", "Clears the screen", "Usage: clear", &clearCommand},
 		{true, "commands", "Prints all commands.", "Usage: commands", &commandsCommand},
 		{true, "time", "Prints the time.", "Usage: time", &timeCommand},
-		{true, "date", "Prints the date.", "Usage: date", &dateCommand},
+		{true, "date", "Prints todays date.", "Usage: date", &dateCommand},
 		{true, "sleep", "Sleeps the system.", "Usage: sleep <seconds>", &sleepCommand},
 		{true, "fractal", "Draws a fractal. To exit the demostration press Esc key", "Usage: fractal", &fractalCommand},
 		{true, "credits", "Prints the OS credits.", "Usage: credits", &creditsCommand},
@@ -44,14 +50,19 @@ commandExec
 		{true, "disclaimer", "Must read", "Usage: disclaimer", &disclaimerCommand},
 		{true, "background", "Sets the color of the shell background.", 	"Usage: background <code>\n\n------------- Color codes ------------\n0 Black          1 Blue\n2 Green          3 Cyan\n4 Red            5 Magenta\n6 Brown          7 Light Gray\n8 Dark Grey      9 Light Blue\n10 Light Green   11 Light Cyan\n12 Light Red     13 Light Magenta\n14 Yellow        15 White\n--------------------------------------", &colorBgCommand},
 		{true, "pid", "Prints the process pid.", "Usage: pid", &pidCommand},
-		{true, "kill", "Kills the selected process.", "Usage: kill <pid>", &killCommand},
+		{true, "kill", "Kills the selected id process.", "Usage: kill <pid>", &killCommand},
 		{true, "ps", "Prints all the processes information.", "Usage: ps", &psCommand},
-		{true, "test", "Deployees mutext test.", "Usage: mTest", &mutextest},
 		{true, "philosophers", "Starts Dining Philosophers problem.", "Usage: philosophers", &philosophers},
 		{true, "prodcon", "Starts ProducerConsumer program.", "Usage: producerconsumer", &producerConsumer},
 		{true, "ipc", "Shows all the IPC implemented.", "Usage: ipc", &ipcCommand},
-		{true, "testCV", "Deployees condition variable test.", "Usage: testCV", &cvTestCommand},
-		{true, "testpi", "Deployees condition variable test.", "Usage: testCV", &pipeTestCommand},
+		{true, "mtest", "Deployees mutext test.", "Usage: mtest", &mutexTestCommand},
+		{true, "fptest", "Deployees free process test.", "Usage: fptest", &freeProcessTestCommand},
+		{true, "sctest", "Deployees scheduler test.", "Usage: sctest", &schedulerTestCommand},
+		{true, "semtest", "Deployees semaphore test.", "Usage: semtest", &semaphoreTestCommand},
+		{true, "vidtest", "Deployees video test.", "Usage: vidtest", &videoTestCommand},
+		{true, "wptest", "Deployees waitpid test.", "Usage: wptest", &waitpidTestCommand},
+		{true, "cvtest", "Deployees condition variable test.", "Usage: cvtest", &varaibleConditionTestCommand},
+		{true, "pitest", "Deployees condition variable test.", "Usage: pitest", &pipeTestCommand}
 	};
 
 int main(int argc, char ** argv) {
@@ -107,6 +118,9 @@ commandExec* getAllCommands() {
 }
 
 static int insertToBuffer(char c) {
+	if(c == EMPTY)
+		return 0;
+
 	if(c == '\b') {
 		buffer[bIndex] = '\0';
 		if(bIndex > 0)
@@ -189,7 +203,6 @@ static bool executeCommand(commandData cmd) {
 		if(commandTable[index].created == true && strcmp(cmd.name, commandTable[index].name) == 0) {
 			uint64_t pid = newProcess(cmd.name, commandTable[index].func, cmd.argc, cmd.argv);
 			wPid(pid);
-
 			return true;
 		}
 	}

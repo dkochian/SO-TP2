@@ -6,7 +6,7 @@
 	#define INIT_PHILOSOPHERS (5)
 
 	#define MIN_SPEED (0)
-	#define MAX_SPEED (10)
+	#define MAX_SPEED (5)
 	#define INIT_SPEED (2)
 
 	int philosophers(int argc, char **argv);

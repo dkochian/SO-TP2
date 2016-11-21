@@ -1,11 +1,16 @@
 #include <stdio.h>
 #include <syscall.h>
 #include "../include/common.h"
+#include "../extra/include/commands.h"
 
 static int processA(int argc, char **argv);
 static int processB(int argc, char **argv);
 
 int schedulerTestCommand(int argc, char **argv) {
+	if(argc != 0) {
+		helpCommand(1, (char **) "scTest");
+		return 1;
+	}
 	uint64_t pA;
 	uint64_t pB;
 	
@@ -31,6 +36,9 @@ int schedulerTestCommand(int argc, char **argv) {
 	print("Scheduler process B id: ");
 	printNum(pB);
 	printNewLine();
+
+	wPid(pA);
+	wPid(pB);
 
 	return 0;
 }

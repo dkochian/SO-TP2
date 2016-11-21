@@ -1,3 +1,4 @@
+//	http://pseudomuto.com/development/2014/03/01/dining-philosophers-in-c/
 #include <syscall.h>
 #include <stdio.h>
 #include <string.h>
@@ -8,130 +9,59 @@
 #include "include/commands.h"
 #include "../include/common.h"
 
-//extern void putPixel(uint16_t x, uint16_t y, ColorRGB* color);
+#define LEFT false
+#define RIGHT true
+#define SIZE (64)
+#define SPACER (16)
+#define TOPGAP (48)
 
+static void colorLegend();
 static void control();
-/*
-ColorRGB baseColors[16] = {
-		{0,		0,		0},
-		{0,		0,		255},
-		{0,		128,	0},
-		{0,		255,	255},
-		{255,	0,		0},
-		{255,	0,		255},
-		{165,	42,		42},
-		{211,	211,	211},
-		{128,	128,	128},
-		{0,		128,	255},
-		{144,	238,	144},
-		{224,	255,	255},
-		{255,	77,		77},
-		{237,	83,		147},
-		{255,	255,	0},
-		{255,	255,	255}
-	};
-*/
-
-
-//	http://pseudomuto.com/development/2014/03/01/dining-philosophers-in-c/
 
 typedef enum {
-	NO_ACTION, INC, DEC, KILL
+	NO_ACTION, ZERO, PLUS, KILL
 } edit_t;
 
 /*****************
 **  Global Data **
 *****************/
 volatile static int speed;
+
 uint64_t childs[MAX_PHILOSOPHERS];
 
 volatile static int total;
 mutex forks[MAX_PHILOSOPHERS];
 
-												//mutex_u_t semLock;
-												//volatile int sem;
 semaphore sem;
 
 mutex editLock;
 volatile edit_t edit[MAX_PHILOSOPHERS];
 
-/***************
-**  Semaphore **
-***************/
-/*static void grabSem(mutex_u_t lock_v, volatile int* value) {
-	while(true) {
-		lock(lock_v);
-		if( (*value)>0 ) {
-			(*value)--;
-			unlock(lock_v);
-			return;
-		} else {
-			unlock(lock_v);
-			yield();
-		}
-	}
-}
-
-static void releaseSem(mutex_u_t lock_v, volatile int* value) {
-	print("AAA");
-	lock(lock_v);
-	print("BBB");
-	(*value)++;
-	print("CCC");
-	unlock(lock_v);
-	printn("dropped");
-}
-*/
 /**************
 **  Display  **
 **************/
-
-#define LEFT false
-#define RIGHT true
-
-
-/*void doA(int x, int y, int l, char color) {
-	ColorRGB c = baseColors[(uint16_t)color];
-	for(int i=0; i<l; i++) {
-		for(int j=0; j<l; j++) {
-			print("<");
-			putPixel(x+i, y+j , &c);
-			print(">");
-		}
-	}
-}*/
-#define SIZE (64)
-#define SPACER (16)
-#define TOPGAP (48)
 static void updateSquare(int pos, char color) {
-	//ColorRGB c = charToRGB(color);
 	int x = SPACER + (SIZE+SPACER)*(pos);
 	int y = TOPGAP;
 	int l = SIZE;
 	drawSquare(x,y,l,color);
-	//doA(x, y, l, color);
 }
 
 static void updateState(int pos, bool hand, char color) {
-	//ColorRGB c = charToRGB(color);
 	if(hand==LEFT) {
 		int x = SPACER+ (SIZE+SPACER)*(pos);
 		int y = TOPGAP;
 		int l = SIZE/2;
 		drawSquare(x,y,l,color);
-		//doA(x, y, l, color);
 		y += SIZE/2;
 		drawSquare(x,y,l,color);
-		//doA(x, y, l, color);
 	} else {
 		int x = SPACER+SIZE/2+ (SIZE+SPACER)*(pos);
 		int y = TOPGAP;
 		int l = SIZE/2;
 		drawSquare(x,y,l,color);
-		//doA(x, y, l, color);
 		y += SIZE/2;
 		drawSquare(x,y,l,color);
-		//doA(x, y, l, color);
 	}
 }
 
@@ -141,6 +71,14 @@ static void mysleep(long int num) {
 }
 
 static void sleep2() {
+	/* 
+	** I tried being nice... sleep syscall hangs everything.
+	** Don't believe me?
+	** Switch to commented code and try it out...
+	*/
+
+	/*for(int i=0; i<speed; i++)
+		sleep(1);*/
 	mysleep(speed);
 }
 
@@ -153,17 +91,9 @@ static int philosopher(int argc, char** argv) {
 	free(argv[0]);
 	free(argv[1]);
 	free(argv);
-	//print("Generated Philosopher N°: ");
+
 	int left = pos;
 	bool alive = true;
-	
-	/*printNum(pos);
-	print(":");
-	printNum(left);
-	print("-");
-	printNum(right);
-	printNewLine();
-	*/
 	while(alive) {
 		// THINKING
 		updateSquare(pos, BLUE);
@@ -174,7 +104,6 @@ static int philosopher(int argc, char** argv) {
 		//sleep2();
 
 		semWait(sem);
-												//grabSem(semLock, &sem);
 		
 		// CAN GRAB
 		updateSquare(pos, RED);
@@ -205,35 +134,34 @@ static int philosopher(int argc, char** argv) {
 		//sleep2();
 
 		semPost(sem);
-												//releaseSem(semLock, &sem);
 		
 		// OUT EAT
 		updateSquare(pos, LIGHT_BLUE);
 		sleep2();
 
-		lock(editLock);
 		
 		// CHECK MESSAGE
+		lock(editLock);
 		updateSquare(pos, DARK_GRAY);
-
 		switch( edit[pos] ) {
-			case INC: {
-				left++;
+			case NO_ACTION:
+				break;
+			case ZERO: {
+				right = 0;
+				edit[pos] = NO_ACTION;
 				break;
 			}
-			case DEC: {
-				left--;
+			case PLUS: {
+				right = pos+1;
+				edit[pos] = NO_ACTION;
 				break;
 			}
 			case KILL: {
 				alive = false;
+				edit[pos] = NO_ACTION;
 				break;
 			}
-			case NO_ACTION:
-			default:
-				;
 		}
-		edit[pos] = NO_ACTION;
 		unlock(editLock);
 	}
 
@@ -251,8 +179,6 @@ static int init() {
 	if(sem==NULL) {
 		return 1;
 	}
-												//sem = total-1;
-												//semLock = mutexInit();
 	editLock = mutexInit();
 	if(editLock ==NULL) {
 		semDestroy(sem);
@@ -273,17 +199,17 @@ static int init() {
 	return 0;
 }
 
-static void launchPhilosopher(int pos, int left) {
+static void launchPhilosopher(int pos, int right) {
 	int argc = 2;
 
 	char** argv = (char**) malloc(sizeof(char*)*argc);
 	char* arg1 = (char*) malloc(sizeof(char*)*64);
 	char* arg2 = (char*) malloc(sizeof(char*)*64);
 	itoa(pos, arg1);
-	itoa(left, arg2);
+	itoa(right, arg2);
 	argv[0] = arg1;
 	argv[1] = arg2;
-	childs[pos] = newProcess("Phi-Child", philosopher, argc, argv);
+	childs[pos] = newProcess("phiChild", philosopher, argc, argv);
 }
 
 static void action(int pos, edit_t value) {
@@ -307,14 +233,9 @@ static void action(int pos, edit_t value) {
 static bool addPhilosopher() {
 	if(total>=MAX_PHILOSOPHERS)
 		return false;
-	launchPhilosopher(total, total-1);
-	action(0, INC);
-
+	launchPhilosopher(total, 0);
+	action(total-1, PLUS);
 	semPost(sem);
-
-										//grabSem(semLock, &sem);
-										//sem++;
-										//releaseSem(semLock, &sem);
 	total++;
 	return true;
 }
@@ -322,12 +243,8 @@ static bool addPhilosopher() {
 static bool removePhilosopher() {
 	if(total<=MIN_PHILOSOPHERS)
 		return false;
-
 	semWait(sem);
-										//grabSem(semLock, &sem);
-										//sem--;
-										//releaseSem(semLock, &sem);
-	action(0, DEC);
+	action(total-2, ZERO);
 	action(total-1, KILL);
 	total--;
 	return true;
@@ -340,7 +257,6 @@ static void exitNicely() {
 		}
 	}
 	semDestroy(sem);
-										//mutexDestroy(semLock);
 	mutexDestroy(editLock);
 	for(int i=0; i<MAX_PHILOSOPHERS; i++) {
 		mutexDestroy(forks[i]);
@@ -360,17 +276,7 @@ int philosophers(int argc, char **argv) {
 	for(int i=0; i<total; i++) {
 		launchPhilosopher(i, (i+1)%total );
 	}
-	
-	//color  code
-	print("Colors:  ");
-	printColor("Thinking  ", BLUE);
-	printColor("Hungry  ", MAGENTA);
-	printColor("Enabled  ", RED);
-	printColor("Eating  ", GREEN);
-	printColor("Done Eating  ", LIGHT_GREEN);
-	printColor("Disabled  ", LIGHT_BLUE);
-	printnColor("Checking  ", DARK_GRAY);
-
+	colorLegend();
 	printNewLine();
 	printNewLine();
 	printNewLine();
@@ -386,6 +292,19 @@ int philosophers(int argc, char **argv) {
 	return 0;
 }
 
+/*****************************
+**  Helpers - Main Process  **
+*****************************/
+static void colorLegend() {
+	print("    Colors:  ");
+	printColor("Thinking  ", BLUE);
+	printColor("Hungry  ", MAGENTA);
+	printColor("Enabled  ", RED);
+	printColor("Eating  ", GREEN);
+	printColor("Done Eating  ", LIGHT_GREEN);
+	printColor("Disabled  ", LIGHT_BLUE);
+	printnColor("Checking  ", DARK_GRAY);
+}
 static void control() {
 	bool end = false;
 	int c;
@@ -398,7 +317,7 @@ static void control() {
 		switch(c) {
 			case 'w':
 			case 'W':
-				print("Adding philosopher...      ");
+				print("    Adding philosopher...      ");
 				if(addPhilosopher()) {
 					printnColor("Done.", GREEN);
 				} else {
@@ -410,7 +329,7 @@ static void control() {
 				break;
 			case 's':
 			case 'S':
-				print("Removing philosopher...    ");
+				print("    Removing philosopher...    ");
 				if(removePhilosopher()) {
 					printnColor("Done.", GREEN);
 				} else {
@@ -422,21 +341,39 @@ static void control() {
 				break;
 			case 'a':
 			case 'A':
-				if(speed < MAX_SPEED)
+				if(speed < MAX_SPEED) {
+					print("    Speed decreased");
 					speed++;
+					if(speed == MAX_SPEED) {
+						printnColor(" to TURTLE SPEED!", GREEN);
+					} else {
+						printn(".");
+					}
+				} else {
+					printnColor("    Snorlax is your spirit Pokemon. ", LIGHT_GRAY);
+				}
 				break;
 			case 'd':
 			case 'D':
-				if(speed > MIN_SPEED)
+				if(speed > MIN_SPEED) {
+					print("    Speed increased");
 					speed--;
+					if(speed==MIN_SPEED) {
+						printnColor(" to TURBO!", RED);
+					} else {
+						printn(".");
+					}
+				} else {
+					printnColor("    2 FAST 2 FURIOUS 4 ME", RED);
+				}
 				break;
 			case 'q':
 			case 'Q':
 				end = true;
 				break;
 			default:
-				printn("Press: 'w' to add, 's' to remove, 'd' to speed up, 'a' to slow down, & 'q' to quit.");
-				psCommand(0, NULL);
+				printn("    Press: 'w' to add, 's' to remove, 'd' to speed up, 'a' to slow down, & 'q' to quit.");
+				colorLegend();
 		}
 	}
 }

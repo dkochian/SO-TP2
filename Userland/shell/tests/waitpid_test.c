@@ -1,10 +1,15 @@
 #include <stdio.h>
 #include <syscall.h>
 #include "../include/common.h"
+#include "../extra/include/commands.h"
 
 static int processA(int argc, char **argv);
 
 int waitpidTestCommand(int argc, char **argv) {
+	if(argc != 0) {
+		helpCommand(1, (char **) "wpTest");
+		return 1;
+	}
 	uint64_t pA;
 
 	print("Creating \"Waitpid process A\"\n");
@@ -22,6 +27,8 @@ int waitpidTestCommand(int argc, char **argv) {
 	print("Hey I can run again!\n");
 
 	return 0;
+
+	wPid(pA);
 }
 
 static int processA(int argc, char **argv) {
