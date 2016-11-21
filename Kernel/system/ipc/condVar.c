@@ -18,10 +18,10 @@ cond_t cvInitialize() {
 void cvWait(cond_t cv, mutex cv_mutex) {	
 
 	process *cProcess = getCurrentProcess();
-	unlock(cv_mutex);
 	listAdd(cv, cProcess);
 
 	blockProcess(cProcess);  
+	unlock(cv_mutex);
 	_yield();
 	
 	lock(cv_mutex);
@@ -45,5 +45,4 @@ void cvBroadcast(cond_t cv) {
 void cvDestroy(cond_t cv) {
 	cvBroadcast(cv);
 	listDestroy(cv);
-	k_free(cv);
 }
