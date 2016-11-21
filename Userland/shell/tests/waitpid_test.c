@@ -26,9 +26,8 @@ int waitpidTestCommand(int argc, char **argv) {
 	wPid(pA);
 	print("Hey I can run again!\n");
 
-	return 0;
-
 	wPid(pA);
+	return 0;
 }
 
 static int processA(int argc, char **argv) {

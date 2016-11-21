@@ -73,6 +73,8 @@ int mutexTestCommand(int argc, char **argv) {
 	wPid(pB);
 	wPid(pC);
 
+	mutexDestroy(m);
+
 	return 0;
 }
 
