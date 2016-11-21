@@ -30,11 +30,11 @@ static int processEntry1(int argc, char **argv) {
     lock(m);
 
     done++;
-    printColor( "[process ",LIGHT_GREEN);
-    printColor((char *)argv,LIGHT_GREEN);
-    printColor("] done is now ",LIGHT_GREEN);
+    print( "[process ");
+    print((char *)argv);
+    print("] done is now ");
     printNum(done);
-    printColor(". Signalling condition.\n",LIGHT_GREEN);
+    print(". Signalling condition.\n");
 
     unlock(m);
 
@@ -58,11 +58,11 @@ static int processEntry2(int argc, char **argv) {
     lock(m);
 
     done++;
-    printColor( "[process ",LIGHT_GREEN);
-    printColor((char *)argv,LIGHT_GREEN);
-    printColor("] done is now ",LIGHT_GREEN);
+    print( "[process ");
+    print((char *)argv);
+    print("] done is now ");
     printNum(done);
-    printColor(". Signalling condition.\n",LIGHT_GREEN);
+    print(". Signalling condition.\n");
 
     syscvSignal(cond);
     unlock(m);
@@ -87,11 +87,11 @@ static int processEntry3(int argc, char **argv) {
     lock(m);
 
     done++;
-    printColor( "[process ",LIGHT_GREEN);
-    printColor((char *)argv,LIGHT_GREEN);
-    printColor("] done is now ",LIGHT_GREEN);
+    print( "[process ");
+    print((char *)argv);
+    print("] done is now ");
     printNum(done);
-    printColor(". Signalling condition.\n",LIGHT_GREEN);
+    print(". Signalling condition.\n");
 
     syscvSignal(cond);
     unlock(m);
@@ -116,11 +116,11 @@ static int processEntry4(int argc, char **argv) {
     lock(m);
 
     done++;
-    printColor( "[process ",LIGHT_GREEN);
-    printColor((char *)argv,LIGHT_GREEN);
-    printColor("] done is now ",LIGHT_GREEN);
+    print( "[process ");
+    print((char *)argv);
+    print("] done is now ");
     printNum(done);
-    printColor(". Signalling condition.\n",LIGHT_GREEN);
+    print(". Signalling condition.\n");
 
     syscvSignal(cond);
     unlock(m);
