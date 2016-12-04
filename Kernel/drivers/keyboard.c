@@ -2,7 +2,6 @@
 #include "include/keyboard.h"
 #include "../system/ipc/include/semaphore.h"
 #include "../system/scheduler/include/scheduler.h"
-#include "../system/include/signals.h"
 
 static void addKeyBuffer(int key);
 
