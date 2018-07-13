@@ -1,3 +1,3 @@
 # SO-TPE2
 
-All push to master, no branch shit. Push to master it's the best practice.
+Trabajo practico de Sistemas Operativos. Consiste en un mini kernel con capacidad de multitask, entre otras cosas.
